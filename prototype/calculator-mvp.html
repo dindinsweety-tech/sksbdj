@@ -1,0 +1,782 @@
+<title>Калькулятор светопрозрачных конструкций</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --paper:#F5F7F9; --surface:#FFFFFF; --surface2:#EDF1F4; --surface3:#E1E8ED;
+  --ink:#101519; --ink2:#3E4C57; --ink3:#6C7C88;
+  --line:#D6DEE4; --line2:#BCC8D1;
+  --acc:#0B6E99; --acc-hi:#075172; --acc-soft:#DEEEF6;
+  --ok:#1E7A4D; --ok-soft:#DFF1E7;
+  --warn:#9A6100; --warn-soft:#FBEFD7;
+  --danger:#B3261E;
+  --sh:0 1px 2px rgba(16,21,25,.06),0 10px 28px -16px rgba(16,21,25,.28);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1418; --surface:#151D23; --surface2:#1C262E; --surface3:#25323B;
+  --ink:#E8EEF3; --ink2:#AABAC6; --ink3:#7C8D9A;
+  --line:#26333C; --line2:#33444F;
+  --acc:#4FB3DE; --acc-hi:#86CDEC; --acc-soft:#0F2C3B;
+  --ok:#4CC38A; --ok-soft:#0E2A1E; --warn:#E0A94A; --warn-soft:#2B2110; --danger:#F2705F;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 12px 30px -16px rgba(0,0,0,.8);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#0E1418; --surface:#151D23; --surface2:#1C262E; --surface3:#25323B;
+  --ink:#E8EEF3; --ink2:#AABAC6; --ink3:#7C8D9A;
+  --line:#26333C; --line2:#33444F;
+  --acc:#4FB3DE; --acc-hi:#86CDEC; --acc-soft:#0F2C3B;
+  --ok:#4CC38A; --ok-soft:#0E2A1E; --warn:#E0A94A; --warn-soft:#2B2110; --danger:#F2705F;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 12px 30px -16px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:14.5px;line-height:1.55}
+h1,h2,h3,h4{margin:0;font-weight:600;text-wrap:balance}
+h1{font-size:22px}h2{font-size:18px}h3{font-size:15.5px}h4{font-size:13px}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:1px;border-radius:2px}
+.mono,.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.muted{color:var(--ink2)}
+.small{font-size:12.5px;line-height:1.45}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+
+/* ---- demo banner ---- */
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 18px;text-align:center;line-height:1.4}
+.demo b{font-family:"IBM Plex Mono",monospace;background:var(--acc);color:#fff;padding:1px 6px;border-radius:2px;font-size:11px;font-weight:500}
+
+/* ---- shell ---- */
+.app[hidden],.login[hidden],.view[hidden]{display:none!important}
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.top-in{max-width:1320px;margin:0 auto;padding:0 18px;display:flex;align-items:center;gap:16px;height:56px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;letter-spacing:-.01em}
+.brand svg{display:block}
+.tabs{display:flex;gap:2px;margin-left:14px;overflow-x:auto}
+.tabs button{background:none;border:0;padding:8px 12px;border-radius:4px;color:var(--ink2);white-space:nowrap;font-size:14px}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--acc-soft);color:var(--acc);font-weight:600}
+.top-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.who{font-size:12.5px;color:var(--ink2);text-align:right;line-height:1.3}
+.who b{display:block;color:var(--ink);font-size:13px}
+.ico{background:none;border:1px solid var(--line);width:32px;height:32px;border-radius:4px;display:grid;place-items:center;color:var(--ink2)}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+
+.page{max-width:1320px;margin:0 auto;padding:22px 18px 80px}
+.phead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+
+/* ---- controls ---- */
+input,select,textarea{font:inherit;font-size:14px;background:var(--surface);color:var(--ink);
+ border:1px solid var(--line2);border-radius:4px;padding:8px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+input[type="number"]{font-family:"IBM Plex Mono",monospace;text-align:right}
+label.f{display:grid;gap:5px;font-size:12px;color:var(--ink2);font-weight:500}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:4px;border:1px solid transparent;
+ font-size:13.5px;font-weight:600;text-decoration:none;white-space:nowrap}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-hi)}
+.btn-s{background:var(--surface);color:var(--ink);border-color:var(--line2)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-g{background:var(--ok);color:#fff}
+.btn-d{background:none;color:var(--danger);border-color:transparent;padding:6px 8px}
+.btn-d:hover{background:var(--surface2)}
+.btn-sm{padding:6px 11px;font-size:12.5px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.card-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.card-b{padding:16px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+ padding:2px 7px;border-radius:3px;background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+.pill.a{background:var(--acc-soft);color:var(--acc);border-color:transparent}
+.pill.g{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.pill.w{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+
+/* ---- calc layout ---- */
+.calc{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.side{position:sticky;top:74px;display:grid;gap:14px}
+.constr{margin-bottom:14px}
+.cgrid{display:grid;grid-template-columns:1.4fr repeat(3,.8fr) auto;gap:10px;align-items:end}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.hw{border:1px solid var(--line);border-radius:5px;padding:10px;background:var(--surface2)}
+.hw-row{display:flex;align-items:center;gap:8px;padding:4px 0}
+.hw-row input[type="number"]{width:64px;padding:4px 7px}
+.hw-row .nm{flex:1;font-size:13px}
+.hw-row .pr{font-size:12px;color:var(--ink3);font-family:"IBM Plex Mono",monospace}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:4px 0}
+.chk input{width:auto;margin-top:3px}
+.lines{border-top:1px dashed var(--line);margin-top:14px;padding-top:10px;display:grid;gap:5px;font-size:13px}
+.line{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:baseline}
+.line .d{color:var(--ink2)}
+.line .q{font-family:"IBM Plex Mono",monospace;color:var(--ink3);font-size:12px;white-space:nowrap}
+.line .s{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;min-width:96px}
+.line.tot{border-top:1px solid var(--line);margin-top:6px;padding-top:8px;font-weight:600}
+.tot-big{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.tot-big .v{font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:600;letter-spacing:-.02em}
+
+/* ---- tables ---- */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+ color:var(--ink3);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface2)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+td.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+th.n{text-align:right}
+td input{padding:6px 8px;font-size:13px}
+.empty{padding:34px;text-align:center;color:var(--ink3)}
+
+/* ---- login ---- */
+.login{min-height:100vh;display:grid;place-items:center;padding:40px 18px;
+ background:radial-gradient(700px 400px at 50% 0%,var(--acc-soft),transparent 70%)}
+.lbox{width:100%;max-width:390px}
+.lbox .card-b{display:grid;gap:14px}
+.hint{background:var(--surface2);border:1px dashed var(--line2);border-radius:4px;padding:10px 12px;font-size:12.5px;color:var(--ink2)}
+
+/* ---- kp / print ---- */
+.kp{background:#fff;color:#101519;max-width:800px;margin:0 auto;padding:34px 38px;border:1px solid var(--line);border-radius:6px}
+.kp h1{font-size:20px}
+.kp table{font-size:12.5px}
+.kp th{background:#EDF1F4;color:#3E4C57}
+.kp td,.kp th{border-bottom:1px solid #D6DEE4}
+.kp .fin{display:flex;justify-content:space-between;font-size:16px;font-weight:600;padding-top:12px;border-top:2px solid #101519;margin-top:10px}
+.kp .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px;color:#3E4C57;margin:16px 0 20px}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:90;background:var(--ink);color:var(--paper);
+ padding:11px 18px;border-radius:5px;font-size:13.5px;box-shadow:var(--sh);max-width:90vw;text-align:center}
+.toast[hidden]{display:none}
+
+@media (max-width:1080px){.calc{grid-template-columns:1fr}.side{position:static}}
+@media (max-width:860px){
+  .cgrid{grid-template-columns:1fr 1fr}
+  .opts,.g3,.g4,.g2{grid-template-columns:1fr}
+  .tabs{margin-left:0}
+  .top-in{height:auto;padding:10px 14px;flex-wrap:wrap}
+  .who{display:none}
+}
+@media print{
+  .demo,header.top,.noprint,.toast{display:none!important}
+  body{background:#fff}
+  .page{padding:0;max-width:none}
+  .kp{border:0;padding:0;max-width:none}
+}
+</style>
+
+<div class="demo">
+  <b>ДЕМО</b>&nbsp; Демонстрационный прототип внутреннего калькулятора. Цены, клиенты и расчёты — условные. Данные хранятся только в вашем браузере.
+</div>
+
+<!-- ================= LOGIN ================= -->
+<div class="login" id="login">
+  <div class="lbox">
+    <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:18px">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+        <rect x="1" y="1" width="26" height="26" rx="3" fill="none" stroke="var(--acc)" stroke-width="2"></rect>
+        <path d="M1 10h26M10 1v26" stroke="var(--acc)" stroke-width="1.4" opacity=".55"></path>
+        <rect x="11" y="11" width="15" height="15" fill="var(--acc)" opacity=".16"></rect>
+      </svg>
+      <span style="font-weight:600;font-size:16px">Калькулятор конструкций</span>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>Вход для сотрудников</h2></div>
+      <form class="card-b" id="loginForm">
+        <label class="f">Логин<input type="text" id="lg" value="menedzher" autocomplete="username"></label>
+        <label class="f">Пароль<input type="password" id="pw" value="demo" autocomplete="current-password"></label>
+        <label class="f">Роль в демо
+          <select id="role">
+            <option value="manager">Менеджер — расчёты и клиенты</option>
+            <option value="admin">Администратор — плюс управление прайсом</option>
+          </select>
+        </label>
+        <button class="btn btn-p" type="submit" style="justify-content:center">Войти</button>
+        <p class="hint">В прототипе вход условный: подойдёт любой логин и пароль. Роль определяет, виден ли раздел «Прайс». В рабочей версии — хеширование паролей, сессии, журнал действий и права по ролям.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="app" id="app" hidden>
+<header class="top"><div class="top-in">
+  <span class="brand">
+    <svg width="22" height="22" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1" y="1" width="26" height="26" rx="3" fill="none" stroke="var(--acc)" stroke-width="2"></rect>
+      <path d="M1 10h26M10 1v26" stroke="var(--acc)" stroke-width="1.4" opacity=".55"></path>
+      <rect x="11" y="11" width="15" height="15" fill="var(--acc)" opacity=".16"></rect>
+    </svg>
+    Калькулятор
+  </span>
+  <nav class="tabs" id="tabs">
+    <button data-view="calc" aria-current="true">Расчёт</button>
+    <button data-view="history">История</button>
+    <button data-view="clients">Клиенты</button>
+    <button data-view="admin" id="tabAdmin">Прайс</button>
+  </nav>
+  <div class="top-r">
+    <span class="pill a mono" id="pvBadge">прайс v1</span>
+    <span class="who"><b id="whoName">Менеджер</b><span id="whoRole">manager</span></span>
+    <button class="ico" id="themeBtn" title="Тема" aria-label="Сменить тему">◐</button>
+    <button class="ico" id="outBtn" title="Выйти" aria-label="Выйти">⏻</button>
+  </div>
+</div></header>
+
+<!-- ---------- CALC ---------- -->
+<div class="page view" data-view="calc">
+  <div class="phead">
+    <div><h1>Новый расчёт</h1><p class="small muted" id="calcMeta">Черновик · прайс не зафиксирован</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-s btn-sm" id="addC">+ Конструкция</button>
+      <button class="btn btn-s btn-sm" id="resetC">Очистить</button>
+      <button class="btn btn-p btn-sm" id="saveC">Сохранить расчёт</button>
+    </div>
+  </div>
+
+  <div class="calc">
+    <div>
+      <div class="card" style="margin-bottom:14px"><div class="card-b">
+        <div class="grid g3">
+          <label class="f">Клиент
+            <select id="clientSel"></select>
+          </label>
+          <label class="f">Объект / адрес<input type="text" id="objAddr" placeholder="ЖК Сибирский, кв. 42"></label>
+          <label class="f">Менеджер<input type="text" id="mgrName" value="Демо Менеджер"></label>
+        </div>
+      </div></div>
+
+      <div id="constrs"></div>
+    </div>
+
+    <div class="side">
+      <div class="card"><div class="card-h"><h3>Услуги</h3></div><div class="card-b" id="svcBox"></div></div>
+      <div class="card"><div class="card-h"><h3>Скидка</h3></div><div class="card-b">
+        <div class="grid g2">
+          <label class="f">Тип
+            <select id="discType"><option value="pct">Процент</option><option value="fix">Сумма, ₽</option></select>
+          </label>
+          <label class="f">Значение<input type="number" id="discVal" value="0" min="0" step="0.5"></label>
+        </div>
+      </div></div>
+      <div class="card"><div class="card-h"><h3>Итого по заказу</h3></div><div class="card-b" id="totalBox"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- HISTORY ---------- -->
+<div class="page view" data-view="history" hidden>
+  <div class="phead">
+    <div><h1>История расчётов</h1><p class="small muted">Каждый расчёт хранит версию прайса, по которой считался. Изменение цен не задевает сохранённые расчёты.</p></div>
+    <input type="search" id="hSearch" placeholder="Поиск по номеру, клиенту, адресу" style="max-width:320px">
+  </div>
+  <div class="tw"><table id="hTable">
+    <thead><tr><th>№</th><th>Дата</th><th>Клиент</th><th>Объект</th><th>Констр.</th><th class="n">Площадь, м²</th><th>Прайс</th><th class="n">Сумма, ₽</th><th></th></tr></thead>
+    <tbody></tbody>
+  </table><div class="empty" id="hEmpty" hidden>Сохранённых расчётов пока нет.</div></div>
+</div>
+
+<!-- ---------- CLIENTS ---------- -->
+<div class="page view" data-view="clients" hidden>
+  <div class="phead">
+    <div><h1>База клиентов</h1><p class="small muted">Клиент подтягивается в расчёт и в коммерческое предложение.</p></div>
+  </div>
+  <div class="grid" style="grid-template-columns:minmax(0,1fr) 320px;align-items:start">
+    <div class="tw"><table id="clTable">
+      <thead><tr><th>Клиент</th><th>Телефон</th><th>Тип</th><th class="n">Расчётов</th><th class="n">Сумма, ₽</th></tr></thead>
+      <tbody></tbody>
+    </table><div class="empty" id="clEmpty" hidden>Клиентов пока нет.</div></div>
+    <div class="card"><div class="card-h"><h3>Добавить клиента</h3></div>
+      <form class="card-b grid" id="clForm">
+        <label class="f">Имя или компания<input type="text" name="name" required placeholder="ООО «Пример»"></label>
+        <label class="f">Телефон<input type="text" name="phone" placeholder="+7 900 000-00-00"></label>
+        <label class="f">Тип<select name="type"><option>Розница</option><option>Дилер</option><option>Застройщик</option></select></label>
+        <button class="btn btn-p" type="submit">Добавить</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- ADMIN ---------- -->
+<div class="page view" data-view="admin" hidden>
+  <div class="phead">
+    <div><h1>Прайс и справочники</h1><p class="small muted" id="pvInfo"></p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-s btn-sm" id="pvReset">Откатить изменения</button>
+      <button class="btn btn-g btn-sm" id="pvSave">Сохранить как новую версию</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px;border-color:var(--warn)"><div class="card-b" style="display:flex;gap:12px;align-items:flex-start">
+    <span class="pill w">Как это работает</span>
+    <p class="small muted" style="flex:1">Измените любую цену и сохраните — прайс получит новую версию. Откройте «Историю»: старые расчёты останутся в прежних суммах, потому что каждый хранит слепок цен на момент сохранения. Новые расчёты пойдут уже по новой версии.</p>
+  </div></div>
+  <div id="adminTables" class="grid" style="gap:16px"></div>
+</div>
+
+<!-- ---------- КП ---------- -->
+<div class="page view" data-view="kp" hidden>
+  <div class="phead noprint">
+    <div><h1>Коммерческое предложение</h1><p class="small muted">Печатная форма. В рабочей версии выгружается в PDF на сервере — с логотипом, подписью и реквизитами.</p></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-s btn-sm" id="kpBack">← Назад</button>
+      <button class="btn btn-p btn-sm" id="kpPrint">Печать / Сохранить в PDF</button>
+    </div>
+  </div>
+  <div class="kp" id="kpBody"></div>
+</div>
+
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var money=function(n){return (Math.round(n*100)/100).toLocaleString("ru-RU",{minimumFractionDigits:2,maximumFractionDigits:2})};
+var num=function(n,d){return (Math.round(n*Math.pow(10,d||2))/Math.pow(10,d||2)).toLocaleString("ru-RU",{minimumFractionDigits:d||2,maximumFractionDigits:d||2})};
+var uid=function(p){return p+"-"+Math.random().toString(36).slice(2,8)};
+
+/* ================= price book ================= */
+var BASE={
+ version:1, date:"01.06.2026",
+ types:[
+  {id:"part", name:"Перегородка стационарная", k:1.00},
+  {id:"shower", name:"Душевое ограждение", k:1.15},
+  {id:"door", name:"Дверь маятниковая", k:1.25},
+  {id:"front", name:"Витраж / фасадное остекление", k:1.35},
+  {id:"canopy", name:"Козырёк алюминиевый", k:1.20}
+ ],
+ glass:[
+  {id:"g8", name:"Закалённое 8 мм, прозрачное", price:4200},
+  {id:"g10", name:"Закалённое 10 мм, прозрачное", price:5400},
+  {id:"g10b", name:"Закалённое 10 мм, бронза / графит", price:6300},
+  {id:"g8m", name:"Закалённое 8 мм, матовое", price:5100},
+  {id:"tri", name:"Триплекс 8.8.1", price:7900}
+ ],
+ profile:[
+  {id:"p0", name:"Без профиля (точечное крепление)", price:0},
+  {id:"pal", name:"Алюминиевый профиль, анодированный", price:1450},
+  {id:"pblk", name:"Алюминиевый профиль, чёрный матовый", price:1850},
+  {id:"pins", name:"Профиль с термовставкой", price:2600}
+ ],
+ hardware:[
+  {id:"h1", name:"Петля стена-стекло", price:2800},
+  {id:"h2", name:"Замок-защёлка", price:3400},
+  {id:"h3", name:"Ручка-скоба 300 мм", price:2100},
+  {id:"h4", name:"Доводчик напольный", price:11500},
+  {id:"h5", name:"Уплотнитель, комплект", price:900}
+ ],
+ extras:[
+  {id:"e1", name:"Обработка кромки, полировка", unit:"мп", price:320},
+  {id:"e2", name:"Отверстия и вырезы", unit:"шт", price:750},
+  {id:"e3", name:"Плёнка защитная / ударопрочная", unit:"м2", price:1100},
+  {id:"e4", name:"Сложный монтаж (высота, стеснённые условия)", unit:"%", price:12}
+ ],
+ services:[
+  {id:"s_measure", name:"Замер на объекте", unit:"фикс", price:2500, on:true},
+  {id:"s_delivery", name:"Доставка по городу", unit:"фикс", price:3500, on:true},
+  {id:"s_install", name:"Монтаж", unit:"%", price:18, on:true},
+  {id:"s_lift", name:"Подъём на этаж без лифта", unit:"шт", price:600, on:false}
+ ]
+};
+var UNIT={"м2":"₽/м²","мп":"₽/пог.м","шт":"₽/шт","%":"%","фикс":"₽"};
+
+/* ================= storage ================= */
+var DB={price:null, prices:{}, clients:[], calcs:[], seq:1};
+function load(){
+  try{
+    var raw=localStorage.getItem("glasscalc");
+    if(raw){DB=JSON.parse(raw);return}
+  }catch(e){}
+  seed();
+}
+function save(){try{localStorage.setItem("glasscalc",JSON.stringify(DB))}catch(e){}}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function seed(){
+  DB.price=clone(BASE);
+  DB.prices={1:clone(BASE)};
+  DB.clients=[
+   {id:"c1",name:"ООО «Стройинвест»",phone:"+7 913 000-11-22",type:"Застройщик"},
+   {id:"c2",name:"Иванов Сергей",phone:"+7 908 000-33-44",type:"Розница"},
+   {id:"c3",name:"Салон «Аква»",phone:"+7 381 200-55-66",type:"Дилер"}
+  ];
+  DB.calcs=[{
+    id:"R-1001", date:"14.08.2026", clientId:"c1", addr:"ЖК Северный, секция 3", mgr:"Демо Менеджер",
+    pv:1, area:18.72, total:214830.40,
+    snapshot:clone(BASE),
+    data:{items:[{id:"i1",type:"front",w:1800,h:2600,qty:4,glass:"g10",profile:"pal",hw:{h5:4},ex:["e1"]}],
+          svc:{s_measure:true,s_delivery:true,s_install:true,s_lift:false},disc:{type:"pct",val:0}}
+  }];
+  DB.calcs.forEach(function(r){
+    var o=calcOrder(r.data,r.snapshot);r.area=o.area;r.total=o.total;
+  });
+  DB.seq=2;
+  save();
+}
+/* ================= calc engine ================= */
+function P(){return DB.price}
+function find(arr,id){for(var i=0;i<arr.length;i++)if(arr[i].id===id)return arr[i];return null}
+
+function calcItem(it,price){
+  var t=find(price.types,it.type)||price.types[0];
+  var g=find(price.glass,it.glass)||price.glass[0];
+  var pr=find(price.profile,it.profile)||price.profile[0];
+  var qty=Math.max(1,it.qty||1);
+  var area=(it.w*it.h)/1000000*qty;
+  var perim=2*(it.w+it.h)/1000*qty;
+  var lines=[];
+  var glassSum=area*g.price*t.k;
+  lines.push({d:"Стекло: "+g.name,q:num(area,3)+" м² × "+money(g.price)+" ₽"+(t.k!==1?" × k"+t.k:""),s:glassSum});
+  var profSum=perim*pr.price;
+  if(pr.price>0)lines.push({d:"Профиль: "+pr.name,q:num(perim,2)+" пог.м × "+money(pr.price)+" ₽",s:profSum});
+  var hwSum=0;
+  Object.keys(it.hw||{}).forEach(function(k){
+    var n=it.hw[k];if(!n)return;var h=find(price.hardware,k);if(!h)return;
+    var s=h.price*n;hwSum+=s;
+    lines.push({d:"Фурнитура: "+h.name,q:n+" шт × "+money(h.price)+" ₽",s:s});
+  });
+  var base=glassSum+profSum+hwSum;
+  var exSum=0;
+  (it.ex||[]).forEach(function(k){
+    var e=find(price.extras,k);if(!e)return;var s=0,q="";
+    if(e.unit==="%"){s=base*e.price/100;q=e.price+"% от "+money(base)+" ₽"}
+    else if(e.unit==="м2"){s=area*e.price;q=num(area,3)+" м² × "+money(e.price)+" ₽"}
+    else if(e.unit==="мп"){s=perim*e.price;q=num(perim,2)+" пог.м × "+money(e.price)+" ₽"}
+    else if(e.unit==="шт"){s=qty*e.price;q=qty+" шт × "+money(e.price)+" ₽"}
+    else {s=e.price;q="фиксированная цена"}
+    exSum+=s;lines.push({d:"Доп. работы: "+e.name,q:q,s:s});
+  });
+  return {area:area,perim:perim,lines:lines,total:base+exSum,name:t.name};
+}
+function calcOrder(state,price){
+  var items=state.items.map(function(it){return calcItem(it,price)});
+  var goods=items.reduce(function(a,b){return a+b.total},0);
+  var area=items.reduce(function(a,b){return a+b.area},0);
+  var qty=state.items.reduce(function(a,b){return a+Math.max(1,b.qty||1)},0);
+  var svc=[];
+  price.services.forEach(function(s){
+    if(!state.svc[s.id])return;
+    var v=0,q="";
+    if(s.unit==="%"){v=goods*s.price/100;q=s.price+"% от стоимости конструкций"}
+    else if(s.unit==="шт"){v=s.price*qty;q=qty+" шт × "+money(s.price)+" ₽"}
+    else if(s.unit==="м2"){v=s.price*area;q=num(area,3)+" м² × "+money(s.price)+" ₽"}
+    else {v=s.price;q="фиксированная цена"}
+    svc.push({d:s.name,q:q,s:v});
+  });
+  var svcSum=svc.reduce(function(a,b){return a+b.s},0);
+  var sub=goods+svcSum;
+  var d=state.disc||{type:"pct",val:0};
+  var disc=d.type==="pct"?sub*(+d.val||0)/100:Math.min(sub,+d.val||0);
+  return {items:items,goods:goods,area:area,qty:qty,svc:svc,svcSum:svcSum,sub:sub,disc:disc,total:Math.max(0,sub-disc)};
+}
+
+/* ================= state ================= */
+var S={items:[],svc:{},disc:{type:"pct",val:0},clientId:"",addr:"",mgr:"Демо Менеджер"};
+function newItem(){
+  return {id:uid("i"),type:P().types[0].id,w:1200,h:2100,qty:1,
+    glass:P().glass[1].id,profile:P().profile[1].id,hw:{},ex:[]};
+}
+function resetState(){
+  S={items:[newItem()],svc:{},disc:{type:"pct",val:0},clientId:DB.clients[0]?DB.clients[0].id:"",addr:"",mgr:$("#mgrName")?$("#mgrName").value:"Демо Менеджер"};
+  P().services.forEach(function(s){S.svc[s.id]=!!s.on});
+}
+
+/* ================= render: calculator ================= */
+function optionList(arr,sel,fmt){
+  return arr.map(function(o){
+    return '<option value="'+o.id+'"'+(o.id===sel?" selected":"")+'>'+esc(fmt?fmt(o):o.name)+'</option>';
+  }).join("");
+}
+function renderCalc(){
+  var price=P();
+  $("#constrs").innerHTML=S.items.map(function(it,idx){
+    var r=calcItem(it,price);
+    return '<div class="card constr" data-i="'+it.id+'">'+
+     '<div class="card-h"><h3>Конструкция '+(idx+1)+' · <span class="muted" style="font-weight:400">'+esc(r.name)+'</span></h3>'+
+     '<div style="display:flex;gap:10px;align-items:center"><span class="pill">'+num(r.area,3)+' м²</span>'+
+     '<span class="pill a mono">'+money(r.total)+' ₽</span>'+
+     (S.items.length>1?'<button class="btn btn-d btn-sm" data-del="'+it.id+'">Удалить</button>':'')+'</div></div>'+
+     '<div class="card-b">'+
+       '<div class="cgrid">'+
+        '<label class="f">Тип конструкции<select data-f="type">'+optionList(price.types,it.type,function(o){return o.name+(o.k!==1?" (k "+o.k+")":"")})+'</select></label>'+
+        '<label class="f">Ширина, мм<input type="number" data-f="w" value="'+it.w+'" min="100" step="10"></label>'+
+        '<label class="f">Высота, мм<input type="number" data-f="h" value="'+it.h+'" min="100" step="10"></label>'+
+        '<label class="f">Кол-во, шт<input type="number" data-f="qty" value="'+it.qty+'" min="1" step="1"></label>'+
+        '<div class="small muted mono" style="padding-bottom:9px;white-space:nowrap">'+num(r.perim,2)+' пог.м</div>'+
+       '</div>'+
+       '<div class="opts">'+
+        '<label class="f">Стекло<select data-f="glass">'+optionList(price.glass,it.glass,function(o){return o.name+" — "+money(o.price)+" ₽/м²"})+'</select></label>'+
+        '<label class="f">Профиль<select data-f="profile">'+optionList(price.profile,it.profile,function(o){return o.name+(o.price?" — "+money(o.price)+" ₽/пог.м":"")})+'</select></label>'+
+       '</div>'+
+       '<div class="opts" style="margin-top:12px">'+
+        '<div class="hw"><h4 class="eyebrow" style="margin-bottom:6px">Фурнитура</h4>'+
+          price.hardware.map(function(h){
+            return '<div class="hw-row"><input type="number" data-hw="'+h.id+'" value="'+(it.hw[h.id]||0)+'" min="0" step="1">'+
+              '<span class="nm">'+esc(h.name)+'</span><span class="pr">'+money(h.price)+' ₽</span></div>';
+          }).join("")+'</div>'+
+        '<div class="hw"><h4 class="eyebrow" style="margin-bottom:6px">Дополнительные работы</h4>'+
+          price.extras.map(function(e){
+            return '<label class="chk"><input type="checkbox" data-ex="'+e.id+'"'+((it.ex||[]).indexOf(e.id)>-1?" checked":"")+'>'+
+              '<span>'+esc(e.name)+' <span class="pr mono">'+money(e.price)+' '+UNIT[e.unit]+'</span></span></label>';
+          }).join("")+'</div>'+
+       '</div>'+
+       '<div class="lines">'+r.lines.map(function(l){
+          return '<div class="line"><span class="d">'+esc(l.d)+'</span><span class="q">'+esc(l.q)+'</span><span class="s">'+money(l.s)+'</span></div>';
+        }).join("")+
+        '<div class="line tot"><span class="d">Итого по конструкции</span><span class="q"></span><span class="s">'+money(r.total)+' ₽</span></div>'+
+       '</div>'+
+     '</div></div>';
+  }).join("");
+
+  $("#svcBox").innerHTML=price.services.map(function(s){
+    return '<label class="chk"><input type="checkbox" data-svc="'+s.id+'"'+(S.svc[s.id]?" checked":"")+'>'+
+      '<span>'+esc(s.name)+' <span class="pr mono muted">'+money(s.price)+' '+UNIT[s.unit]+'</span></span></label>';
+  }).join("");
+
+  var o=calcOrder(S,price);
+  $("#totalBox").innerHTML=
+    '<div class="lines" style="border-top:0;margin-top:0;padding-top:0">'+
+    '<div class="line"><span class="d">Конструкции ('+o.qty+' шт)</span><span class="q">'+num(o.area,3)+' м²</span><span class="s">'+money(o.goods)+'</span></div>'+
+    o.svc.map(function(s){return '<div class="line"><span class="d">'+esc(s.d)+'</span><span class="q">'+esc(s.q)+'</span><span class="s">'+money(s.s)+'</span></div>'}).join("")+
+    (o.disc>0?'<div class="line" style="color:var(--ok)"><span class="d">Скидка</span><span class="q">'+(S.disc.type==="pct"?S.disc.val+"%":"сумма")+'</span><span class="s">−'+money(o.disc)+'</span></div>':'')+
+    '</div>'+
+    '<div class="tot-big" style="margin-top:14px"><span class="muted">К оплате</span><span class="v">'+money(o.total)+' ₽</span></div>'+
+    '<button class="btn btn-p" id="mkKp" style="width:100%;justify-content:center;margin-top:14px">Сформировать КП</button>';
+
+  $("#pvBadge").textContent="прайс v"+price.version;
+  $("#calcMeta").textContent="Черновик · считается по прайсу v"+price.version+" от "+price.date;
+}
+
+/* ---- calc events ---- */
+$("#constrs").addEventListener("input",function(e){
+  var box=e.target.closest("[data-i]");if(!box)return;
+  var it=S.items.filter(function(x){return x.id===box.getAttribute("data-i")})[0];if(!it)return;
+  var f=e.target.getAttribute("data-f"),hw=e.target.getAttribute("data-hw"),ex=e.target.getAttribute("data-ex");
+  if(f){it[f]=(f==="w"||f==="h"||f==="qty")?Math.max(1,+e.target.value||0):e.target.value}
+  else if(hw){it.hw[hw]=Math.max(0,+e.target.value||0)}
+  else if(ex){var i=it.ex.indexOf(ex);if(e.target.checked&&i<0)it.ex.push(ex);if(!e.target.checked&&i>-1)it.ex.splice(i,1)}
+  renderCalc();
+});
+$("#constrs").addEventListener("click",function(e){
+  var d=e.target.closest("[data-del]");if(!d)return;
+  S.items=S.items.filter(function(x){return x.id!==d.getAttribute("data-del")});renderCalc();
+});
+$("#svcBox").addEventListener("change",function(e){
+  var s=e.target.getAttribute("data-svc");if(!s)return;S.svc[s]=e.target.checked;renderCalc();
+});
+$("#discType").addEventListener("change",function(){S.disc.type=this.value;renderCalc()});
+$("#discVal").addEventListener("input",function(){S.disc.val=+this.value||0;renderCalc()});
+$("#addC").addEventListener("click",function(){S.items.push(newItem());renderCalc()});
+$("#resetC").addEventListener("click",function(){resetState();syncHead();renderCalc();toast("Расчёт очищен")});
+$("#objAddr").addEventListener("input",function(){S.addr=this.value});
+$("#mgrName").addEventListener("input",function(){S.mgr=this.value});
+$("#clientSel").addEventListener("change",function(){S.clientId=this.value});
+document.addEventListener("click",function(e){if(e.target&&e.target.id==="mkKp")showKp(null)});
+
+/* ================= save / history ================= */
+$("#saveC").addEventListener("click",function(){
+  if(!S.items.length){toast("Добавьте хотя бы одну конструкцию");return}
+  var price=P(),o=calcOrder(S,price);
+  var rec={
+    id:"R-"+(1000+DB.seq++), date:new Date().toLocaleDateString("ru-RU"),
+    clientId:S.clientId, addr:S.addr, mgr:S.mgr,
+    pv:price.version, area:o.area, total:o.total,
+    snapshot:clone(price), data:clone({items:S.items,svc:S.svc,disc:S.disc})
+  };
+  DB.calcs.unshift(rec);save();renderHistory();
+  toast("Расчёт "+rec.id+" сохранён вместе со слепком прайса v"+price.version);
+});
+function clientName(id){var c=DB.clients.filter(function(x){return x.id===id})[0];return c?c.name:"—"}
+function renderHistory(){
+  var q=($("#hSearch").value||"").toLowerCase();
+  var rows=DB.calcs.filter(function(r){
+    return !q||(r.id+" "+clientName(r.clientId)+" "+(r.addr||"")).toLowerCase().indexOf(q)>-1;
+  });
+  $("#hTable").querySelector("tbody").innerHTML=rows.map(function(r){
+    var cur=P().version, old=r.pv<cur;
+    return '<tr><td class="mono">'+r.id+'</td><td class="mono">'+r.date+'</td><td>'+esc(clientName(r.clientId))+'</td>'+
+      '<td class="muted">'+esc(r.addr||"—")+'</td><td class="n">'+r.data.items.length+'</td>'+
+      '<td class="n">'+num(r.area,3)+'</td>'+
+      '<td><span class="pill '+(old?"w":"g")+'">v'+r.pv+(old?" · архив":" · текущий")+'</span></td>'+
+      '<td class="n">'+money(r.total)+'</td>'+
+      '<td style="white-space:nowrap"><button class="btn btn-s btn-sm" data-open="'+r.id+'">Открыть</button> '+
+      '<button class="btn btn-s btn-sm" data-kp="'+r.id+'">КП</button></td></tr>';
+  }).join("");
+  $("#hEmpty").hidden=rows.length>0;
+}
+$("#hSearch").addEventListener("input",renderHistory);
+$("#hTable").addEventListener("click",function(e){
+  var o=e.target.closest("[data-open]"),k=e.target.closest("[data-kp]");
+  if(k){showKp(k.getAttribute("data-kp"));return}
+  if(!o)return;
+  var r=DB.calcs.filter(function(x){return x.id===o.getAttribute("data-open")})[0];if(!r)return;
+  var res=calcOrder(r.data,r.snapshot);
+  openInfo("Расчёт "+r.id,
+    '<p class="small muted">Пересчитан по слепку прайса v'+r.pv+' от '+esc(r.snapshot.date)+'. Текущая версия прайса — v'+P().version+
+    '. Сумма не изменилась, потому что расчёт хранит свои цены.</p>'+
+    '<div class="lines" style="margin-top:12px">'+
+    res.items.map(function(it,i){return '<div class="line"><span class="d">Конструкция '+(i+1)+': '+esc(it.name)+'</span><span class="q">'+num(it.area,3)+' м²</span><span class="s">'+money(it.total)+'</span></div>'}).join("")+
+    res.svc.map(function(s){return '<div class="line"><span class="d">'+esc(s.d)+'</span><span class="q">'+esc(s.q)+'</span><span class="s">'+money(s.s)+'</span></div>'}).join("")+
+    '<div class="line tot"><span class="d">Итого</span><span class="q"></span><span class="s">'+money(res.total)+' ₽</span></div></div>');
+});
+
+/* ================= clients ================= */
+function renderClients(){
+  $("#clTable").querySelector("tbody").innerHTML=DB.clients.map(function(c){
+    var mine=DB.calcs.filter(function(r){return r.clientId===c.id});
+    var sum=mine.reduce(function(a,b){return a+b.total},0);
+    return '<tr><td style="font-weight:500">'+esc(c.name)+'</td><td class="mono">'+esc(c.phone||"—")+'</td>'+
+      '<td><span class="pill">'+esc(c.type)+'</span></td><td class="n">'+mine.length+'</td><td class="n">'+money(sum)+'</td></tr>';
+  }).join("");
+  $("#clEmpty").hidden=DB.clients.length>0;
+  var sel=$("#clientSel");
+  sel.innerHTML=DB.clients.map(function(c){
+    return '<option value="'+c.id+'"'+(c.id===S.clientId?" selected":"")+'>'+esc(c.name)+'</option>';
+  }).join("")||'<option value="">Клиентов нет</option>';
+}
+$("#clForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var f=this.elements;
+  if(!f.name.value.trim())return;
+  DB.clients.push({id:uid("c"),name:f.name.value.trim(),phone:f.phone.value.trim(),type:f.type.value});
+  save();this.reset();renderClients();toast("Клиент добавлен");
+});
+
+/* ================= admin ================= */
+var DRAFT=null;
+function renderAdmin(){
+  DRAFT=DRAFT||clone(P());
+  $("#pvInfo").textContent="Текущая версия — v"+P().version+" от "+P().date+". Расчётов на этой версии: "+
+    DB.calcs.filter(function(r){return r.pv===P().version}).length+".";
+  var groups=[
+    ["types","Типы конструкций","Коэффициент сложности умножает стоимость стекла","k"],
+    ["glass","Стекло","Цена за квадратный метр","₽/м²"],
+    ["profile","Профиль","Цена за погонный метр","₽/пог.м"],
+    ["hardware","Фурнитура","Цена за штуку","₽/шт"],
+    ["extras","Дополнительные работы","Единица измерения задаёт способ расчёта",""],
+    ["services","Услуги","Замер, доставка, монтаж, подъём",""]
+  ];
+  $("#adminTables").innerHTML=groups.map(function(g){
+    var key=g[0],rows=DRAFT[key];
+    return '<div class="card"><div class="card-h"><div><h3>'+esc(g[1])+'</h3><p class="small muted">'+esc(g[2])+'</p></div></div>'+
+     '<div class="tw" style="border:0;border-radius:0"><table><thead><tr><th>Наименование</th><th style="width:120px">Ед.</th><th class="n" style="width:150px">Значение</th></tr></thead><tbody>'+
+     rows.map(function(r,i){
+       var unit=key==="types"?"k":(key==="glass"?"м2":(key==="profile"?"мп":(key==="hardware"?"шт":r.unit)));
+       var val=key==="types"?r.k:r.price;
+       return '<tr><td>'+esc(r.name)+'</td><td class="mono muted">'+esc(UNIT[unit]||unit)+'</td>'+
+         '<td class="n"><input type="number" data-g="'+key+'" data-i="'+i+'" value="'+val+'" step="'+(key==="types"?"0.01":"1")+'" min="0"></td></tr>';
+     }).join("")+'</tbody></table></div></div>';
+  }).join("");
+}
+$("#adminTables").addEventListener("input",function(e){
+  var g=e.target.getAttribute("data-g");if(!g)return;
+  var i=+e.target.getAttribute("data-i"),v=+e.target.value||0;
+  if(g==="types")DRAFT[g][i].k=v;else DRAFT[g][i].price=v;
+});
+$("#pvReset").addEventListener("click",function(){DRAFT=clone(P());renderAdmin();toast("Изменения отменены")});
+$("#pvSave").addEventListener("click",function(){
+  var v=P().version+1;
+  DRAFT.version=v;DRAFT.date=new Date().toLocaleDateString("ru-RU");
+  DB.price=clone(DRAFT);DB.prices[v]=clone(DRAFT);DRAFT=clone(DB.price);
+  save();renderAdmin();renderCalc();renderHistory();
+  toast("Прайс сохранён как версия v"+v+". Сохранённые расчёты остались на прежних ценах.");
+});
+
+/* ================= КП ================= */
+var kpFrom=null;
+function showKp(recId){
+  var rec,price,state;
+  if(recId){rec=DB.calcs.filter(function(x){return x.id===recId})[0];price=rec.snapshot;state=rec.data}
+  else {price=P();state=S;rec={id:"R-"+(1000+DB.seq)+" (черновик)",date:new Date().toLocaleDateString("ru-RU"),
+        clientId:S.clientId,addr:S.addr,mgr:S.mgr,pv:price.version}}
+  var o=calcOrder(state,price);
+  var c=DB.clients.filter(function(x){return x.id===rec.clientId})[0];
+  var rows=o.items.map(function(it,i){
+    var src=state.items[i];
+    return '<tr><td>'+(i+1)+'</td><td>'+esc(it.name)+'<div style="font-size:11.5px;color:#6C7C88">'+
+      src.w+' × '+src.h+' мм · '+esc((find(price.glass,src.glass)||{}).name||"")+'</div></td>'+
+      '<td class="n">'+src.qty+'</td><td class="n">'+num(it.area,3)+'</td><td class="n">'+money(it.total)+'</td></tr>';
+  }).join("");
+  var svcRows=o.svc.map(function(s){
+    return '<tr><td></td><td>'+esc(s.d)+'<div style="font-size:11.5px;color:#6C7C88">'+esc(s.q)+'</div></td><td class="n">—</td><td class="n">—</td><td class="n">'+money(s.s)+'</td></tr>';
+  }).join("");
+  $("#kpBody").innerHTML=
+   '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid #101519;padding-bottom:14px">'+
+   '<div><h1>Коммерческое предложение</h1><p style="font-size:12.5px;color:#3E4C57">№ '+esc(rec.id)+' от '+esc(rec.date)+'</p></div>'+
+   '<div style="text-align:right;font-size:12.5px;color:#3E4C57">ООО «Демо-Конструкции»<br>г. Омск, ул. Примерная, 1<br>+7 000 000-00-00</div></div>'+
+   '<div class="meta"><div><b>Клиент:</b> '+esc(c?c.name:"не выбран")+(c&&c.phone?"<br>"+esc(c.phone):"")+'</div>'+
+   '<div style="text-align:right"><b>Объект:</b> '+esc(rec.addr||"—")+'<br><b>Менеджер:</b> '+esc(rec.mgr||"—")+'</div></div>'+
+   '<table><thead><tr><th style="width:28px">№</th><th>Наименование</th><th class="n">Кол-во</th><th class="n">Площадь, м²</th><th class="n">Сумма, ₽</th></tr></thead>'+
+   '<tbody>'+rows+svcRows+'</tbody></table>'+
+   '<div style="margin-top:14px;display:grid;gap:5px;font-size:13px">'+
+   '<div style="display:flex;justify-content:space-between"><span>Конструкции</span><span class="mono">'+money(o.goods)+' ₽</span></div>'+
+   '<div style="display:flex;justify-content:space-between"><span>Услуги</span><span class="mono">'+money(o.svcSum)+' ₽</span></div>'+
+   (o.disc>0?'<div style="display:flex;justify-content:space-between;color:#1E7A4D"><span>Скидка</span><span class="mono">−'+money(o.disc)+' ₽</span></div>':'')+
+   '</div><div class="fin"><span>Итого к оплате</span><span class="mono">'+money(o.total)+' ₽</span></div>'+
+   '<p style="font-size:11.5px;color:#6C7C88;margin-top:18px">Расчёт выполнен по прайсу версии v'+price.version+' от '+esc(price.date)+
+   '. Предложение действительно 14 календарных дней. Демонстрационный документ, суммы условные.</p>';
+  kpFrom=recId?"history":"calc";
+  go("kp");
+}
+$("#kpBack").addEventListener("click",function(){go(kpFrom||"calc")});
+$("#kpPrint").addEventListener("click",function(){
+  try{window.print()}catch(e){toast("Печать недоступна в этом окне — откройте демо в отдельной вкладке")}
+});
+
+/* ================= info modal (reuse toast area) ================= */
+function openInfo(title,html){
+  var w=document.createElement("div");
+  w.style.cssText="position:fixed;inset:0;background:rgba(6,12,18,.55);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:8vh 18px;overflow:auto";
+  w.innerHTML='<div class="card" style="max-width:640px;width:100%;box-shadow:var(--sh)">'+
+    '<div class="card-h"><h3>'+esc(title)+'</h3><button class="btn btn-s btn-sm" data-x="1">Закрыть</button></div>'+
+    '<div class="card-b">'+html+'</div></div>';
+  w.addEventListener("click",function(e){if(e.target===w||e.target.getAttribute("data-x"))w.remove()});
+  document.body.appendChild(w);
+}
+
+/* ================= shell ================= */
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3200)}
+function go(v){
+  $$(".view").forEach(function(p){p.hidden=p.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-view")===v))});
+  if(v==="history")renderHistory();
+  if(v==="clients")renderClients();
+  if(v==="admin")renderAdmin();
+  window.scrollTo(0,0);
+}
+$("#tabs").addEventListener("click",function(e){
+  var b=e.target.closest("[data-view]");if(b)go(b.getAttribute("data-view"));
+});
+$("#themeBtn").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+function syncHead(){
+  $("#objAddr").value=S.addr;$("#mgrName").value=S.mgr;
+}
+load();
+renderClients();
+
+$("#loginForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var role=$("#role").value;
+  $("#whoName").textContent=$("#lg").value||"Сотрудник";
+  $("#whoRole").textContent=role==="admin"?"администратор":"менеджер";
+  $("#tabAdmin").hidden=role!=="admin";
+  $("#login").hidden=true;$("#app").hidden=false;
+  resetState();syncHead();renderClients();renderCalc();go("calc");
+  toast(role==="admin"?"Вы вошли администратором — доступен раздел «Прайс»":"Вы вошли менеджером — раздел «Прайс» скрыт");
+});
+$("#outBtn").addEventListener("click",function(){
+  $("#app").hidden=true;$("#login").hidden=false;window.scrollTo(0,0);
+});
+})();
+</script>
