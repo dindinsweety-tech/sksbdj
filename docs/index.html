@@ -1,0 +1,1559 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демонстрационный кликабельный прототип корпоративного сайта завода полипропилена. Данные условные.">
+<title>Прототип сайта «Полиом»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --paper:#F1F3F6; --surface:#FFFFFF; --surface2:#E7EBF1; --surface3:#DCE3EC;
+  --ink:#0D1720; --ink2:#41525F; --ink3:#6D7F8C;
+  --line:#D2DAE4; --line2:#BCC7D4;
+  --accent:#1256B8; --accent-hi:#0B3D86; --accent-soft:#E3EBFA;
+  --eco:#0A8F76; --eco-soft:#DFF2ED;
+  --amber:#B96F10; --amber-soft:#FBEEDA;
+  --shadow:0 1px 2px rgba(13,23,32,.06),0 8px 24px -12px rgba(13,23,32,.18);
+  --radius:4px;
+  color-scheme:light;
+}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0A1219; --surface:#101B24; --surface2:#17242F; --surface3:#1F2F3B;
+    --ink:#E9F0F6; --ink2:#A8B9C6; --ink3:#7B8D9B;
+    --line:#22333F; --line2:#2E4351;
+    --accent:#5C9CFF; --accent-hi:#8FBCFF; --accent-soft:#12294A;
+    --eco:#2ECFA9; --eco-soft:#0D2E29;
+    --amber:#E3A64E; --amber-soft:#33260F;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0A1219; --surface:#101B24; --surface2:#17242F; --surface3:#1F2F3B;
+  --ink:#E9F0F6; --ink2:#A8B9C6; --ink3:#7B8D9B;
+  --line:#22333F; --line2:#2E4351;
+  --accent:#5C9CFF; --accent-hi:#8FBCFF; --accent-soft:#12294A;
+  --eco:#2ECFA9; --eco-soft:#0D2E29;
+  --amber:#E3A64E; --amber-soft:#33260F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Unbounded","Manrope",system-ui,sans-serif;font-weight:400;text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(30px,4.4vw,54px);line-height:1.08;font-weight:300}
+h2{font-size:clamp(23px,2.6vw,34px);line-height:1.15}
+h3{font-size:clamp(17px,1.5vw,21px);line-height:1.25}
+h4{font-size:15px;line-height:1.3}
+p{margin:0}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.lead{font-size:clamp(16px,1.5vw,19px);line-height:1.55;color:var(--ink2);max-width:62ch}
+.muted{color:var(--ink2)}
+.small{font-size:13px;line-height:1.5}
+
+/* ---------- prototype banner ---------- */
+.proto{
+  background:var(--ink);color:var(--paper);font-size:12px;line-height:1.4;
+  padding:7px 24px;display:flex;gap:12px;align-items:center;justify-content:center;
+  flex-wrap:wrap;text-align:center;position:relative;z-index:60;
+}
+.proto b{font-family:"JetBrains Mono",monospace;font-weight:500;letter-spacing:.08em;
+  background:var(--accent);color:#fff;padding:2px 7px;border-radius:2px;font-size:11px}
+:root[data-theme="dark"] .proto b,
+:root:not([data-theme="light"]) .proto b{color:#06121F}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .proto b{color:#fff}}
+
+/* ---------- header ---------- */
+header.site{position:sticky;top:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:20px;height:68px}
+.logo{display:flex;align-items:center;gap:11px;flex:0 0 auto}
+.logo svg{display:block}
+.logo .nm{font-family:"Unbounded",sans-serif;font-size:19px;letter-spacing:.02em;font-weight:600;color:var(--ink)}
+.logo .sb{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.16em;color:var(--ink3);text-transform:uppercase;display:block;margin-top:-2px}
+nav.main{display:flex;gap:2px;margin-left:auto}
+nav.main>button{
+  background:none;border:0;padding:9px 12px;font-size:14.5px;font-weight:500;color:var(--ink2);
+  border-radius:var(--radius);position:relative;white-space:nowrap;
+}
+nav.main>button:hover{color:var(--ink);background:var(--surface2)}
+nav.main>button[aria-current="true"]{color:var(--accent)}
+nav.main>button[aria-current="true"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:2px;background:var(--accent)}
+.tools{display:flex;gap:6px;align-items:center;flex:0 0 auto}
+.icobtn{background:none;border:1px solid var(--line);width:34px;height:34px;border-radius:var(--radius);
+  display:grid;place-items:center;color:var(--ink2)}
+.icobtn:hover{border-color:var(--accent);color:var(--accent)}
+.lang{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.lang button{background:none;border:0;padding:6px 9px;font-size:12px;font-weight:700;color:var(--ink3);font-family:"JetBrains Mono",monospace}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.burger{display:none}
+
+/* mega menu */
+.mega{
+  position:absolute;left:0;right:0;top:100%;background:var(--surface);border-bottom:1px solid var(--line);
+  box-shadow:var(--shadow);padding:26px 0 30px;
+}
+.mega[hidden]{display:none}
+.mega-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.mega h4{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;font-weight:500}
+.mega ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.mega li button{background:none;border:0;text-align:left;width:100%;padding:6px 8px;border-radius:var(--radius);font-size:14.5px;color:var(--ink)}
+.mega li button:hover{background:var(--accent-soft);color:var(--accent-hi)}
+.mega li span{display:block;font-size:12px;color:var(--ink3);line-height:1.35}
+
+/* ---------- hero ---------- */
+.hero{background:var(--surface);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero-in{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;padding:64px 0 0;align-items:start}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lead{margin-top:20px}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;padding-bottom:56px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:var(--radius);
+  border:1px solid transparent;font-size:14.5px;font-weight:700;text-decoration:none;
+}
+.btn:hover{text-decoration:none}
+.btn-p{background:var(--accent);color:#fff}
+.btn-p:hover{background:var(--accent-hi)}
+.btn-s{background:transparent;color:var(--ink);border-color:var(--line2)}
+.btn-s:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:8px 14px;font-size:13px}
+.reactor{position:relative;align-self:stretch;min-height:340px}
+.reactor svg{width:100%;height:auto;display:block}
+
+/* figures rail */
+.figs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+.fig{padding:22px 24px;border-right:1px solid var(--line)}
+.fig:last-child{border-right:0}
+.fig .v{font-family:"Unbounded",sans-serif;font-size:clamp(26px,3vw,40px);font-weight:300;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.fig .v small{font-size:.45em;font-family:"JetBrains Mono",monospace;color:var(--ink3);margin-left:6px;letter-spacing:0}
+.fig .l{font-size:12.5px;color:var(--ink2);margin-top:8px;line-height:1.35}
+
+/* ---------- generic sections ---------- */
+main{display:block;min-height:60vh}
+.page[hidden]{display:none}
+.sec{padding:56px 0;border-bottom:1px solid var(--line)}
+.sec:last-child{border-bottom:0}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px;flex-wrap:wrap}
+.sec-head .lead{margin-top:10px}
+.crumbs{font-size:12.5px;color:var(--ink3);padding:18px 0 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.crumbs button{background:none;border:0;padding:0;color:var(--ink3);font-size:12.5px}
+.crumbs button:hover{color:var(--accent)}
+.pagehead{padding:12px 0 40px;border-bottom:1px solid var(--line);background:var(--surface)}
+.pagehead .lead{margin-top:16px}
+
+/* cards */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;gap:9px}
+.card h3{font-size:18px}
+.card .small{color:var(--ink2)}
+.card-link{cursor:pointer;transition:border-color .15s,transform .15s}
+.card-link:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card .go{margin-top:auto;padding-top:12px;font-size:13px;font-weight:700;color:var(--accent);font-family:"JetBrains Mono",monospace}
+.tag{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:2px;background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+.tag.eco{background:var(--eco-soft);color:var(--eco);border-color:transparent}
+.tag.acc{background:var(--accent-soft);color:var(--accent-hi);border-color:transparent}
+.tag.amb{background:var(--amber-soft);color:var(--amber);border-color:transparent}
+
+/* audience routes */
+.routes{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.route{border-right:1px solid var(--line);padding:24px 20px;text-align:left;background:none;border-top:0;border-bottom:0;border-left:0;display:flex;flex-direction:column;gap:8px;min-height:150px}
+.route:last-child{border-right:0}
+.route:hover{background:var(--accent-soft)}
+.route .n{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink3)}
+.route .t{font-family:"Unbounded",sans-serif;font-size:16px;line-height:1.2}
+.route .d{font-size:12.5px;color:var(--ink2);line-height:1.4}
+.route .a{margin-top:auto;font-size:12px;font-weight:700;color:var(--accent);font-family:"JetBrains Mono",monospace}
+
+/* timeline */
+.tl{position:relative;padding-left:0}
+.tl-row{display:grid;grid-template-columns:110px 1fr;gap:24px;padding:20px 0;border-top:1px solid var(--line)}
+.tl-row:last-child{border-bottom:1px solid var(--line)}
+.tl-year{font-family:"Unbounded",sans-serif;font-size:26px;font-weight:300;color:var(--accent);font-variant-numeric:tabular-nums}
+.tl-row h3{font-size:17px;margin-bottom:4px}
+
+/* process chain */
+.chain{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.step{flex:1 1 0;min-width:150px;border-right:1px solid var(--line);padding:18px 16px;background:none;
+  border-top:0;border-bottom:0;border-left:0;text-align:left;display:flex;flex-direction:column;gap:6px}
+.step:last-child{border-right:0}
+.step:hover{background:var(--surface2)}
+.step[aria-pressed="true"]{background:var(--accent);color:#fff}
+.step[aria-pressed="true"] .sn,.step[aria-pressed="true"] .sd{color:rgba(255,255,255,.82)}
+.sn{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink3);letter-spacing:.1em}
+.st{font-family:"Unbounded",sans-serif;font-size:15px;line-height:1.2}
+.sd{font-size:12px;color:var(--ink3);line-height:1.35}
+.step-detail{border:1px solid var(--line);border-top:0;border-radius:0 0 var(--radius) var(--radius);background:var(--surface2);padding:24px}
+.step-detail .grid{margin-top:14px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13.5px}
+.kv dt{color:var(--ink3)}
+.kv dd{margin:0;font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+
+/* catalog */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:16px 0 22px}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--ink2)}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+input[type="search"],input[type="text"],input[type="email"],input[type="tel"],select,textarea{
+  font:inherit;font-size:14.5px;background:var(--surface);color:var(--ink);border:1px solid var(--line2);
+  border-radius:var(--radius);padding:10px 12px;width:100%;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+table.marks{width:100%;border-collapse:collapse;font-size:14px;background:var(--surface)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+table.marks th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);font-weight:500;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.marks td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.marks tr:last-child td{border-bottom:0}
+table.marks tbody tr:hover{background:var(--surface2);cursor:pointer}
+table.marks .mk{font-family:"JetBrains Mono",monospace;font-weight:500;color:var(--accent)}
+td.num{font-variant-numeric:tabular-nums;font-family:"JetBrains Mono",monospace}
+.empty{padding:34px;text-align:center;color:var(--ink3);font-size:14px}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(6,14,20,.6);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px;overflow-y:auto;backdrop-filter:blur(2px)}
+.overlay[hidden]{display:none}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);max-width:720px;width:100%;box-shadow:var(--shadow)}
+.modal-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:24px 24px 16px;border-bottom:1px solid var(--line)}
+.modal-b{padding:24px}
+.modal-f{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* forms */
+.form{display:grid;gap:14px;max-width:640px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label.f{display:grid;gap:6px;font-size:13px;color:var(--ink2);font-weight:500}
+label.f span.req{color:var(--amber)}
+.switchrow{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface2)}
+.switchrow input{width:auto;margin-top:3px}
+.note{font-size:12.5px;color:var(--ink3);line-height:1.5}
+.ok{background:var(--eco-soft);border:1px solid var(--eco);color:var(--eco);padding:14px 16px;border-radius:var(--radius);font-size:14px}
+
+/* press */
+.news{display:grid;gap:0;border-top:1px solid var(--line)}
+.nrow{display:grid;grid-template-columns:120px 1fr auto;gap:20px;padding:18px 0;border-bottom:1px solid var(--line);align-items:start;text-align:left;background:none;border-left:0;border-right:0;border-top:0;width:100%}
+.nrow:hover{background:var(--surface)}
+.nrow .dt{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink3);font-variant-numeric:tabular-nums;padding-top:2px}
+.nrow .ti{font-size:16px;font-weight:500;line-height:1.35}
+.nrow .ex{font-size:13.5px;color:var(--ink2);margin-top:5px}
+
+/* vacancies */
+.vac{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:18px 20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);flex-wrap:wrap}
+.vac h3{font-size:17px}
+
+/* footer */
+footer.site{background:var(--ink);color:var(--paper);padding:48px 0 28px;margin-top:0}
+footer.site a{color:var(--paper);opacity:.75}
+footer.site a:hover{opacity:1}
+.fgrid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:32px}
+footer h4{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;margin-bottom:12px;font-weight:500}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:7px;font-size:14px}
+footer .fbot{margin-top:36px;padding-top:20px;border-top:1px solid rgba(255,255,255,.14);display:flex;justify-content:space-between;gap:20px;font-size:12.5px;opacity:.6;flex-wrap:wrap}
+footer button.lnk{background:none;border:0;padding:0;font-size:14px;color:var(--paper);opacity:.75;text-align:left}
+footer button.lnk:hover{opacity:1;text-decoration:underline}
+
+/* chat bot */
+.chat-fab{position:fixed;right:20px;bottom:20px;z-index:70;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;border:0;box-shadow:var(--shadow);display:grid;place-items:center}
+.chat-fab:hover{background:var(--accent-hi)}
+.chat{position:fixed;right:20px;bottom:88px;z-index:70;width:340px;max-width:calc(100vw - 40px);background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.chat[hidden]{display:none}
+.chat-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.chat-h .t{font-family:"Unbounded",sans-serif;font-size:14px}
+.chat-b{padding:14px 16px;display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto}
+.msg{font-size:13.5px;line-height:1.45;padding:9px 12px;border-radius:10px;max-width:88%}
+.msg.bot{background:var(--surface2);border-bottom-left-radius:2px;align-self:flex-start}
+.msg.me{background:var(--accent);color:#fff;border-bottom-right-radius:2px;align-self:flex-end}
+.chat-q{padding:10px 16px 14px;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line)}
+.chat-q button{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:7px 12px;font-size:12.5px;text-align:left;color:var(--accent)}
+.chat-q button:hover{border-color:var(--accent);background:var(--accent-soft)}
+
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:100;background:var(--ink);color:var(--paper);
+  padding:12px 20px;border-radius:var(--radius);font-size:14px;box-shadow:var(--shadow)}
+.toast[hidden]{display:none}
+
+/* search overlay */
+.searchbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);max-width:640px;width:100%;padding:20px;box-shadow:var(--shadow)}
+.sres{display:grid;gap:2px;margin-top:14px}
+.sres button{background:none;border:0;text-align:left;padding:10px 12px;border-radius:var(--radius);font-size:14.5px}
+.sres button:hover{background:var(--accent-soft);color:var(--accent-hi)}
+.sres button span{display:block;font-size:12px;color:var(--ink3)}
+
+@media (max-width:1080px){
+  .mega-grid{grid-template-columns:repeat(2,1fr)}
+  .routes{grid-template-columns:repeat(2,1fr)}
+  .route{border-bottom:1px solid var(--line)}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .figs{grid-template-columns:repeat(2,1fr)}
+  .fig{border-bottom:1px solid var(--line)}
+}
+@media (max-width:900px){
+  nav.main{display:none}
+  nav.main.open{display:flex;position:absolute;left:0;right:0;top:100%;background:var(--surface);
+    border-bottom:1px solid var(--line);flex-direction:column;padding:10px;gap:0;box-shadow:var(--shadow)}
+  nav.main.open>button{text-align:left;padding:12px}
+  .burger{display:grid}
+  .hero-in{grid-template-columns:1fr;gap:28px;padding-top:44px}
+  .reactor{min-height:220px}
+  .g3,.g2{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .tl-row{grid-template-columns:1fr;gap:6px}
+  .nrow{grid-template-columns:1fr;gap:6px}
+  .row2{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .figs{grid-template-columns:1fr}
+  .g4,.routes{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .chat{right:10px;left:10px;width:auto}
+}
+@media (max-width:820px){.detail-grid{grid-template-columns:1fr!important;gap:20px!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="proto">
+  <b>ПРОТОТИП</b>
+  <span>Демонстрационный кликабельный макет корпоративного сайта. Не является официальным сайтом ООО «Полиом». Все цифры, тексты, вакансии и новости — условные, для показа логики и интерфейса.</span>
+</div>
+
+<header class="site">
+  <div class="wrap bar">
+    <button class="logo" data-go="home" style="background:none;border:0;padding:0">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <rect width="34" height="34" rx="3" fill="var(--accent)"></rect>
+        <path d="M8 25V9h7.4c3.3 0 5.4 1.9 5.4 4.9s-2.1 5-5.4 5H12V25H8Zm4-9.4h3c1.3 0 2-.6 2-1.7s-.7-1.7-2-1.7h-3v3.4Z" fill="#fff"></path>
+        <circle cx="24.5" cy="22.5" r="2.5" fill="#fff" opacity=".8"></circle>
+      </svg>
+      <span style="text-align:left">
+        <span class="nm">ПОЛИОМ</span>
+        <span class="sb" data-i18n="sub">Омский завод полипропилена</span>
+      </span>
+    </button>
+
+    <nav class="main" id="nav">
+      <button data-menu="about" data-go="about" data-i18n="n1">О предприятии</button>
+      <button data-menu="prod" data-go="production" data-i18n="n2">Производство</button>
+      <button data-menu="cat" data-go="products" data-i18n="n3">Продукция</button>
+      <button data-menu="esg" data-go="sustainability" data-i18n="n4">Устойчивое развитие</button>
+      <button data-menu="career" data-go="career" data-i18n="n5">Карьера</button>
+      <button data-go="press" data-i18n="n6">Пресс-центр</button>
+      <button data-go="contacts" data-i18n="n7">Контакты</button>
+    </nav>
+
+    <div class="tools">
+      <button class="icobtn" id="searchBtn" aria-label="Поиск" title="Поиск">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="7" r="4.6"></circle><path d="M10.5 10.5 14 14"></path></svg>
+      </button>
+      <button class="icobtn" id="themeBtn" aria-label="Тема" title="Светлая / тёмная тема">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 9.4A5.6 5.6 0 0 1 6.6 3a5.6 5.6 0 1 0 6.4 6.4Z"></path></svg>
+      </button>
+      <div class="lang">
+        <button data-lang="ru" aria-pressed="true">RU</button>
+        <button data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="icobtn burger" id="burger" aria-label="Меню">
+        <svg width="16" height="16" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.7"><path d="M2 4h12M2 8h12M2 12h12"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="mega" id="mega" hidden>
+    <div class="wrap mega-grid" id="megaGrid"></div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ================= HOME ================= -->
+<section class="page" data-page="home">
+  <div class="hero">
+    <div class="wrap hero-in">
+      <div>
+        <p class="eyebrow" data-i18n="h_eye">Омск · предприятие СИБУРа · с 2013 года</p>
+        <h1 style="margin-top:14px" data-i18n="h_h1">Полипропилен, из которого<br>сделана <em>повседневность</em></h1>
+        <p class="lead" data-i18n="h_lead">«Полиом» — завод по производству полипропилена в Омске. Мы перерабатываем пропан-пропиленовую фракцию Омского НПЗ в 20+ марок полимера, которые становятся упаковкой, деталями автомобилей, медицинскими изделиями, трубами и текстилем.</p>
+        <div class="hero-cta">
+          <button class="btn btn-p" data-go="products" data-i18n="h_cta1">Каталог марок →</button>
+          <button class="btn btn-s" data-go="production" data-i18n="h_cta2">Как устроено производство</button>
+          <button class="btn btn-s" data-go="vacancies" data-i18n="h_cta3">Вакансии</button>
+        </div>
+      </div>
+      <div class="reactor" aria-hidden="true">
+        <svg viewBox="0 0 420 380" fill="none">
+          <defs>
+            <linearGradient id="gx" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="var(--accent)" stop-opacity=".16"></stop>
+              <stop offset="1" stop-color="var(--accent)" stop-opacity="0"></stop>
+            </linearGradient>
+          </defs>
+          <rect x="10" y="20" width="400" height="340" fill="url(#gx)"></rect>
+          <g stroke="var(--line2)" stroke-width="1">
+            <path d="M10 300h400M10 240h400M10 180h400M10 120h400M10 60h400"></path>
+          </g>
+          <g stroke="var(--accent)" stroke-width="2" fill="none" stroke-linecap="round">
+            <path d="M40 300c40 0 40-60 80-60s40-90 80-90 40-70 80-70 40-20 80-20"></path>
+          </g>
+          <g fill="var(--accent)">
+            <circle cx="40" cy="300" r="4"></circle><circle cx="120" cy="240" r="4"></circle>
+            <circle cx="200" cy="150" r="4"></circle><circle cx="280" cy="80" r="4"></circle>
+            <circle cx="380" cy="60" r="5"></circle>
+          </g>
+          <g stroke="var(--eco)" stroke-width="1.6" fill="none" opacity=".8">
+            <circle cx="330" cy="250" r="26"></circle><circle cx="330" cy="250" r="14"></circle>
+            <path d="M330 224v52M304 250h52"></path>
+          </g>
+          <text x="14" y="336" fill="var(--ink3)" font-family="JetBrains Mono, monospace" font-size="11">выпуск, тыс. т/год · условные данные</text>
+        </svg>
+      </div>
+    </div>
+    <div class="wrap" style="padding:0">
+      <div class="figs">
+        <div class="fig"><div class="v">218<small>тыс. т</small></div><div class="l">проектная мощность по полипропилену в год</div></div>
+        <div class="fig"><div class="v">20<small>марок</small></div><div class="l">гомополимеры, статсополимеры, ударопрочные</div></div>
+        <div class="fig"><div class="v">1&nbsp;100<small>чел.</small></div><div class="l">сотрудников на площадке в Омске</div></div>
+        <div class="fig"><div class="v">3<small>ISO</small></div><div class="l">9001 · 14001 · 45001 — интегрированная система менеджмента</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow">Маршруты</p>
+          <h2 style="margin-top:8px">Вы пришли за чем-то конкретным</h2>
+          <p class="lead">Пять сценариев вместо одного меню: сайт ведёт каждую аудиторию по своему пути.</p>
+        </div>
+      </div>
+      <div class="routes">
+        <button class="route" data-go="products"><span class="n">01</span><span class="t">Купить полипропилен</span><span class="d">Марки, TDS, паспорта качества, переход в коммерческий сервис СИБУРа</span><span class="a">В каталог →</span></button>
+        <button class="route" data-go="vacancies"><span class="n">02</span><span class="t">Работать у нас</span><span class="d">Вакансии, стажировки, истории сотрудников, отклик через hh.ru</span><span class="a">К вакансиям →</span></button>
+        <button class="route" data-go="ecology"><span class="n">03</span><span class="t">Узнать про экологию</span><span class="d">Природоохранные программы, мониторинг воздуха, отчётность</span><span class="a">Открыть →</span></button>
+        <button class="route" data-go="partners"><span class="n">04</span><span class="t">Стать подрядчиком</span><span class="d">Закупки, требования, реализация отходов и НВИ, документы</span><span class="a">Открыть →</span></button>
+        <button class="route" data-go="smi"><span class="n">05</span><span class="t">Я из СМИ</span><span class="d">Пресс-служба, фотобанк, логотипы, брендбук, контакты</span><span class="a">Открыть →</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="eyebrow">Производство</p><h2 style="margin-top:8px">От фракции до гранулы — четыре передела</h2></div>
+        <button class="btn btn-s btn-sm" data-go="production">Технологический процесс →</button>
+      </div>
+      <div class="grid g4">
+        <div class="card card-link" data-go="production"><span class="tag acc">Сырьё</span><h3>ППФ с Омского НПЗ</h3><p class="small">Пропан-пропиленовая фракция приходит по трубопроводу — без автотранспорта и перевалки.</p><span class="go">Подробнее →</span></div>
+        <div class="card card-link" data-go="production"><span class="tag acc">Разделение</span><h3>Пропилен 99,8%</h3><p class="small">Ректификация и очистка до полимеризационной чистоты.</p><span class="go">Подробнее →</span></div>
+        <div class="card card-link" data-go="production"><span class="tag acc">Полимеризация</span><h3>Реакторный узел</h3><p class="small">Петлевые реакторы и газофазный реактор — базовая линейка марок.</p><span class="go">Подробнее →</span></div>
+        <div class="card card-link" data-go="production"><span class="tag acc">Грануляция</span><h3>Гранула и отгрузка</h3><p class="small">Экструзия, ввод добавок, фасовка в биг-бэги и мешки, отгрузка ж/д и авто.</p><span class="go">Подробнее →</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><p class="eyebrow">Пресс-центр</p><h2 style="margin-top:8px">Что у нас происходит</h2></div>
+        <button class="btn btn-s btn-sm" data-go="press">Все материалы →</button>
+      </div>
+      <div class="grid g3" id="homeNews"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="page" data-page="about" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>О предприятии</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">О предприятии</h1>
+    <p class="lead">ООО «Полиом» — производитель полипропилена в Омске, входит в периметр СИБУРа. Площадка интегрирована с Омским НПЗ по сырью и с федеральной логистикой по отгрузке.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="figs" style="border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)">
+      <div class="fig"><div class="v">2013<small>год</small></div><div class="l">пуск производства</div></div>
+      <div class="fig"><div class="v">218<small>тыс. т</small></div><div class="l">мощность в год</div></div>
+      <div class="fig"><div class="v">36<small>стран</small></div><div class="l">география поставок</div></div>
+      <div class="fig"><div class="v">1&nbsp;100<small>чел.</small></div><div class="l">команда предприятия</div></div>
+    </div>
+    <div class="grid g3" style="margin-top:24px">
+      <div class="card card-link" data-go="history"><span class="tag">Раздел</span><h3>История</h3><p class="small">Ключевые этапы развития площадки: от проекта до модернизации 2024 года.</p><span class="go">Смотреть таймлайн →</span></div>
+      <div class="card card-link" data-go="ism"><span class="tag">Раздел</span><h3>Система менеджмента, политики и стандарты</h3><p class="small">ИСМ, сертификаты ISO, политики, документы с фильтрацией.</p><span class="go">Открыть документы →</span></div>
+      <div class="card card-link" data-go="production"><span class="tag">Раздел</span><h3>Производство и технологии</h3><p class="small">Технологическая цепочка, оборудование, цифровизация.</p><span class="go">Открыть →</span></div>
+    </div>
+    <div class="grid g2" style="margin-top:40px;align-items:start">
+      <div>
+        <h2>Роль в регионе</h2>
+        <p class="lead" style="margin-top:14px">Предприятие замыкает нефтехимический цикл Омска: продукты переработки НПЗ не уходят в топливо, а становятся полимером с высокой добавленной стоимостью. Это налоги в бюджет региона, квалифицированные рабочие места и заказ для местных подрядчиков.</p>
+        <button class="btn btn-s btn-sm" style="margin-top:18px" data-go="social">Социальные программы →</button>
+      </div>
+      <div class="card">
+        <h3>Реквизиты и статус</h3>
+        <dl class="kv" style="margin-top:6px">
+          <dt>Полное наименование</dt><dd style="font-family:inherit">ООО «Полиом»</dd>
+          <dt>Отрасль</dt><dd style="font-family:inherit">Нефтехимия, производство полимеров</dd>
+          <dt>Площадка</dt><dd style="font-family:inherit">г. Омск</dd>
+          <dt>Год пуска</dt><dd>2013</dd>
+          <dt>Класс опасности ОПО</dt><dd>I</dd>
+        </dl>
+        <p class="note" style="margin-top:12px">Данные в прототипе условные.</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= HISTORY ================= -->
+<section class="page" data-page="history" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="about">О предприятии</button><span>/</span><span>История</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">История</h1>
+    <p class="lead">Хронология площадки: решения, которые определили сегодняшний завод.</p>
+  </div></div>
+  <div class="sec"><div class="wrap"><div class="tl" id="timeline"></div></div></div>
+</section>
+
+<!-- ================= ISM ================= -->
+<section class="page" data-page="ism" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="about">О предприятии</button><span>/</span><span>Система менеджмента</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Система менеджмента, политики и стандарты</h1>
+    <p class="lead">Интегрированная система менеджмента охватывает качество, экологию, охрану труда и промышленную безопасность. Ниже — действующие политики, сертификаты и стандарты.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="filters" id="docFilters"></div>
+    <div class="tablewrap"><table class="marks" id="docTable"><thead><tr><th>Документ</th><th>Категория</th><th>Ред.</th><th>Формат</th><th></th></tr></thead><tbody></tbody></table></div>
+    <p class="note" style="margin-top:14px">В прототипе кнопки скачивания показывают уведомление вместо файла.</p>
+  </div></div>
+</section>
+
+<!-- ================= PRODUCTION ================= -->
+<section class="page" data-page="production" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>Производство и технологии</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Производство и технологии</h1>
+    <p class="lead">Непрерывный цикл: сырьё приходит по трубе с соседнего НПЗ, на выходе — гранула, упакованная под конкретного переработчика.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <p class="eyebrow">Технологический процесс · нажмите на этап</p>
+    <div class="chain" id="chain" style="margin-top:12px"></div>
+    <div class="step-detail" id="chainDetail"></div>
+    <div class="grid g3" style="margin-top:40px">
+      <div class="card"><span class="tag amb">Оборудование</span><h3>Реакторный узел</h3><p class="small">Петлевые реакторы и газофазный реактор, лицензионная технология. Управление — из единой операторной.</p></div>
+      <div class="card"><span class="tag amb">Цифровизация</span><h3>Цифровой двойник установки</h3><p class="small">Онлайн-модель предсказывает показатель текучести расплава и снижает объём переходных партий.</p></div>
+      <div class="card"><span class="tag amb">Автоматизация</span><h3>Мобильный обходчик</h3><p class="small">Маршруты обходов, дефекты и замеры — в планшете, без бумажных журналов.</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= PRODUCTS ================= -->
+<section class="page" data-page="products" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>Продукция</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Каталог марок полипропилена</h1>
+    <p class="lead">Гомополимеры, статистические и ударопрочные сополимеры. Отфильтруйте по способу переработки или сфере применения и откройте карточку марки.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+      <button class="btn btn-s btn-sm" data-go="ppworld">Полипропилен вокруг нас →</button>
+      <button class="btn btn-s btn-sm" data-ext="Коммерческий сервис СИБУРа">Купить в сервисе СИБУРа ↗</button>
+    </div>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding-top:4px">
+      <input type="search" id="markSearch" placeholder="Поиск по марке, применению или ТУ — например «трубы» или «H030»">
+      <span class="small muted mono" id="markCount"></span>
+    </div>
+    <div class="filters" id="markFilters"></div>
+    <div class="tablewrap">
+      <table class="marks" id="markTable">
+        <thead><tr><th>Марка</th><th>Тип</th><th>ПТР, г/10 мин</th><th>Переработка</th><th>Применение</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="empty" id="markEmpty" hidden>Ничего не нашлось. Сбросьте фильтры или измените запрос.</div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= PP WORLD ================= -->
+<section class="page" data-page="ppworld" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="products">Продукция</button><span>/</span><span>Полипропилен вокруг нас</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Полипропилен вокруг нас</h1>
+    <p class="lead">Интерактивный блок для широкой аудитории: выберите сферу — и увидите, где именно в ней работает полимер и какие марки за это отвечают.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="filters" id="worldTabs"></div>
+    <div class="grid g2" style="align-items:start">
+      <div class="card" id="worldCard"></div>
+      <div class="card">
+        <h3>Проверьте себя</h3>
+        <p class="small" id="quizQ" style="margin-top:4px"></p>
+        <div id="quizOpts" style="display:grid;gap:8px;margin-top:12px"></div>
+        <p class="small" id="quizRes" style="margin-top:12px;min-height:22px"></p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= SUSTAINABILITY ================= -->
+<section class="page" data-page="sustainability" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>Устойчивое развитие</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Устойчивое развитие</h1>
+    <p class="lead">Раздел-навигатор: четыре направления, за каждым — программы, документы и измеримые результаты.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g2">
+      <div class="card card-link" data-go="ecology"><span class="tag eco">01 — Экология</span><h3>Природоохранные решения и «Чистый воздух»</h3><p class="small">Модернизация, мониторинг, озеленение, снижение выбросов, отчётность.</p><span class="go">Открыть →</span></div>
+      <div class="card card-link" data-go="hse"><span class="tag eco">02 — Безопасность</span><h3>Охрана труда и промышленная безопасность</h3><p class="small">Подход, обучение, практики, правила и памятки, диалоговый сервис.</p><span class="go">Открыть →</span></div>
+      <div class="card card-link" data-go="social"><span class="tag eco">03 — Общество</span><h3>Социальная ответственность</h3><p class="small">Благотворительные, образовательные и волонтёрские проекты, партнёрства.</p><span class="go">Открыть →</span></div>
+      <div class="card card-link" data-go="compliance"><span class="tag eco">04 — Комплаенс</span><h3>Комплаенс и деловая этика</h3><p class="small">Принципы, ключевые документы, каналы обращения, анонимная форма.</p><span class="go">Открыть →</span></div>
+    </div>
+    <div class="figs" style="border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);margin-top:24px">
+      <div class="fig"><div class="v">−24<small>%</small></div><div class="l">валовых выбросов к уровню 2019 года</div></div>
+      <div class="fig"><div class="v">92<small>%</small></div><div class="l">отходов передано на утилизацию и переработку</div></div>
+      <div class="fig"><div class="v">0<small>случаев</small></div><div class="l">смертельного травматизма за 2024 год</div></div>
+      <div class="fig"><div class="v">18<small>проектов</small></div><div class="l">социальных программ в регионе</div></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= ECOLOGY ================= -->
+<section class="page" data-page="ecology" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="sustainability">Устойчивое развитие</button><span>/</span><span>Экология</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Экология</h1>
+    <p class="lead">Природоохранная программа предприятия: что модернизируем, что измеряем и как публикуем результаты.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g3">
+      <div class="card"><span class="tag eco">Проект</span><h3>Закрытая система факельного хозяйства</h3><p class="small">Снижение объёмов сжигания и запаха в санитарно-защитной зоне.</p><span class="go">Статус: выполнено, 2023</span></div>
+      <div class="card"><span class="tag eco">Проект</span><h3>Автоматический пост контроля воздуха</h3><p class="small">Непрерывные замеры на границе СЗЗ, данные передаются в надзорные органы.</p><span class="go">Статус: в работе, 2025</span></div>
+      <div class="card"><span class="tag eco">Проект</span><h3>Озеленение промзоны</h3><p class="small">Высажено 4 300 деревьев и кустарников вместе с волонтёрами предприятия.</p><span class="go">Статус: ежегодно</span></div>
+    </div>
+    <div class="grid g2" style="margin-top:36px;align-items:start">
+      <div>
+        <h2>Участие в программе «Чистый воздух»</h2>
+        <p class="lead" style="margin-top:14px">Омск — участник федерального проекта. Предприятие раскрывает план мероприятий и фактические показатели по годам. В прототипе блок показывает структуру подачи: цель → мероприятие → факт → документ.</p>
+        <button class="btn btn-s btn-sm" style="margin-top:16px" data-doc="Экологический отчёт 2024">Экологический отчёт 2024 (PDF)</button>
+      </div>
+      <div class="card">
+        <h3>Динамика валовых выбросов</h3>
+        <p class="small muted">Условные данные прототипа, тыс. т/год</p>
+        <svg viewBox="0 0 360 190" style="width:100%;height:auto;margin-top:10px" role="img" aria-label="Столбчатая диаграмма снижения выбросов с 2019 по 2024 год">
+          <g stroke="var(--line)" stroke-width="1"><path d="M34 20h316M34 60h316M34 100h316M34 140h316"></path></g>
+          <g fill="var(--ink3)" font-family="JetBrains Mono, monospace" font-size="9">
+            <text x="4" y="24">4,0</text><text x="4" y="64">3,0</text><text x="4" y="104">2,0</text><text x="4" y="144">1,0</text>
+          </g>
+          <g fill="var(--eco)">
+            <rect x="46" y="28" width="34" height="112"></rect>
+            <rect x="98" y="42" width="34" height="98"></rect>
+            <rect x="150" y="52" width="34" height="88"></rect>
+            <rect x="202" y="62" width="34" height="78"></rect>
+            <rect x="254" y="70" width="34" height="70"></rect>
+            <rect x="306" y="78" width="34" height="62"></rect>
+          </g>
+          <g fill="var(--ink3)" font-family="JetBrains Mono, monospace" font-size="9.5" text-anchor="middle">
+            <text x="63" y="156">2019</text><text x="115" y="156">2020</text><text x="167" y="156">2021</text>
+            <text x="219" y="156">2022</text><text x="271" y="156">2023</text><text x="323" y="156">2024</text>
+          </g>
+          <g fill="var(--ink)" font-family="JetBrains Mono, monospace" font-size="9.5" text-anchor="middle">
+            <text x="63" y="22">3,7</text><text x="115" y="36">3,3</text><text x="167" y="46">3,1</text>
+            <text x="219" y="56">2,8</text><text x="271" y="64">2,6</text><text x="323" y="72">2,4</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= HSE ================= -->
+<section class="page" data-page="hse" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="sustainability">Устойчивое развитие</button><span>/</span><span>Охрана труда и промбезопасность</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Охрана труда и промышленная безопасность</h1>
+    <p class="lead">Правила, обучение и практики, обязательные и для сотрудников, и для подрядчиков на площадке.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g3">
+      <div class="card"><span class="tag">Подход</span><h3>Восемь кардинальных правил</h3><p class="small">Нарушение любого — основание для отстранения от работ на площадке.</p></div>
+      <div class="card"><span class="tag">Обучение</span><h3>Вводный инструктаж онлайн</h3><p class="small">Подрядчик проходит курс и тест до выхода на объект.</p></div>
+      <div class="card"><span class="tag">Практика</span><h3>Поведенческие аудиты безопасности</h3><p class="small">Более 6 000 диалогов в год, результаты — в план корректирующих мер.</p></div>
+    </div>
+    <div class="card" style="margin-top:24px">
+      <h3>Сообщить об опасной ситуации</h3>
+      <p class="small">Заметили риск на площадке или рядом с ней — опишите его. Можно без указания имени.</p>
+      <button class="btn btn-p btn-sm" style="margin-top:14px;align-self:flex-start" data-chat="hse">Открыть диалоговый сервис</button>
+    </div>
+    <div style="margin-top:28px"><button class="btn btn-s btn-sm" data-doc="Памятка для подрядных организаций">Памятка для подрядных организаций (PDF)</button></div>
+  </div></div>
+</section>
+
+<!-- ================= SOCIAL ================= -->
+<section class="page" data-page="social" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="sustainability">Устойчивое развитие</button><span>/</span><span>Социальная ответственность</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Социальная ответственность</h1>
+    <p class="lead">Инвестиции в город: образование, спорт, городская среда и волонтёрство сотрудников.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g3">
+      <div class="card"><span class="tag acc">Образование</span><h3>Полимерные классы</h3><p class="small">Профильные классы в школах Советского округа, оборудование лабораторий.</p><span class="go">240 школьников в год</span></div>
+      <div class="card"><span class="tag acc">Городская среда</span><h3>Формула хороших дел</h3><p class="small">Грантовый конкурс инициатив жителей: от скверов до фестивалей.</p><span class="go">31 проект поддержан</span></div>
+      <div class="card"><span class="tag acc">Волонтёрство</span><h3>Корпоративное волонтёрство</h3><p class="small">Экологические субботники, помощь приютам, донорские акции.</p><span class="go">380 участников</span></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= COMPLIANCE ================= -->
+<section class="page" data-page="compliance" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="sustainability">Устойчивое развитие</button><span>/</span><span>Комплаенс</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Комплаенс и деловая этика</h1>
+    <p class="lead">Мы ждём сообщений о нарушениях от сотрудников, подрядчиков и любых третьих лиц. Обращение можно отправить анонимно — без имени и контактов.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g2" style="align-items:start">
+      <form class="form" id="compForm">
+        <div class="switchrow">
+          <input type="checkbox" id="anon" checked>
+          <label for="anon" style="font-size:13.5px;line-height:1.45;font-weight:500;cursor:pointer">
+            Отправить анонимно
+            <span class="note" style="display:block;font-weight:400;margin-top:3px">Поля с персональными данными скроются. Мы не сможем задать уточняющие вопросы, но обращение всё равно будет рассмотрено.</span>
+          </label>
+        </div>
+        <div id="pdFields" hidden style="display:grid;gap:14px">
+          <div class="row2">
+            <label class="f">Имя<input type="text" name="name" placeholder="Как к вам обращаться"></label>
+            <label class="f">Email или телефон<input type="text" name="contact" placeholder="Для обратной связи"></label>
+          </div>
+          <label class="f" style="flex-direction:row">
+            <span class="note"><input type="checkbox" style="width:auto;margin-right:8px" required> Согласен на обработку персональных данных согласно <a href="#" data-doc="Политика обработки персональных данных">Политике</a></span>
+          </label>
+        </div>
+        <label class="f">Категория обращения <span class="req">*</span>
+          <select name="cat" required>
+            <option value="">Выберите категорию</option>
+            <option>Конфликт интересов</option>
+            <option>Злоупотребления при закупках</option>
+            <option>Нарушение требований безопасности</option>
+            <option>Некорректное поведение, дискриминация</option>
+            <option>Хищение или порча имущества</option>
+            <option>Иное</option>
+          </select>
+        </label>
+        <label class="f">Суть обращения <span class="req">*</span>
+          <textarea name="text" rows="6" required placeholder="Что произошло, когда, кто участвовал. Не указывайте лишних персональных данных третьих лиц."></textarea>
+        </label>
+        <button class="btn btn-p" type="submit" style="justify-self:start">Отправить обращение</button>
+        <p class="note">Прототип: форма проверяет заполнение и показывает экран подтверждения, данные никуда не уходят.</p>
+      </form>
+      <div>
+        <div class="card">
+          <h3>Другие каналы</h3>
+          <dl class="kv" style="margin-top:8px">
+            <dt>Горячая линия</dt><dd>8 800 000-00-00</dd>
+            <dt>Почта</dt><dd style="font-family:inherit">compliance@example.ru</dd>
+            <dt>Режим</dt><dd style="font-family:inherit">круглосуточно, 7 дней в неделю</dd>
+          </dl>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>Документы</h3>
+          <div style="display:grid;gap:8px;margin-top:8px">
+            <button class="btn btn-s btn-sm" data-doc="Кодекс корпоративной этики">Кодекс корпоративной этики</button>
+            <button class="btn btn-s btn-sm" data-doc="Антикоррупционная политика">Антикоррупционная политика</button>
+            <button class="btn btn-s btn-sm" data-doc="Политика о конфликте интересов">Политика о конфликте интересов</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= CAREER ================= -->
+<section class="page" data-page="career" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>Карьера</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Работа в «Полиоме»</h1>
+    <p class="lead">Непрерывное производство, сменный график, обучение внутри профессии и понятная карьерная лестница — от оператора до начальника установки.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+      <button class="btn btn-p btn-sm" data-go="vacancies">Актуальные вакансии →</button>
+      <button class="btn btn-s btn-sm" data-go="stories">Истории сотрудников</button>
+      <button class="btn btn-s btn-sm" data-go="young">Студентам и выпускникам</button>
+    </div>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g4">
+      <div class="card"><span class="tag">Условия</span><h3>Белая зарплата и премия</h3><p class="small">Оклад плюс премия за производственные показатели, индексация раз в год.</p></div>
+      <div class="card"><span class="tag">Условия</span><h3>ДМС со стоматологией</h3><p class="small">С первого месяца, плюс страхование от несчастных случаев.</p></div>
+      <div class="card"><span class="tag">Развитие</span><h3>Обучение за счёт компании</h3><p class="small">Аттестации, вторая профессия, программы кадрового резерва.</p></div>
+      <div class="card"><span class="tag">Быт</span><h3>Транспорт и питание</h3><p class="small">Служебные автобусы по маршрутам города, столовая на площадке.</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:40px;align-items:start">
+      <div class="card"><h3>Как проходит отбор</h3>
+        <div class="tl" style="margin-top:6px">
+          <div class="tl-row" style="grid-template-columns:40px 1fr;padding:12px 0"><span class="tl-year" style="font-size:18px">01</span><div><h3 style="font-size:15px">Отклик</h3><p class="small muted">На сайте или через hh.ru — резюме попадает в одну систему.</p></div></div>
+          <div class="tl-row" style="grid-template-columns:40px 1fr;padding:12px 0"><span class="tl-year" style="font-size:18px">02</span><div><h3 style="font-size:15px">Разговор с рекрутером</h3><p class="small muted">15–20 минут: опыт, график, ожидания по доходу.</p></div></div>
+          <div class="tl-row" style="grid-template-columns:40px 1fr;padding:12px 0"><span class="tl-year" style="font-size:18px">03</span><div><h3 style="font-size:15px">Встреча с руководителем</h3><p class="small muted">Профессиональные вопросы, экскурсия по установке.</p></div></div>
+          <div class="tl-row" style="grid-template-columns:40px 1fr;padding:12px 0"><span class="tl-year" style="font-size:18px">04</span><div><h3 style="font-size:15px">Оффер и медосмотр</h3><p class="small muted">Обязательный для производственных позиций.</p></div></div>
+        </div>
+      </div>
+      <div class="card"><h3>Цифры о команде</h3>
+        <dl class="kv" style="margin-top:8px">
+          <dt>Средний стаж в компании</dt><dd>8,4 года</dd>
+          <dt>Доля сотрудников до 35 лет</dt><dd>41 %</dd>
+          <dt>Внутренние переходы за год</dt><dd>73</dd>
+          <dt>Часов обучения на человека</dt><dd>46</dd>
+        </dl>
+        <p class="note" style="margin-top:12px">Условные данные прототипа.</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= VACANCIES ================= -->
+<section class="page" data-page="vacancies" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="career">Карьера</button><span>/</span><span>Вакансии</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Вакансии</h1>
+    <p class="lead">Список синхронизируется с аккаунтом компании на hh.ru. Отклик открывается на hh.ru — резюме и статус остаются в привычном кандидату интерфейсе.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="filters" id="vacFilters"></div>
+    <div style="display:grid;gap:12px" id="vacList"></div>
+  </div></div>
+</section>
+
+<!-- ================= STORIES ================= -->
+<section class="page" data-page="stories" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="career">Карьера</button><span>/</span><span>Истории сотрудников</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Истории сотрудников</h1>
+    <p class="lead">Реальные карьерные маршруты вместо рекламных обещаний. Публикации размечены тегами и связаны с вакансиями.</p>
+  </div></div>
+  <div class="sec"><div class="wrap"><div class="grid g3" id="storyList"></div></div></div>
+</section>
+
+<!-- ================= YOUNG ================= -->
+<section class="page" data-page="young" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="career">Карьера</button><span>/</span><span>Молодые специалисты</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Студентам и выпускникам</h1>
+    <p class="lead">Понятный маршрут: от экскурсии на площадку до первого рабочего дня.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="chain" style="margin-top:0">
+      <div class="step"><span class="sn">ШАГ 1</span><span class="st">Экскурсия</span><span class="sd">Дни открытых дверей для профильных групп ОмГТУ и колледжей</span></div>
+      <div class="step"><span class="sn">ШАГ 2</span><span class="st">Практика</span><span class="sd">2–4 недели на установке с наставником</span></div>
+      <div class="step"><span class="sn">ШАГ 3</span><span class="st">Стажировка</span><span class="sd">Оплачиваемая, 3–6 месяцев, с реальной задачей</span></div>
+      <div class="step"><span class="sn">ШАГ 4</span><span class="st">Оффер</span><span class="sd">Позиция оператора или инженера, программа адаптации</span></div>
+    </div>
+    <div class="grid g2" style="margin-top:32px;align-items:start">
+      <div class="card"><h3>Заявка на практику</h3><p class="small">Прототип формы: учебное заведение, курс, специальность, желаемый период.</p><button class="btn btn-p btn-sm" style="margin-top:12px;align-self:flex-start" data-go="contacts">Заполнить заявку</button></div>
+      <div class="card"><h3>Партнёрство с вузами</h3><p class="small">Совместные программы, стипендии, оборудование лабораторий, темы дипломов от предприятия.</p><span class="go">4 учебных заведения-партнёра</span></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= PRESS ================= -->
+<section class="page" data-page="press" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>Пресс-центр</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Пресс-центр</h1>
+    <p class="lead">Единая лента: новости, официальные сообщения, интервью, репортажи и спецматериалы. Фильтр по типу, поиск по тексту.</p>
+    <div style="margin-top:18px"><button class="btn btn-s btn-sm" data-go="smi">Для СМИ: контакты, логотипы, фотобанк →</button></div>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <input type="search" id="newsSearch" placeholder="Поиск по материалам">
+    <div class="filters" id="newsFilters"></div>
+    <div class="news" id="newsList"></div>
+    <div class="empty" id="newsEmpty" hidden>По запросу ничего не найдено.</div>
+  </div></div>
+</section>
+
+<!-- ================= SMI ================= -->
+<section class="page" data-page="smi" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="press">Пресс-центр</button><span>/</span><span>Для СМИ</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Для СМИ</h1>
+    <p class="lead">Контакты пресс-службы и материалы, которые можно использовать без дополнительного согласования.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g3">
+      <div class="card"><span class="tag">Контакт</span><h3>Пресс-служба</h3><p class="small">Ответ на запрос — в течение одного рабочего дня.</p><dl class="kv" style="margin-top:8px"><dt>Почта</dt><dd style="font-family:inherit">press@example.ru</dd><dt>Телефон</dt><dd>+7 3812 00-00-00</dd></dl></div>
+      <div class="card"><span class="tag">Материалы</span><h3>Логотипы и брендбук</h3><p class="small">Векторные логотипы, правила использования, цветовые константы.</p><button class="btn btn-s btn-sm" style="margin-top:auto;align-self:flex-start" data-doc="Брендбук и логотипы (архив)">Скачать архив</button></div>
+      <div class="card"><span class="tag">Материалы</span><h3>Фотобанк</h3><p class="small">Съёмка производства, портреты руководителей, аэросъёмка площадки.</p><button class="btn btn-s btn-sm" style="margin-top:auto;align-self:flex-start" data-ext="Фотобанк">Открыть фотобанк ↗</button></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= CONTACTS ================= -->
+<section class="page" data-page="contacts" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>Контакты</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Контакты и сервисы</h1>
+    <p class="lead">Общие контакты предприятия и отдельные входы для деловых аудиторий, чтобы не перегружать основное меню.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <div class="card">
+          <h3>Предприятие</h3>
+          <dl class="kv" style="margin-top:8px">
+            <dt>Адрес</dt><dd style="font-family:inherit">644035, г. Омск, Красноярский тракт (демо-адрес)</dd>
+            <dt>Приёмная</dt><dd>+7 3812 00-00-00</dd>
+            <dt>Почта</dt><dd style="font-family:inherit">info@example.ru</dd>
+            <dt>Режим</dt><dd style="font-family:inherit">Пн–Пт, 08:00–17:00</dd>
+          </dl>
+        </div>
+        <div style="margin-top:16px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--surface2)">
+          <div style="padding:10px 14px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--ink3)" class="mono">КАРТА · в прототипе — заглушка</div>
+          <svg viewBox="0 0 600 260" style="width:100%;height:auto;display:block" aria-label="Схема расположения площадки">
+            <rect width="600" height="260" fill="var(--surface2)"></rect>
+            <g stroke="var(--line2)" stroke-width="1.5" fill="none">
+              <path d="M0 180h600M0 90h600M140 0v260M400 0v260"></path>
+            </g>
+            <path d="M0 220C120 200 260 240 380 190S560 130 600 150" stroke="var(--accent)" stroke-width="3" fill="none" opacity=".45"></path>
+            <rect x="300" y="100" width="120" height="70" fill="var(--accent)" opacity=".18" stroke="var(--accent)" stroke-width="1.5"></rect>
+            <circle cx="360" cy="135" r="7" fill="var(--accent)"></circle>
+            <text x="378" y="139" fill="var(--ink)" font-family="JetBrains Mono, monospace" font-size="12">Площадка «Полиом»</text>
+            <text x="12" y="212" fill="var(--ink3)" font-family="JetBrains Mono, monospace" font-size="11">р. Иртыш</text>
+          </svg>
+        </div>
+        <div class="grid g2" style="margin-top:16px">
+          <div class="card card-link" data-go="partners"><span class="tag">Сервис</span><h3>Партнёрам и подрядчикам</h3><p class="small">Закупки, требования, аккредитация.</p><span class="go">Открыть →</span></div>
+          <div class="card card-link" data-go="services"><span class="tag">Сервис</span><h3>Реализация отходов и НВИ</h3><p class="small">Специализированные формы и регламенты.</p><span class="go">Открыть →</span></div>
+        </div>
+      </div>
+      <form class="form" id="feedbackForm">
+        <h3>Форма обратной связи</h3>
+        <label class="f">Тема обращения <span class="req">*</span>
+          <select name="topic" required>
+            <option value="">Выберите тему</option>
+            <option>Покупка продукции</option>
+            <option>Сотрудничество и закупки</option>
+            <option>Вопрос по вакансиям</option>
+            <option>Запрос от СМИ</option>
+            <option>Экология и жизнь района</option>
+            <option>Другое</option>
+          </select>
+        </label>
+        <div class="row2">
+          <label class="f">Имя <span class="req">*</span><input type="text" name="name" required placeholder="Иван Иванов"></label>
+          <label class="f">Организация<input type="text" name="org" placeholder="ООО «Пример»"></label>
+        </div>
+        <div class="row2">
+          <label class="f">Email <span class="req">*</span><input type="email" name="email" required placeholder="ivan@example.ru"></label>
+          <label class="f">Телефон<input type="tel" name="phone" placeholder="+7 900 000-00-00"></label>
+        </div>
+        <label class="f">Сообщение <span class="req">*</span><textarea name="msg" rows="5" required placeholder="Опишите вопрос"></textarea></label>
+        <span class="note"><input type="checkbox" required style="width:auto;margin-right:8px">Согласен на обработку персональных данных согласно <a href="#" data-doc="Политика обработки персональных данных">Политике</a> <span class="req">*</span></span>
+        <button class="btn btn-p" type="submit" style="justify-self:start">Отправить</button>
+        <p class="note">Прототип: маршрутизация обращения зависит от выбранной темы — форма показывает, в какой отдел уйдёт заявка.</p>
+      </form>
+    </div>
+  </div></div>
+</section>
+
+<!-- ================= PARTNERS ================= -->
+<section class="page" data-page="partners" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="contacts">Контакты</button><span>/</span><span>Партнёрам и подрядчикам</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Партнёрам, подрядчикам и поставщикам</h1>
+    <p class="lead">Отдельный B2B-контур: требования, документы и точки входа, вынесенные из основного меню.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="grid g3">
+      <div class="card"><span class="tag acc">Шаг 1</span><h3>Аккредитация</h3><p class="small">Анкета контрагента, учредительные документы, справка об отсутствии задолженности.</p><button class="btn btn-s btn-sm" style="margin-top:auto;align-self:flex-start" data-doc="Анкета контрагента">Анкета (XLSX)</button></div>
+      <div class="card"><span class="tag acc">Шаг 2</span><h3>Участие в закупке</h3><p class="small">Процедуры проводятся на электронной площадке, извещения дублируются здесь.</p><button class="btn btn-s btn-sm" style="margin-top:auto;align-self:flex-start" data-ext="Электронная торговая площадка">Перейти к закупкам ↗</button></div>
+      <div class="card"><span class="tag acc">Шаг 3</span><h3>Допуск на площадку</h3><p class="small">Инструктаж по промбезопасности, СИЗ, наряд-допуск, пропускной режим.</p><button class="btn btn-s btn-sm" style="margin-top:auto;align-self:flex-start" data-go="hse">Требования ОТ и ПБ →</button></div>
+    </div>
+    <div class="card" style="margin-top:24px"><h3>Вопрос по закупкам</h3><p class="small">В прототипе — та же универсальная форма с другим набором полей и маршрутизацией на отдел закупок.</p><button class="btn btn-p btn-sm" style="margin-top:12px;align-self:flex-start" data-go="contacts">Написать в закупки</button></div>
+  </div></div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<section class="page" data-page="services" hidden>
+  <div class="pagehead"><div class="wrap">
+    <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="contacts">Контакты</button><span>/</span><span>Специализированные сервисы</span></div>
+    <h1 style="margin-top:14px;font-size:clamp(28px,3.4vw,44px)">Специализированные сервисы</h1>
+    <p class="lead">Узкопрофильные направления: реализация отходов и невостребованных излишков (НВИ), продажа вторичных материальных ресурсов.</p>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <div class="tablewrap"><table class="marks">
+      <thead><tr><th>Лот</th><th>Категория</th><th>Объём</th><th>Приём заявок до</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="mk">НВИ-2026-014</td><td>Трубная продукция, остатки</td><td class="num">12,4 т</td><td class="num">30.09.2026</td><td><button class="btn btn-s btn-sm" data-go="contacts">Заявка</button></td></tr>
+        <tr><td class="mk">НВИ-2026-015</td><td>Лом чёрных металлов</td><td class="num">38,0 т</td><td class="num">07.10.2026</td><td><button class="btn btn-s btn-sm" data-go="contacts">Заявка</button></td></tr>
+        <tr><td class="mk">ВМР-2026-003</td><td>Полимерные отходы производства</td><td class="num">96,5 т</td><td class="num">15.10.2026</td><td><button class="btn btn-s btn-sm" data-go="contacts">Заявка</button></td></tr>
+      </tbody>
+    </table></div>
+    <p class="note" style="margin-top:14px">Лоты условные, показывают формат раздела.</p>
+  </div></div>
+</section>
+
+<!-- ================= SEARCH RESULTS PAGE (fallback) ================= -->
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <div style="font-family:Unbounded,sans-serif;font-size:20px;font-weight:600">ПОЛИОМ</div>
+        <p class="small" style="opacity:.7;margin-top:8px;max-width:34ch">Омский завод полипропилена. Демонстрационный прототип корпоративного сайта.</p>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="btn btn-sm" style="border-color:rgba(255,255,255,.25);color:#fff" data-ext="Сообщество «ВКонтакте»">ВКонтакте ↗</button>
+          <button class="btn btn-sm" style="border-color:rgba(255,255,255,.25);color:#fff" data-ext="hh.ru">hh.ru ↗</button>
+        </div>
+      </div>
+      <div><h4>Компания</h4><ul>
+        <li><button class="lnk" data-go="about">О предприятии</button></li>
+        <li><button class="lnk" data-go="history">История</button></li>
+        <li><button class="lnk" data-go="ism">Политики и стандарты</button></li>
+        <li><button class="lnk" data-go="production">Производство</button></li>
+      </ul></div>
+      <div><h4>Аудиториям</h4><ul>
+        <li><button class="lnk" data-go="products">Покупателям</button></li>
+        <li><button class="lnk" data-go="vacancies">Соискателям</button></li>
+        <li><button class="lnk" data-go="partners">Подрядчикам</button></li>
+        <li><button class="lnk" data-go="smi">СМИ</button></li>
+      </ul></div>
+      <div><h4>Сервисы</h4><ul>
+        <li><button class="lnk" data-go="compliance">Комплаенс-обращение</button></li>
+        <li><button class="lnk" data-go="services">Реализация НВИ</button></li>
+        <li><button class="lnk" data-go="contacts">Обратная связь</button></li>
+        <li><button class="lnk" data-doc="Политика обработки персональных данных">Политика ПДн</button></li>
+      </ul></div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 Демо-прототип. Не является официальным сайтом ООО «Полиом». Данные условные.</span>
+      <span class="mono">Прототип для оценки объёма работ · 1С-Битрикс / RU · EN</span>
+    </div>
+  </div>
+</footer>
+
+<button class="chat-fab" id="chatFab" aria-label="Открыть чат-бот">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a8 8 0 1 1-3.2-6.4"></path><path d="M8 11h8M8 15h5"></path></svg>
+</button>
+<div class="chat" id="chat" hidden>
+  <div class="chat-h">
+    <div><div class="t">Помощник «Полиома»</div><div class="small muted" style="font-size:11.5px">Демо-сценарий прототипа</div></div>
+    <button class="icobtn" id="chatClose" aria-label="Закрыть чат" style="width:28px;height:28px">✕</button>
+  </div>
+  <div class="chat-b" id="chatBody"></div>
+  <div class="chat-q" id="chatQuick"></div>
+</div>
+
+<div class="overlay" id="overlay" hidden><div id="overlayInner"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var esc=function(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+
+/* ---------- demo data ---------- */
+var MARKS=[
+ {m:"PP H030 GP",t:"Гомополимер",ptr:3.0,proc:"Литьё",app:"Тонкостенная упаковка, ящики, крышки",tu:"ТУ 20.16.51-001",note:"Базовая литьевая марка с высокой текучестью и стабильной усадкой."},
+ {m:"PP H120 GP",t:"Гомополимер",ptr:12.0,proc:"Литьё",app:"Тонкостенное литьё, посуда, контейнеры",tu:"ТУ 20.16.51-002",note:"Для быстрых циклов и сложных тонкостенных изделий."},
+ {m:"PP H250 GP",t:"Гомополимер",ptr:25.0,proc:"Литьё",app:"Изделия сложной геометрии, медицинские изделия",tu:"ТУ 20.16.51-003",note:"Максимальная текучесть, подходит для стерилизуемых изделий."},
+ {m:"PP H031 BF",t:"Гомополимер",ptr:3.2,proc:"Экструзия волокна",app:"БОПП-плёнка, нити, мешочная ткань",tu:"ТУ 20.16.51-004",note:"Стабильная работа на высоких скоростях фильерной вытяжки."},
+ {m:"PP H013 EX",t:"Гомополимер",ptr:1.3,proc:"Экструзия листа",app:"Лист, термоформование, канцелярия",tu:"ТУ 20.16.51-005",note:"Повышенная жёсткость, ровная поверхность листа."},
+ {m:"PP R003 EX",t:"Статсополимер",ptr:0.3,proc:"Экструзия трубы",app:"Трубы PPR для водоснабжения и отопления",tu:"ТУ 20.16.51-006",note:"Ресурс 50 лет при рабочих параметрах по стандарту трубной серии."},
+ {m:"PP R021 IM",t:"Статсополимер",ptr:2.1,proc:"Литьё",app:"Прозрачная упаковка, контейнеры для пищи",tu:"ТУ 20.16.51-007",note:"Высокая прозрачность и ударная вязкость при низких температурах."},
+ {m:"PP R012 BM",t:"Статсополимер",ptr:1.2,proc:"Выдув",app:"Флаконы, бутылки для бытовой химии",tu:"ТУ 20.16.51-008",note:"Стабильность рукава при экструзионно-выдувном формовании."},
+ {m:"PP K277 IM",t:"Ударопрочный сополимер",ptr:27.0,proc:"Литьё",app:"Автокомпоненты, бамперы, детали салона",tu:"ТУ 20.16.51-009",note:"Сохраняет ударную вязкость до −30 °C."},
+ {m:"PP K102 IM",t:"Ударопрочный сополимер",ptr:10.2,proc:"Литьё",app:"Транспортная тара, ящики, поддоны",tu:"ТУ 20.16.51-010",note:"Для многооборотной тары с высокой нагрузкой."},
+ {m:"PP K045 EX",t:"Ударопрочный сополимер",ptr:0.45,proc:"Экструзия листа",app:"Лист для термоформования, автомобильные панели",tu:"ТУ 20.16.51-011",note:"Низкая текучесть, толстостенные изделия."},
+ {m:"PP H100 MD",t:"Гомополимер",ptr:10.0,proc:"Литьё",app:"Медицинские изделия, шприцы, лабораторная посуда",tu:"ТУ 20.16.51-012",note:"Марка медицинского назначения, стерилизация гамма-излучением."}
+];
+var PROCS=["Литьё","Экструзия трубы","Экструзия листа","Экструзия волокна","Выдув"];
+var TYPES=["Гомополимер","Статсополимер","Ударопрочный сополимер"];
+
+var NEWS=[
+ {d:"04.09.2026",t:"news",ti:"«Полиом» завершил плановый капитальный ремонт установки полимеризации",ex:"Работы заняли 21 день, заменено более 400 единиц запорной арматуры, установка выведена на проектную нагрузку."},
+ {d:"28.08.2026",t:"official",ti:"Официальное сообщение о результатах производственного экологического контроля",ex:"Превышений нормативов на границе санитарно-защитной зоны не зафиксировано."},
+ {d:"19.08.2026",t:"interview",ti:"«Гранула — это только начало пути»: интервью с главным технологом",ex:"О том, как марка полипропилена превращается в деталь автомобиля и почему важна стабильность партии."},
+ {d:"11.08.2026",t:"report",ti:"Репортаж: один день с оператором технологических установок",ex:"Смена начинается в 07:40 с приёма установки. Что происходит дальше — в фоторепортаже."},
+ {d:"30.07.2026",t:"news",ti:"Запущен автоматический пост контроля качества атмосферного воздуха",ex:"Данные передаются в надзорные органы в непрерывном режиме."},
+ {d:"22.07.2026",t:"special",ti:"Спецпроект: полипропилен вокруг нас",ex:"Интерактивная карта предметов, в которых живёт полимер омского производства."},
+ {d:"15.07.2026",t:"news",ti:"Более 240 школьников прошли профориентационные экскурсии на предприятии",ex:"Программа полимерных классов расширяется на два новых учебных заведения."},
+ {d:"03.07.2026",t:"official",ti:"О графике приёма обращений жителей в летний период",ex:"Приём ведётся по предварительной записи, форма обратной связи работает круглосуточно."}
+];
+var NTYPES={news:"Новости",official:"Официально",interview:"Интервью",report:"Репортаж",special:"Спецпроект"};
+
+var DOCS=[
+ {n:"Политика в области качества",c:"Политики",r:"ред. 4, 2025",f:"PDF"},
+ {n:"Экологическая политика",c:"Политики",r:"ред. 3, 2025",f:"PDF"},
+ {n:"Политика в области охраны труда и промышленной безопасности",c:"Политики",r:"ред. 5, 2026",f:"PDF"},
+ {n:"Сертификат ISO 9001:2015",c:"Сертификаты",r:"до 2027",f:"PDF"},
+ {n:"Сертификат ISO 14001:2015",c:"Сертификаты",r:"до 2027",f:"PDF"},
+ {n:"Сертификат ISO 45001:2018",c:"Сертификаты",r:"до 2028",f:"PDF"},
+ {n:"Кодекс корпоративной этики",c:"Комплаенс",r:"ред. 2, 2026",f:"PDF"},
+ {n:"Антикоррупционная политика",c:"Комплаенс",r:"ред. 2, 2026",f:"PDF"},
+ {n:"Требования к подрядным организациям по ОТ и ПБ",c:"Регламенты",r:"ред. 7, 2026",f:"PDF"},
+ {n:"Анкета контрагента",c:"Регламенты",r:"2026",f:"XLSX"}
+];
+
+var TIMELINE=[
+ {y:"2009",t:"Начало строительства",d:"Принято решение о создании производства полипропилена в Омске на базе сырья Омского НПЗ."},
+ {y:"2013",t:"Пуск производства",d:"Получена первая товарная партия полипропилена. Производство выведено на проектные показатели."},
+ {y:"2014",t:"Первый экспорт",d:"Начались поставки продукции за пределы России."},
+ {y:"2018",t:"Расширение марочного ассортимента",d:"Освоены статистические сополимеры для трубной и упаковочной переработки."},
+ {y:"2021",t:"Программа цифровизации",d:"Внедрены цифровые советчики оператора и мобильные обходы оборудования."},
+ {y:"2023",t:"Экологическая модернизация",d:"Реализован проект закрытой системы факельного хозяйства."},
+ {y:"2026",t:"Обновление корпоративного сайта",d:"Запуск новой версии сайта с маршрутами для пяти аудиторий (демо-событие прототипа)."}
+];
+
+var CHAIN=[
+ {n:"01",t:"Сырьё",d:"ППФ с Омского НПЗ",full:"Пропан-пропиленовая фракция поступает на площадку по трубопроводу с соседнего нефтеперерабатывающего завода. Транспортное плечо равно нулю: нет автоцистерн, перевалки и связанных с ними рисков.",kv:[["Источник","Омский НПЗ"],["Транспорт","трубопровод"],["Приём","непрерывный"]]},
+ {n:"02",t:"Разделение",d:"Пропилен полимеризационной чистоты",full:"Фракция разделяется ректификацией, пропилен очищается от примесей, отравляющих катализатор. Чистота на входе в реактор определяет стабильность будущей марки.",kv:[["Чистота","99,8 %"],["Узел","ректификация и очистка"],["Контроль","поточные анализаторы"]]},
+ {n:"03",t:"Полимеризация",d:"Реакторный узел",full:"В петлевых реакторах и газофазном реакторе пропилен превращается в порошок полипропилена. Рецептура катализатора, водорода и сомономера задаёт тип марки: гомополимер, статсополимер или ударопрочный сополимер.",kv:[["Технология","лицензионная"],["Реакторы","петлевые + газофазный"],["Марок в линейке","20"]]},
+ {n:"04",t:"Грануляция",d:"Экструзия и добавки",full:"Порошок смешивается с пакетом добавок и продавливается через экструдер. На выходе — гранула с заданными стабилизирующими и антистатическими свойствами.",kv:[["Форма","гранула 3–5 мм"],["Добавки","стабилизаторы, антистатики"],["Контроль","ПТР каждой партии"]]},
+ {n:"05",t:"Отгрузка",d:"Упаковка и логистика",full:"Гранула фасуется в мешки по 25 кг, биг-бэги и отгружается навалом в хопперах. Паспорт качества формируется автоматически на партию и доступен покупателю в личном кабинете.",kv:[["Фасовка","мешки, биг-бэги, навал"],["Транспорт","ж/д и авто"],["Документы","паспорт качества, TDS"]]}
+];
+
+var VACS=[
+ {t:"Оператор технологических установок 5 разряда",dep:"Производство",city:"Омск",sal:"от 92 000 ₽",type:"Производство"},
+ {t:"Инженер-технолог",dep:"Технический отдел",city:"Омск",sal:"от 110 000 ₽",type:"Инженерные"},
+ {t:"Слесарь по ремонту технологических установок",dep:"Ремонтная служба",city:"Омск",sal:"от 78 000 ₽",type:"Производство"},
+ {t:"Специалист по охране труда",dep:"ОТ и ПБ",city:"Омск",sal:"от 95 000 ₽",type:"Инженерные"},
+ {t:"Ведущий специалист по закупкам",dep:"Закупки",city:"Омск",sal:"от 105 000 ₽",type:"Офис"},
+ {t:"Стажёр-лаборант",dep:"Лаборатория",city:"Омск",sal:"от 45 000 ₽",type:"Стажировки"}
+];
+var VTYPES=["Все","Производство","Инженерные","Офис","Стажировки"];
+
+var STORIES=[
+ {n:"Алексей",p:"От аппаратчика до начальника смены за семь лет",tg:"Производство",d:"«Пришёл после колледжа на практику и остался. Сначала боялся ошибиться, потом понял: тут учат, а не наказывают»."},
+ {n:"Марина",p:"Как лаборант стала специалистом по качеству продукции",tg:"Лаборатория",d:"«Каждая партия — это тысячи изделий у переработчика. Мой анализ решает, поедет она или нет»."},
+ {n:"Тимур",p:"Инженер по цифровизации: писал модель, а внедрял на установке",tg:"Цифровизация",d:"«Оператор — главный заказчик. Если он не пользуется твоим интерфейсом, значит ты сделал плохо»."}
+];
+
+var WORLD=[
+ {k:"Быт",t:"Дом и кухня",items:["Контейнеры для еды и крышки","Стулья и складная мебель","Корпуса бытовой техники","Стаканчики для йогурта"],marks:["PP H030 GP","PP R021 IM"]},
+ {k:"Медицина",t:"Медицина",items:["Одноразовые шприцы","Лабораторная посуда","Упаковка стерильных изделий","Корпуса ингаляторов"],marks:["PP H100 MD","PP H250 GP"]},
+ {k:"Авто",t:"Автомобили",items:["Бамперы и накладки","Панели салона","Воздуховоды","Корпуса аккумуляторов"],marks:["PP K277 IM","PP K045 EX"]},
+ {k:"Упаковка",t:"Упаковка",items:["БОПП-плёнка для продуктов","Мешки для строительных смесей","Транспортные ящики","Флаконы бытовой химии"],marks:["PP H031 BF","PP R012 BM","PP K102 IM"]},
+ {k:"Спорт",t:"Спорт и текстиль",items:["Нетканые материалы","Спортивные покрытия","Термобельё","Рюкзаки и стропы"],marks:["PP H031 BF"]},
+ {k:"ЖКХ",t:"Дом и трубы",items:["Трубы горячего водоснабжения","Фитинги","Системы отопления","Канализационные элементы"],marks:["PP R003 EX"]}
+];
+var QUIZ=[
+ {q:"Сколько примерно служит труба из полипропилена при штатных параметрах?",o:["5 лет","20 лет","50 лет"],a:2},
+ {q:"Что определяет показатель текучести расплава (ПТР)?",o:["Цвет гранулы","Как легко расплав заполняет форму","Массу мешка"],a:1},
+ {q:"Из какого сырья на «Полиоме» делают полипропилен?",o:["Пропан-пропиленовая фракция","Древесная щепа","Природный газ напрямую"],a:0}
+];
+
+var MEGA={
+ about:[{h:"О предприятии",l:[["about","Обзор","Статус, профиль, роль в регионе"],["history","История","Ключевые этапы развития"],["ism","Система менеджмента","ИСМ, политики, сертификаты"]]},
+        {h:"Смежное",l:[["production","Производство и технологии",""],["social","Социальная ответственность",""],["smi","Для СМИ",""]]}],
+ prod:[{h:"Производство",l:[["production","Обзор производства","Что и в каком масштабе производим"],["production","Технологический процесс","Интерактивная цепочка переделов"],["production","Технологии и оборудование","Цифровизация и автоматизация"]]},
+       {h:"Смежное",l:[["products","Каталог марок",""],["hse","Охрана труда и промбезопасность",""]]}],
+ cat:[{h:"Продукция",l:[["products","Каталог марок","Фильтры по переработке и применению"],["ppworld","Полипропилен вокруг нас","Интерактивный блок для широкой аудитории"]]},
+      {h:"Покупателям",l:[["contacts","Запрос коммерческого предложения",""],["ism","Документы и сертификаты",""]]}],
+ esg:[{h:"Устойчивое развитие",l:[["sustainability","Навигатор раздела",""],["ecology","Экология","Программы и результаты"],["hse","Охрана труда и промбезопасность",""]]},
+      {h:"Общество и этика",l:[["social","Социальная ответственность",""],["compliance","Комплаенс","Анонимное обращение"]]}],
+ career:[{h:"Карьера",l:[["career","Работа в компании","Условия, культура, цифры"],["vacancies","Вакансии","Синхронизация с hh.ru"],["stories","Истории сотрудников",""],["young","Студентам и выпускникам",""]]}]
+};
+
+/* ---------- toast & modal ---------- */
+var toastEl=$("#toast"),toastTimer;
+function toast(msg){toastEl.textContent=msg;toastEl.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){toastEl.hidden=true},2800)}
+var overlay=$("#overlay"),overlayInner=$("#overlayInner");
+function openModal(html){overlayInner.innerHTML=html;overlay.hidden=false;document.body.style.overflow="hidden";var f=overlayInner.querySelector("button,input");if(f)f.focus()}
+function closeModal(){overlay.hidden=true;overlayInner.innerHTML="";document.body.style.overflow=""}
+overlay.addEventListener("click",function(e){if(e.target===overlay)closeModal()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeModal();closeMega();$("#chat").hidden=true}});
+
+/* ---------- router ---------- */
+var NAVMAP={about:"about",history:"about",ism:"about",production:"production",products:"products",ppworld:"products",
+ sustainability:"sustainability",ecology:"sustainability",hse:"sustainability",social:"sustainability",compliance:"sustainability",
+ career:"career",vacancies:"career",stories:"career",young:"career",press:"press",smi:"press",contacts:"contacts",partners:"contacts",services:"contacts"};
+function go(page){
+  if(!$('[data-page="'+page+'"]')) page="home";
+  $$(".page").forEach(function(s){s.hidden=(s.getAttribute("data-page")!==page)});
+  $$("nav.main>button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===NAVMAP[page]))});
+  closeMega();$("#nav").classList.remove("open");
+  if(!overlay.hidden)closeModal();
+  if(location.hash!=="#"+page){history.pushState(null,"","#"+page)}
+  window.scrollTo({top:0,behavior:"auto"});
+}
+window.addEventListener("popstate",function(){go((location.hash||"#home").slice(1))});
+document.addEventListener("click",function(e){
+  var g=e.target.closest("[data-go]");
+  if(g){e.preventDefault();go(g.getAttribute("data-go"));return}
+  var d=e.target.closest("[data-doc]");
+  if(d){e.preventDefault();toast("Прототип: «"+d.getAttribute("data-doc")+"» — здесь будет файл из библиотеки документов");return}
+  var x=e.target.closest("[data-ext]");
+  if(x){e.preventDefault();toast("Прототип: внешний переход — "+x.getAttribute("data-ext"));return}
+  var c=e.target.closest("[data-chat]");
+  if(c){e.preventDefault();openChat(c.getAttribute("data-chat"));return}
+});
+
+/* ---------- mega menu ---------- */
+var mega=$("#mega"),megaGrid=$("#megaGrid"),megaKey=null;
+function closeMega(){mega.hidden=true;megaKey=null}
+function openMega(key){
+  var cols=MEGA[key];if(!cols){closeMega();return}
+  megaGrid.innerHTML=cols.map(function(c){
+    return '<div><h4>'+esc(c.h)+'</h4><ul>'+c.l.map(function(i){
+      return '<li><button data-go="'+i[0]+'">'+esc(i[1])+(i[2]?'<span>'+esc(i[2])+'</span>':'')+'</button></li>';
+    }).join("")+'</ul></div>';
+  }).join("");
+  mega.hidden=false;megaKey=key;
+}
+$$("nav.main>button").forEach(function(b){
+  var k=b.getAttribute("data-menu");
+  b.addEventListener("mouseenter",function(){if(window.innerWidth>900){k?openMega(k):closeMega()}});
+});
+$("header.site").addEventListener("mouseleave",closeMega);
+$("#burger").addEventListener("click",function(){$("#nav").classList.toggle("open")});
+
+/* ---------- theme ---------- */
+$("#themeBtn").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var isDark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",isDark?"light":"dark");
+});
+
+/* ---------- lang (demo) ---------- */
+var EN={sub:"Omsk polypropylene plant",n1:"Company",n2:"Production",n3:"Products",n4:"Sustainability",n5:"Careers",n6:"Press",n7:"Contacts",
+ h_eye:"Omsk · a SIBUR enterprise · since 2013",h_h1:"The polypropylene<br>everyday life is <em>made of</em>",
+ h_lead:"Poliom is a polypropylene plant in Omsk. We convert propane-propylene fraction from the Omsk refinery into 20+ polymer grades used in packaging, automotive parts, medical devices, pipes and textiles.",
+ h_cta1:"Grade catalogue →",h_cta2:"How production works",h_cta3:"Vacancies"};
+var RU={};
+$$("[data-i18n]").forEach(function(el){RU[el.getAttribute("data-i18n")]=el.innerHTML});
+$$(".lang button").forEach(function(b){
+  b.addEventListener("click",function(){
+    var l=b.getAttribute("data-lang");
+    $$(".lang button").forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
+    var dict=l==="en"?EN:RU;
+    $$("[data-i18n]").forEach(function(el){var k=el.getAttribute("data-i18n");if(dict[k])el.innerHTML=dict[k]});
+    if(l==="en")toast("Prototype: English version is wired for the top-level navigation and the home screen only.");
+    else toast("Русская версия восстановлена");
+  });
+});
+
+/* ---------- render: news ---------- */
+var newsState={type:"all",q:""};
+function renderNewsFilters(){
+  var f=$("#newsFilters");var types=[["all","Все материалы"]].concat(Object.keys(NTYPES).map(function(k){return [k,NTYPES[k]]}));
+  f.innerHTML=types.map(function(t){return '<button class="chip" data-ntype="'+t[0]+'" aria-pressed="'+(newsState.type===t[0])+'">'+esc(t[1])+'</button>'}).join("");
+}
+function renderNews(){
+  var list=NEWS.filter(function(n){
+    if(newsState.type!=="all"&&n.t!==newsState.type)return false;
+    var q=newsState.q.toLowerCase();
+    return !q||(n.ti+" "+n.ex).toLowerCase().indexOf(q)>-1;
+  });
+  $("#newsList").innerHTML=list.map(function(n,i){
+    return '<button class="nrow" data-news="'+NEWS.indexOf(n)+'"><span class="dt">'+n.d+'</span>'+
+      '<span><span class="ti">'+esc(n.ti)+'</span><span class="ex">'+esc(n.ex)+'</span></span>'+
+      '<span class="tag">'+esc(NTYPES[n.t])+'</span></button>';
+  }).join("");
+  $("#newsEmpty").hidden=list.length>0;
+  renderNewsFilters();
+}
+function newsModal(i){
+  var n=NEWS[i];
+  var rel=NEWS.filter(function(x,j){return j!==i&&x.t===n.t}).slice(0,2);
+  openModal('<div class="modal"><div class="modal-h"><div><span class="tag">'+esc(NTYPES[n.t])+'</span>'+
+   '<h2 style="margin-top:10px;font-size:24px">'+esc(n.ti)+'</h2>'+
+   '<p class="small muted mono" style="margin-top:8px">'+n.d+' · Пресс-центр</p></div>'+
+   '<button class="icobtn" data-close="1" aria-label="Закрыть">✕</button></div>'+
+   '<div class="modal-b"><p class="lead">'+esc(n.ex)+'</p>'+
+   '<p class="small muted" style="margin-top:16px">Универсальный шаблон материала: текст, фото, видео, документы и блок «Материалы по теме», который собирается автоматически по системе тегов. В прототипе тело публикации сокращено.</p>'+
+   (rel.length?'<div style="margin-top:22px"><p class="eyebrow">Материалы по теме</p><div style="display:grid;gap:8px;margin-top:10px">'+
+     rel.map(function(r){return '<button class="chip" style="text-align:left;border-radius:4px" data-news="'+NEWS.indexOf(r)+'">'+esc(r.ti)+'</button>'}).join("")+'</div></div>':'')+
+   '</div><div class="modal-f"><button class="btn btn-s btn-sm" data-doc="Пресс-релиз">Скачать пресс-релиз</button>'+
+   '<button class="btn btn-s btn-sm" data-ext="Публикация во «ВКонтакте»">Поделиться ↗</button>'+
+   '<span class="note" style="margin-left:auto">Демо-материал</span></div></div>');
+}
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-ntype]");
+  if(t){newsState.type=t.getAttribute("data-ntype");renderNews();return}
+  var n=e.target.closest("[data-news]");
+  if(n){newsModal(parseInt(n.getAttribute("data-news"),10));return}
+  if(e.target.closest("[data-close]"))closeModal();
+});
+$("#newsSearch").addEventListener("input",function(){newsState.q=this.value;renderNews()});
+renderNews();
+$("#homeNews").innerHTML=NEWS.slice(0,3).map(function(n){
+  return '<div class="card card-link" data-news="'+NEWS.indexOf(n)+'"><span class="small mono muted">'+n.d+' · '+esc(NTYPES[n.t])+'</span>'+
+   '<h3>'+esc(n.ti)+'</h3><p class="small">'+esc(n.ex)+'</p><span class="go">Читать →</span></div>';
+}).join("");
+
+/* ---------- render: docs ---------- */
+var docCat="Все";
+function renderDocs(){
+  var cats=["Все"].concat(DOCS.map(function(d){return d.c}).filter(function(v,i,a){return a.indexOf(v)===i}));
+  $("#docFilters").innerHTML=cats.map(function(c){return '<button class="chip" data-doccat="'+esc(c)+'" aria-pressed="'+(docCat===c)+'">'+esc(c)+'</button>'}).join("");
+  var rows=DOCS.filter(function(d){return docCat==="Все"||d.c===docCat});
+  $("#docTable").querySelector("tbody").innerHTML=rows.map(function(d){
+    return '<tr><td style="font-weight:500">'+esc(d.n)+'</td><td><span class="tag">'+esc(d.c)+'</span></td>'+
+      '<td class="num">'+esc(d.r)+'</td><td class="num">'+d.f+'</td>'+
+      '<td><button class="btn btn-s btn-sm" data-doc="'+esc(d.n)+'">Скачать</button></td></tr>';
+  }).join("");
+}
+document.addEventListener("click",function(e){
+  var c=e.target.closest("[data-doccat]");
+  if(c){docCat=c.getAttribute("data-doccat");renderDocs()}
+});
+renderDocs();
+
+/* ---------- render: timeline ---------- */
+$("#timeline").innerHTML=TIMELINE.map(function(t){
+  return '<div class="tl-row"><span class="tl-year">'+t.y+'</span><div><h3>'+esc(t.t)+'</h3><p class="muted">'+esc(t.d)+'</p></div></div>';
+}).join("");
+
+/* ---------- render: chain ---------- */
+var chainIdx=0;
+function renderChain(){
+  $("#chain").innerHTML=CHAIN.map(function(c,i){
+    return '<button class="step" data-step="'+i+'" aria-pressed="'+(i===chainIdx)+'">'+
+      '<span class="sn">'+c.n+'</span><span class="st">'+esc(c.t)+'</span><span class="sd">'+esc(c.d)+'</span></button>';
+  }).join("");
+  var c=CHAIN[chainIdx];
+  $("#chainDetail").innerHTML='<div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px" class="detail-grid">'+
+    '<div><p class="eyebrow">Этап '+c.n+'</p><h3 style="margin-top:8px">'+esc(c.t)+'</h3><p class="lead" style="margin-top:10px;font-size:16px">'+esc(c.full)+'</p></div>'+
+    '<dl class="kv" style="align-content:start">'+c.kv.map(function(k){return '<dt>'+esc(k[0])+'</dt><dd>'+esc(k[1])+'</dd>'}).join("")+'</dl></div>';
+}
+document.addEventListener("click",function(e){
+  var s=e.target.closest("[data-step]");
+  if(s){chainIdx=parseInt(s.getAttribute("data-step"),10);renderChain()}
+});
+renderChain();
+
+/* ---------- render: marks ---------- */
+var mState={proc:"Все",type:"Все",q:""};
+function renderMarkFilters(){
+  var html='<span class="small muted mono" style="margin-right:4px">Переработка:</span>';
+  html+=["Все"].concat(PROCS).map(function(p){return '<button class="chip" data-mproc="'+esc(p)+'" aria-pressed="'+(mState.proc===p)+'">'+esc(p)+'</button>'}).join("");
+  html+='<span class="small muted mono" style="margin:0 4px 0 12px">Тип:</span>';
+  html+=["Все"].concat(TYPES).map(function(p){return '<button class="chip" data-mtype="'+esc(p)+'" aria-pressed="'+(mState.type===p)+'">'+esc(p)+'</button>'}).join("");
+  $("#markFilters").innerHTML=html;
+}
+function renderMarks(){
+  var rows=MARKS.filter(function(m){
+    if(mState.proc!=="Все"&&m.proc!==mState.proc)return false;
+    if(mState.type!=="Все"&&m.t!==mState.type)return false;
+    var q=mState.q.toLowerCase().trim();
+    return !q||(m.m+" "+m.app+" "+m.tu+" "+m.t+" "+m.proc).toLowerCase().indexOf(q)>-1;
+  });
+  $("#markTable").querySelector("tbody").innerHTML=rows.map(function(m){
+    return '<tr data-mark="'+esc(m.m)+'"><td class="mk">'+esc(m.m)+'</td><td>'+esc(m.t)+'</td>'+
+     '<td class="num">'+m.ptr.toFixed(1)+'</td><td>'+esc(m.proc)+'</td><td>'+esc(m.app)+'</td>'+
+     '<td><span class="go" style="padding:0">Карточка →</span></td></tr>';
+  }).join("");
+  $("#markEmpty").hidden=rows.length>0;
+  $("#markCount").textContent=rows.length+" из "+MARKS.length;
+  renderMarkFilters();
+}
+function markModal(name){
+  var m=MARKS.filter(function(x){return x.m===name})[0];if(!m)return;
+  openModal('<div class="modal"><div class="modal-h"><div><span class="tag acc">'+esc(m.t)+'</span>'+
+   '<h2 style="margin-top:10px;font-size:26px" class="mono">'+esc(m.m)+'</h2>'+
+   '<p class="muted" style="margin-top:6px">'+esc(m.app)+'</p></div>'+
+   '<button class="icobtn" data-close="1" aria-label="Закрыть">✕</button></div>'+
+   '<div class="modal-b"><p class="lead" style="font-size:16px">'+esc(m.note)+'</p>'+
+   '<dl class="kv" style="margin-top:20px">'+
+   '<dt>Тип полимера</dt><dd style="font-family:inherit">'+esc(m.t)+'</dd>'+
+   '<dt>ПТР (230 °C / 2,16 кг)</dt><dd>'+m.ptr.toFixed(1)+' г/10 мин</dd>'+
+   '<dt>Способ переработки</dt><dd style="font-family:inherit">'+esc(m.proc)+'</dd>'+
+   '<dt>Технические условия</dt><dd>'+esc(m.tu)+'</dd>'+
+   '<dt>Фасовка</dt><dd style="font-family:inherit">мешки 25 кг · биг-бэг 1000 кг · навал</dd>'+
+   '</dl>'+
+   '<p class="note" style="margin-top:16px">Показатели условные и приведены для демонстрации структуры карточки марки.</p></div>'+
+   '<div class="modal-f"><button class="btn btn-p btn-sm" data-doc="TDS '+esc(m.m)+'">Скачать TDS</button>'+
+   '<button class="btn btn-s btn-sm" data-doc="Паспорт качества '+esc(m.m)+'">Паспорт качества</button>'+
+   '<button class="btn btn-s btn-sm" data-ext="Коммерческий сервис СИБУРа">Купить ↗</button></div></div>');
+}
+document.addEventListener("click",function(e){
+  var p=e.target.closest("[data-mproc]");if(p){mState.proc=p.getAttribute("data-mproc");renderMarks();return}
+  var t=e.target.closest("[data-mtype]");if(t){mState.type=t.getAttribute("data-mtype");renderMarks();return}
+  var r=e.target.closest("[data-mark]");if(r){markModal(r.getAttribute("data-mark"))}
+});
+$("#markSearch").addEventListener("input",function(){mState.q=this.value;renderMarks()});
+renderMarks();
+
+/* ---------- render: pp world + quiz ---------- */
+var wIdx=0;
+function renderWorld(){
+  $("#worldTabs").innerHTML=WORLD.map(function(w,i){
+    return '<button class="chip" data-world="'+i+'" aria-pressed="'+(i===wIdx)+'">'+esc(w.t)+'</button>';
+  }).join("");
+  var w=WORLD[wIdx];
+  $("#worldCard").innerHTML='<span class="tag acc">'+esc(w.k)+'</span><h3>'+esc(w.t)+'</h3>'+
+    '<ul style="margin:8px 0 0;padding-left:18px;display:grid;gap:6px" class="small">'+
+    w.items.map(function(i){return '<li>'+esc(i)+'</li>'}).join("")+'</ul>'+
+    '<p class="eyebrow" style="margin-top:16px">Марки «Полиома» в этой сфере</p>'+
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+
+    w.marks.map(function(m){return '<button class="chip mono" data-mark="'+esc(m)+'">'+esc(m)+'</button>'}).join("")+'</div>';
+}
+document.addEventListener("click",function(e){
+  var w=e.target.closest("[data-world]");if(w){wIdx=parseInt(w.getAttribute("data-world"),10);renderWorld()}
+});
+renderWorld();
+var qIdx=0;
+function renderQuiz(){
+  var q=QUIZ[qIdx];
+  $("#quizQ").textContent=q.q;
+  $("#quizOpts").innerHTML=q.o.map(function(o,i){return '<button class="chip" style="text-align:left;border-radius:4px" data-quiz="'+i+'">'+esc(o)+'</button>'}).join("");
+  $("#quizRes").textContent="";
+}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-quiz]");if(!b)return;
+  var q=QUIZ[qIdx],ok=parseInt(b.getAttribute("data-quiz"),10)===q.a;
+  $("#quizRes").innerHTML=ok?'<span style="color:var(--eco);font-weight:700">Верно.</span> Следующий вопрос загрузится через секунду.':'<span style="color:var(--amber);font-weight:700">Не угадали.</span> Правильный ответ: «'+esc(q.o[q.a])+'».';
+  setTimeout(function(){qIdx=(qIdx+1)%QUIZ.length;renderQuiz()},1600);
+});
+renderQuiz();
+
+/* ---------- render: vacancies & stories ---------- */
+var vType="Все";
+function renderVacs(){
+  $("#vacFilters").innerHTML=VTYPES.map(function(t){return '<button class="chip" data-vtype="'+esc(t)+'" aria-pressed="'+(vType===t)+'">'+esc(t)+'</button>'}).join("");
+  var rows=VACS.filter(function(v){return vType==="Все"||v.type===vType});
+  $("#vacList").innerHTML=rows.map(function(v){
+    return '<div class="vac"><div><h3>'+esc(v.t)+'</h3><p class="small muted">'+esc(v.dep)+' · '+esc(v.city)+' · полная занятость</p></div>'+
+      '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="mono" style="font-size:15px;font-weight:500">'+esc(v.sal)+'</span>'+
+      '<button class="btn btn-p btn-sm" data-ext="Отклик на hh.ru">Откликнуться на hh.ru ↗</button></div></div>';
+  }).join("")||'<div class="empty">В этой категории сейчас нет открытых вакансий.</div>';
+}
+document.addEventListener("click",function(e){
+  var v=e.target.closest("[data-vtype]");if(v){vType=v.getAttribute("data-vtype");renderVacs()}
+});
+renderVacs();
+$("#storyList").innerHTML=STORIES.map(function(s){
+  return '<div class="card"><span class="tag">'+esc(s.tg)+'</span><h3>'+esc(s.p)+'</h3>'+
+    '<p class="small">'+esc(s.d)+'</p><span class="go">'+esc(s.n)+', сотрудник предприятия</span></div>';
+}).join("");
+
+/* ---------- forms ---------- */
+$("#anon").addEventListener("change",function(){$("#pdFields").hidden=this.checked});
+$("#compForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var anon=$("#anon").checked,cat=this.cat.value;
+  var id="ОБР-"+(Math.floor(Math.random()*9000)+1000);
+  openModal('<div class="modal"><div class="modal-h"><div><span class="tag eco">Обращение принято</span>'+
+   '<h2 style="margin-top:10px;font-size:24px">Спасибо, обращение зарегистрировано</h2></div>'+
+   '<button class="icobtn" data-close="1" aria-label="Закрыть">✕</button></div><div class="modal-b">'+
+   '<div class="ok">Номер обращения: <b class="mono">'+id+'</b>'+(anon?' · режим: анонимно':'')+'</div>'+
+   '<dl class="kv" style="margin-top:18px"><dt>Категория</dt><dd style="font-family:inherit">'+esc(cat)+'</dd>'+
+   '<dt>Срок рассмотрения</dt><dd style="font-family:inherit">до 30 календарных дней</dd>'+
+   '<dt>Кто получит</dt><dd style="font-family:inherit">комплаенс-офицер, без доступа линейных руководителей</dd></dl>'+
+   '<p class="note" style="margin-top:16px">'+(anon?'Обращение отправлено без персональных данных. Сохраните номер — по нему можно узнать статус.':'Мы свяжемся по указанным контактам.')+'</p>'+
+   '<p class="note">Прототип: данные не сохраняются и никуда не передаются.</p></div>'+
+   '<div class="modal-f"><button class="btn btn-p btn-sm" data-close="1">Понятно</button></div></div>');
+  this.reset();$("#anon").checked=true;$("#pdFields").hidden=true;
+});
+var ROUTE={"Покупка продукции":"отдел продаж","Сотрудничество и закупки":"отдел закупок","Вопрос по вакансиям":"служба подбора персонала",
+ "Запрос от СМИ":"пресс-служба","Экология и жизнь района":"служба охраны окружающей среды","Другое":"канцелярия"};
+$("#feedbackForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var t=this.topic.value;
+  openModal('<div class="modal"><div class="modal-h"><div><span class="tag eco">Отправлено</span>'+
+   '<h2 style="margin-top:10px;font-size:24px">Заявка принята</h2></div>'+
+   '<button class="icobtn" data-close="1" aria-label="Закрыть">✕</button></div><div class="modal-b">'+
+   '<div class="ok">Обращение по теме «'+esc(t)+'» направлено в подразделение: <b>'+esc(ROUTE[t]||"канцелярия")+'</b>.</div>'+
+   '<p class="note" style="margin-top:16px">Так работает универсальная форма: один шаблон, разные наборы полей и маршрутизация по теме. Ответ — в течение 3 рабочих дней.</p>'+
+   '<p class="note">Прототип: данные не сохраняются.</p></div>'+
+   '<div class="modal-f"><button class="btn btn-p btn-sm" data-close="1">Закрыть</button></div></div>');
+  this.reset();
+});
+
+/* ---------- chat bot ---------- */
+var chat=$("#chat"),chatBody=$("#chatBody"),chatQuick=$("#chatQuick");
+var SCEN={
+ start:{m:"Здравствуйте! Я помощник «Полиома». Подскажу по продукции, вакансиям, экологии и обращениям. С чего начнём?",
+   q:[["buy","Хочу купить полипропилен"],["job","Ищу работу"],["eco","Вопрос по экологии"],["hse","Сообщить об опасной ситуации"]]},
+ buy:{m:"Подберём марку. Что вы производите?",q:[["buy_pack","Упаковку"],["buy_pipe","Трубы"],["buy_auto","Автокомпоненты"],["start","Назад"]]},
+ buy_pack:{m:"Для упаковки чаще берут PP H030 GP (литьё), PP H031 BF (плёнка и волокно) и PP R021 IM (прозрачная тара). Открыть карточки?",q:[["cat","Открыть каталог"],["mgr","Связаться с менеджером"],["start","В начало"]]},
+ buy_pipe:{m:"Для труб PPR — марка PP R003 EX, статсополимер с ПТР 0,3 г/10 мин. Ресурс 50 лет при штатных параметрах.",q:[["cat","Открыть каталог"],["mgr","Связаться с менеджером"],["start","В начало"]]},
+ buy_auto:{m:"Для автокомпонентов — ударопрочные сополимеры PP K277 IM и PP K045 EX, сохраняют вязкость до −30 °C.",q:[["cat","Открыть каталог"],["mgr","Связаться с менеджером"],["start","В начало"]]},
+ job:{m:"Сейчас открыто 6 вакансий: производство, инженерные позиции, офис и стажировки. Отклик идёт через hh.ru.",q:[["vac","Смотреть вакансии"],["young","Я студент"],["start","В начало"]]},
+ eco:{m:"Данные мониторинга воздуха и природоохранные проекты собраны в разделе «Экология». Если хотите задать вопрос лично — есть форма обратной связи с маршрутом в экологическую службу.",q:[["ecopage","Открыть раздел"],["form","Задать вопрос"],["start","В начало"]]},
+ hse:{m:"Опишите ситуацию: что и где вы заметили. Можно без имени — сообщение уйдёт в службу охраны труда в течение минуты.",q:[["hsedone","Отправить сообщение"],["start","В начало"]]},
+ hsedone:{m:"Принято, номер СОС-4471. Дежурный инженер получил уведомление. Спасибо, что не прошли мимо.",q:[["start","В начало"]]},
+ mgr:{m:"Оставьте заявку в форме обратной связи с темой «Покупка продукции» — она уйдёт в отдел продаж.",q:[["form","Открыть форму"],["start","В начало"]]}
+};
+var ACT={cat:"products",vac:"vacancies",young:"young",ecopage:"ecology",form:"contacts"};
+function chatSay(text,cls){
+  var d=document.createElement("div");d.className="msg "+cls;d.textContent=text;
+  chatBody.appendChild(d);chatBody.scrollTop=chatBody.scrollHeight;
+}
+function chatNode(key){
+  var n=SCEN[key];if(!n)return;
+  chatSay(n.m,"bot");
+  chatQuick.innerHTML=n.q.map(function(q){return '<button data-cq="'+q[0]+'">'+esc(q[1])+'</button>'}).join("");
+}
+chatQuick.addEventListener("click",function(e){
+  var b=e.target.closest("[data-cq]");if(!b)return;
+  var key=b.getAttribute("data-cq");
+  chatSay(b.textContent,"me");
+  if(ACT[key]){go(ACT[key]);chatSay("Открыл раздел на сайте.","bot");chatNode("start");return}
+  setTimeout(function(){chatNode(key)},280);
+});
+function openChat(pre){
+  chat.hidden=false;
+  if(!chatBody.childElementCount)chatNode("start");
+  if(pre==="hse"){chatSay("Сообщить об опасной ситуации","me");setTimeout(function(){chatNode("hse")},280)}
+}
+$("#chatFab").addEventListener("click",function(){chat.hidden?openChat():chat.hidden=true});
+$("#chatClose").addEventListener("click",function(){chat.hidden=true});
+
+/* ---------- search ---------- */
+var SEARCH=[
+ ["home","Главная",""],["about","О предприятии","Статус, профиль, роль в регионе"],["history","История","Хронология развития"],
+ ["ism","Политики, стандарты и документы","ISO, сертификаты, регламенты"],["production","Производство и технологии","Технологический процесс"],
+ ["products","Каталог марок полипропилена","ПТР, ТУ, применение"],["ppworld","Полипропилен вокруг нас","Интерактивный блок"],
+ ["sustainability","Устойчивое развитие","Навигатор раздела"],["ecology","Экология","Выбросы, «Чистый воздух»"],
+ ["hse","Охрана труда и промбезопасность",""],["social","Социальная ответственность",""],["compliance","Комплаенс-обращение","Анонимно"],
+ ["career","Работа в компании",""],["vacancies","Вакансии","Интеграция с hh.ru"],["stories","Истории сотрудников",""],
+ ["young","Студентам и выпускникам",""],["press","Пресс-центр","Новости и материалы"],["smi","Для СМИ","Фотобанк, логотипы"],
+ ["contacts","Контакты и обратная связь",""],["partners","Партнёрам и подрядчикам",""],["services","Реализация отходов и НВИ",""]
+];
+$("#searchBtn").addEventListener("click",function(){
+  openModal('<div class="searchbox"><input type="search" id="siteSearch" placeholder="Поиск по сайту: марка, раздел, документ" autofocus><div class="sres" id="sres"></div></div>');
+  var inp=$("#siteSearch");
+  function draw(){
+    var q=inp.value.toLowerCase().trim();
+    var pages=SEARCH.filter(function(s){return !q||(s[1]+" "+s[2]).toLowerCase().indexOf(q)>-1}).slice(0,7);
+    var marks=q?MARKS.filter(function(m){return (m.m+" "+m.app).toLowerCase().indexOf(q)>-1}).slice(0,4):[];
+    $("#sres").innerHTML=pages.map(function(s){
+      return '<button data-go="'+s[0]+'">'+esc(s[1])+(s[2]?'<span>'+esc(s[2])+'</span>':'')+'</button>';
+    }).join("")+marks.map(function(m){
+      return '<button data-mark="'+esc(m.m)+'" class="mono">'+esc(m.m)+'<span style="font-family:Manrope,sans-serif">Марка · '+esc(m.app)+'</span></button>';
+    }).join("")+(pages.length+marks.length?"":'<div class="empty">Ничего не найдено</div>');
+  }
+  inp.addEventListener("input",draw);draw();
+  inp.focus();
+});
+
+/* init */
+go((location.hash||"#home").slice(1));
+})();
+</script>
+
+</body>
+</html>
