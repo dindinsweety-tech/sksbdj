@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демонстрационный прототип продающей страницы терапевтического курса. Данные условные.">
+<title>Курс «Опора внутри»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@300;400;500;600&family=Manrope:wght@400;500;600;700&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --paper:#EEF1F0; --surface:#FFFFFF; --surface2:#E3E8E7; --surface3:#D6DEDC;
+  --ink:#15201E; --ink2:#41504D; --ink3:#6E807C;
+  --line:#D2DAD8; --line2:#B8C4C1;
+  --acc:#1F5F5B; --acc-hi:#154441; --acc-soft:#DDEAE8;
+  --warm:#C4703C; --warm-soft:#F8E7DA;
+  --sh:0 1px 2px rgba(21,32,30,.05),0 14px 34px -20px rgba(21,32,30,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0F1615; --surface:#16211F; --surface2:#1E2B29; --surface3:#273634;
+  --ink:#E8EFED; --ink2:#AFC0BC; --ink3:#7E918D;
+  --line:#25332F; --line2:#33443F;
+  --acc:#67BDB4; --acc-hi:#93D6CE; --acc-soft:#12302D;
+  --warm:#E09765; --warm-soft:#33210F;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 16px 36px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#0F1615; --surface:#16211F; --surface2:#1E2B29; --surface3:#273634;
+  --ink:#E8EFED; --ink2:#AFC0BC; --ink3:#7E918D;
+  --line:#25332F; --line2:#33443F;
+  --acc:#67BDB4; --acc-hi:#93D6CE; --acc-soft:#12302D;
+  --warm:#E09765; --warm-soft:#33210F;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 16px 36px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font-family:"Manrope",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.65}
+h1,h2,h3{margin:0;font-family:"Spectral",Georgia,serif;font-weight:400;text-wrap:balance;letter-spacing:-.005em}
+h1{font-size:clamp(30px,4.6vw,52px);line-height:1.1;font-weight:300}
+h2{font-size:clamp(24px,3vw,36px);line-height:1.15}
+h3{font-size:20px;font-weight:500}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.narrow{max-width:760px}
+.lead{font-size:clamp(17px,1.7vw,20px);line-height:1.55;color:var(--ink2)}
+.small{font-size:13.5px;line-height:1.5}
+.muted{color:var(--ink2)}
+.eyebrow{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);font-weight:600}
+.sec{padding:64px 0;border-top:1px solid var(--line)}
+.sec:first-of-type{border-top:0}
+
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:7px 20px;text-align:center;line-height:1.45}
+.demo b{background:var(--warm);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+
+/* top */
+header.t{position:sticky;top:0;z-index:40;background:rgba(238,241,240,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+:root[data-theme="dark"] header.t{background:rgba(15,22,21,.92)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header.t{background:rgba(15,22,21,.92)}}
+.tin{display:flex;align-items:center;gap:16px;height:60px}
+.mark{font-family:"Spectral",serif;font-size:18px;font-weight:500;letter-spacing:.01em}
+.tr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.ico{border:1px solid var(--line2);width:34px;height:34px;border-radius:3px;display:grid;place-items:center;color:var(--ink2);font-size:14px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 26px;border-radius:3px;
+ border:1px solid transparent;font-size:15px;font-weight:700;text-decoration:none}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-hi)}
+.btn-w{background:var(--warm);color:#fff}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:9px 16px;font-size:13.5px}
+
+/* hero */
+.hero{padding:52px 0 60px}
+.hero-in{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+.hero h1{margin-top:16px}
+.hero .lead{margin-top:20px}
+.meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.meta div .k{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.meta div .v{font-family:"Spectral",serif;font-size:20px;margin-top:2px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px;align-items:center}
+.portrait{aspect-ratio:4/5;border-radius:4px;background:var(--surface2);display:grid;place-items:center;
+ border:1px solid var(--line);position:relative;overflow:hidden}
+.portrait svg{width:70%;height:auto;color:var(--acc);opacity:.5}
+.portrait .cap{position:absolute;bottom:0;left:0;right:0;padding:12px 14px;background:var(--surface);
+ border-top:1px solid var(--line);font-size:12.5px;color:var(--ink3)}
+
+/* cards */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:24px}
+.card h3{font-size:18px}
+.card p{margin-top:8px;color:var(--ink2);font-size:15px}
+.quote{border-left:3px solid var(--warm);padding-left:20px;font-family:"Spectral",serif;font-size:19px;line-height:1.5;font-weight:300}
+
+/* list of states */
+.states{display:grid;gap:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--surface)}
+.state{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line);align-items:start}
+.state:last-child{border-bottom:0}
+.state .n{font-family:"Spectral",serif;font-size:17px;color:var(--acc)}
+.state p{color:var(--ink2);font-size:15px;margin-top:3px}
+
+/* accordion */
+.acc{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--surface)}
+.ai{border-bottom:1px solid var(--line)}
+.ai:last-child{border-bottom:0}
+.ah{width:100%;text-align:left;padding:18px 20px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.ah:hover{background:var(--surface2)}
+.ah .w{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);font-weight:600;white-space:nowrap}
+.ah .t{font-family:"Spectral",serif;font-size:18px}
+.ah .x{color:var(--ink3);font-size:18px;transition:transform .18s}
+.ah[aria-expanded="true"] .x{transform:rotate(45deg)}
+.ab{padding:0 20px 20px 20px;color:var(--ink2);font-size:15px}
+.ab[hidden]{display:none}
+.ab ul{margin:10px 0 0;padding-left:20px;display:grid;gap:6px}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:26px;display:flex;flex-direction:column;gap:12px}
+.tier.best{border-color:var(--acc);box-shadow:var(--sh);position:relative}
+.tier.best::before{content:"Выбирают чаще всего";position:absolute;top:-11px;left:26px;background:var(--acc);color:#fff;
+ font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:2px}
+.tier .nm{font-family:"Spectral",serif;font-size:22px}
+.tier .pr{font-family:"Spectral",serif;font-size:34px;font-weight:400;line-height:1;display:flex;align-items:baseline;gap:10px}
+.tier .old{font-size:15px;color:var(--ink3);text-decoration:line-through;font-family:"Manrope",sans-serif}
+.tier ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:9px;font-size:14.5px;color:var(--ink2)}
+.tier li{padding-left:22px;position:relative}
+.tier li::before{content:"✓";position:absolute;left:0;color:var(--acc);font-weight:700}
+.tier li.no{color:var(--ink3)}
+.tier li.no::before{content:"—";color:var(--ink3)}
+.tier .btn{margin-top:auto;width:100%}
+
+/* form */
+.formwrap{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:30px}
+.form{display:grid;gap:16px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label.f{display:grid;gap:6px;font-size:13px;color:var(--ink2);font-weight:600}
+input,select,textarea{font:inherit;font-size:15px;background:var(--paper);color:var(--ink);
+ border:1px solid var(--line2);border-radius:3px;padding:12px 13px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--ink2);line-height:1.5}
+.consent input{width:auto;margin-top:3px}
+.ok{background:var(--acc-soft);border:1px solid var(--acc);border-radius:4px;padding:22px;text-align:center}
+.ok h3{color:var(--acc)}
+
+/* faq + footer */
+footer.s{background:var(--ink);color:var(--paper);padding:40px 0 30px;font-size:14px}
+footer.s a,footer.s button{color:var(--paper);opacity:.75;text-decoration:underline}
+.fdocs{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}
+.fb{margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.16);opacity:.6;font-size:12px}
+
+/* sticky mobile cta */
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--surface);border-top:1px solid var(--line);
+ padding:10px 16px;display:none;gap:12px;align-items:center;box-shadow:0 -8px 24px -18px rgba(0,0,0,.5)}
+.sticky .p{font-family:"Spectral",serif;font-size:19px;white-space:nowrap}
+.sticky .btn{flex:1}
+
+/* editable-zone overlay */
+.ed{position:relative}
+body.show-ed .ed{outline:2px dashed var(--warm);outline-offset:5px;border-radius:2px}
+body.show-ed .ed::after{content:attr(data-ed);position:absolute;top:-11px;left:0;background:var(--warm);color:#fff;
+ font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:2px;
+ white-space:nowrap;z-index:5;font-family:"Manrope",sans-serif}
+.edbar{position:fixed;right:16px;bottom:16px;z-index:50;display:flex;gap:8px;align-items:center;
+ background:var(--surface);border:1px solid var(--line2);border-radius:4px;padding:8px 12px;box-shadow:var(--sh);font-size:13px}
+.edbar button{font-weight:700;color:var(--warm)}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:80px;z-index:90;background:var(--ink);color:var(--paper);
+ padding:12px 20px;border-radius:3px;font-size:14px;box-shadow:var(--sh);max-width:90vw;text-align:center}
+.toast[hidden]{display:none}
+
+@media (max-width:900px){
+  .hero-in{grid-template-columns:1fr;gap:28px}
+  .portrait{max-width:340px}
+  .tiers,.g3,.g2{grid-template-columns:1fr}
+  .row2{grid-template-columns:1fr}
+  .sticky{display:flex}
+  body{padding-bottom:66px}
+  .edbar{bottom:76px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Демонстрационный прототип страницы курса. Эксперт, программа, цены и отзывы — условные, для показа структуры и логики.</div>
+
+<header class="t"><div class="wrap tin">
+  <span class="mark">Центр «Опора»</span>
+  <div class="tr">
+    <button class="ico" id="theme" aria-label="Тема">◐</button>
+    <a class="btn btn-p btn-sm" href="#zayavka">Записаться</a>
+  </div>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap hero-in">
+  <div>
+    <p class="eyebrow">Продолжение эфира от 12 сентября</p>
+    <h1 class="ed" data-ed="Название курса">Опора внутри:<br>курс о том, как перестать держать всё на себе</h1>
+    <p class="lead ed" data-ed="Подзаголовок">Четыре недели практики для тех, кто на сессии узнал своё состояние: вы справляетесь, вас хвалят, а внутри — пустота и усталость, которую не снимает отпуск.</p>
+    <div class="meta">
+      <div class="ed" data-ed="Даты"><div class="k">Старт</div><div class="v">23 сентября</div></div>
+      <div><div class="k">Формат</div><div class="v">4 недели</div></div>
+      <div><div class="k">Встречи</div><div class="v">2 раза в неделю</div></div>
+      <div class="ed" data-ed="Стоимость"><div class="k">Стоимость</div><div class="v">от 12 900 ₽</div></div>
+    </div>
+    <div class="hero-cta">
+      <a class="btn btn-p" href="#tarify">Выбрать участие</a>
+      <a class="btn btn-s" href="#programma">Посмотреть программу</a>
+    </div>
+    <p class="small muted" style="margin-top:14px">Набор открыт до 22 сентября или пока есть места в малой группе.</p>
+  </div>
+  <div class="portrait ed" data-ed="Фото эксперта">
+    <svg viewBox="0 0 200 250" fill="none" aria-hidden="true">
+      <circle cx="100" cy="88" r="42" stroke="currentColor" stroke-width="3"/>
+      <path d="M28 232c0-40 32-72 72-72s72 32 72 72" stroke="currentColor" stroke-width="3"/>
+    </svg>
+    <span class="cap">Слот под фотографию эксперта</span>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap narrow">
+  <p class="eyebrow">Кому это подойдёт</p>
+  <h2 style="margin-top:12px">Вы были на сессии. Если что-то из этого про вас — курс для вас</h2>
+  <div class="states ed" data-ed="Блок «кому подойдёт»" style="margin-top:26px">
+    <div class="state"><span class="n">01</span><div><h3 style="font-size:17px">Вы опора для всех, кроме себя</h3><p>К вам приходят за помощью, советом и решением. А спросить, как вы сами, некому — и вы уже привыкли.</p></div></div>
+    <div class="state"><span class="n">02</span><div><h3 style="font-size:17px">Отдых не восстанавливает</h3><p>Отпуск, выходные, сон — а усталость остаётся. Потому что она не физическая.</p></div></div>
+    <div class="state"><span class="n">03</span><div><h3 style="font-size:17px">Сложно сказать «нет»</h3><p>Согласие вырывается раньше, чем вы успеваете подумать. А потом — раздражение на себя.</p></div></div>
+    <div class="state"><span class="n">04</span><div><h3 style="font-size:17px">На сессии что-то откликнулось</h3><p>Вы почувствовали движение внутри и хотите продолжить, а не оставить это разовым опытом.</p></div></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <p class="eyebrow">Результат</p>
+  <h2 style="margin-top:12px;max-width:20ch">С чем вы выйдете через четыре недели</h2>
+  <div class="grid g3 ed" data-ed="Блок результатов" style="margin-top:28px">
+    <div class="card"><h3>Опора не в людях</h3><p>Устойчивость, которая не зависит от того, оценили вас сегодня или нет.</p></div>
+    <div class="card"><h3>Слышимые границы</h3><p>Отказ без вины и без объяснительной на три абзаца. Отработано в практике, а не в теории.</p></div>
+    <div class="card"><h3>Свои опознавательные знаки</h3><p>Понимание, по каким сигналам тела и настроения вы уходите в перегруз — и что делать в этот момент.</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="programma"><div class="wrap narrow">
+  <p class="eyebrow">Программа</p>
+  <h2 style="margin-top:12px">Четыре недели, четыре шага</h2>
+  <p class="lead" style="margin-top:14px">Каждую неделю — одна встреча-теория с практикой и одна групповая сессия. Записи остаются у вас.</p>
+  <div class="acc ed" data-ed="Программа курса" id="prog" style="margin-top:26px"></div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="grid g2" style="align-items:center;gap:44px">
+    <div>
+      <p class="eyebrow">Как проходит</p>
+      <h2 style="margin-top:12px">Живые встречи, малая группа</h2>
+      <div class="grid" style="gap:14px;margin-top:22px">
+        <div class="card"><h3>Zoom, вторник и четверг, 19:00 мск</h3><p>Встреча длится 90 минут. Не успели — смотрите запись, она открывается в тот же вечер.</p></div>
+        <div class="card"><h3>Группа до 12 человек</h3><p>Достаточно мало, чтобы у каждого было время в сессии, и достаточно, чтобы услышать себя в чужих историях.</p></div>
+        <div class="card"><h3>Чат поддержки на весь курс</h3><p>Вопросы между встречами, обратная связь по практикам, ответы куратора в течение дня.</p></div>
+      </div>
+    </div>
+    <div>
+      <blockquote class="quote ed" data-ed="Цитата эксперта">Я не учу быть сильнее. Я показываю, где вы уже держитесь — и как перестать делать это ценой себя.</blockquote>
+      <div class="card" style="margin-top:24px">
+        <h3 class="ed" data-ed="Имя эксперта">Мария Демидова</h3>
+        <p>Клинический психолог, 12 лет практики. Специализация — эмоциональное выгорание и границы у помогающих специалистов. Ведёт группы с 2018 года, более 900 участников.</p>
+        <p class="small muted" style="margin-top:10px">Данные условные, для демонстрации блока.</p>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec" id="tarify"><div class="wrap">
+  <p class="eyebrow">Участие</p>
+  <h2 style="margin-top:12px">Три формата участия</h2>
+  <p class="lead" style="margin-top:12px">Цена зафиксирована до старта потока. Есть рассрочка на три платежа без процентов.</p>
+  <div class="tiers ed" data-ed="Тарифы и цены" style="margin-top:30px">
+    <div class="tier">
+      <span class="nm">Самостоятельно</span>
+      <div class="pr">12 900 ₽</div>
+      <ul>
+        <li>Все восемь встреч в записи</li>
+        <li>Рабочая тетрадь с практиками</li>
+        <li>Доступ к записям 6 месяцев</li>
+        <li class="no">Живое участие в сессиях</li>
+        <li class="no">Чат поддержки</li>
+      </ul>
+      <button class="btn btn-s" data-pay="Самостоятельно">Выбрать</button>
+    </div>
+    <div class="tier best">
+      <span class="nm">В группе</span>
+      <div class="pr">24 900 ₽ <span class="old">29 900 ₽</span></div>
+      <ul>
+        <li>Живое участие во всех встречах</li>
+        <li>Групповые трансформационные сессии</li>
+        <li>Чат поддержки с куратором</li>
+        <li>Рабочая тетрадь и записи</li>
+        <li class="no">Личная сессия с экспертом</li>
+      </ul>
+      <button class="btn btn-p" data-pay="В группе">Записаться</button>
+    </div>
+    <div class="tier">
+      <span class="nm">С сопровождением</span>
+      <div class="pr">44 900 ₽</div>
+      <ul>
+        <li>Всё из тарифа «В группе»</li>
+        <li>Две личные сессии с экспертом</li>
+        <li>Разбор вашего случая в группе</li>
+        <li>Приоритетные ответы в чате</li>
+        <li>Три места на поток</li>
+      </ul>
+      <button class="btn btn-s" data-pay="С сопровождением">Выбрать</button>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top:18px">Оплата картой, СБП или в рассрочку. После оплаты на почту приходит письмо с ссылкой на Zoom и рабочей тетрадью.</p>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <p class="eyebrow">Отзывы</p>
+  <h2 style="margin-top:12px">Из предыдущих потоков</h2>
+  <div class="grid g3 ed" data-ed="Отзывы" style="margin-top:26px" id="revs"></div>
+  <p class="small muted" style="margin-top:16px">Отзывы в прототипе условные. На боевой странице — реальные, с именем, фото или скриншотом переписки по согласию автора.</p>
+</div></section>
+
+<section class="sec" id="zayavka"><div class="wrap narrow">
+  <p class="eyebrow">Заявка</p>
+  <h2 style="margin-top:12px">Оставьте заявку — вернусь с деталями</h2>
+  <p class="lead" style="margin-top:12px">Если сомневаетесь в формате или тарифе, напишите — отвечу лично, без автоворонки.</p>
+  <div class="formwrap" style="margin-top:26px">
+    <form class="form" id="zForm">
+      <div class="row2">
+        <label class="f">Имя<input type="text" name="name" required placeholder="Как к вам обращаться"></label>
+        <label class="f">Телефон или Telegram<input type="text" name="contact" required placeholder="+7 900 000-00-00"></label>
+      </div>
+      <label class="f">Email<input type="email" name="email" required placeholder="Куда прислать доступ"></label>
+      <label class="f">Формат участия
+        <select name="tier" id="tierSel">
+          <option>Самостоятельно — 12 900 ₽</option>
+          <option selected>В группе — 24 900 ₽</option>
+          <option>С сопровождением — 44 900 ₽</option>
+          <option>Пока не решил, нужна консультация</option>
+        </select>
+      </label>
+      <label class="f">Вопрос эксперту, если есть<textarea name="msg" rows="3" placeholder="Например: подойдёт ли курс, если я не был на эфире"></textarea></label>
+      <label class="consent"><input type="checkbox" required>
+        Соглашаюсь с <button type="button" data-doc="Политика обработки персональных данных">политикой обработки персональных данных</button>,
+        <button type="button" data-doc="Публичная оферта">офертой</button> и получением писем о курсе.</label>
+      <button class="btn btn-p" type="submit">Отправить заявку</button>
+      <p class="small muted">Прототип: форма проверяет заполнение и показывает экран подтверждения. На боевой странице заявка уходит в почту, Telegram и CRM, а событие фиксируется целью Яндекс Метрики.</p>
+    </form>
+    <div id="zOk" hidden></div>
+  </div>
+</div></section>
+</main>
+
+<footer class="s"><div class="wrap">
+  <div style="display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap">
+    <div>
+      <div class="mark" style="font-size:17px">Центр «Опора»</div>
+      <p class="small" style="opacity:.7;margin-top:8px;max-width:36ch">Демонстрационный прототип страницы курса. Собран как шаблон, который дублируется под каждый новый поток.</p>
+    </div>
+    <div>
+      <div class="small" style="opacity:.6">Документы</div>
+      <div class="fdocs">
+        <button data-doc="Публичная оферта">Оферта</button>
+        <button data-doc="Политика обработки персональных данных">Политика ПДн</button>
+        <button data-doc="Согласие на обработку данных">Согласие на обработку</button>
+        <button data-doc="Реквизиты">Реквизиты</button>
+      </div>
+    </div>
+  </div>
+  <div class="fb">© 2026 Демо-прототип. Не является страницей действующего центра. Данные условные.</div>
+</div></footer>
+
+<div class="sticky">
+  <span class="p">24 900 ₽</span>
+  <a class="btn btn-p btn-sm" href="#zayavka">Записаться</a>
+</div>
+
+<div class="edbar">
+  <span class="small muted">Что меняет помощница:</span>
+  <button id="edBtn" aria-pressed="false">показать</button>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+
+var PROG=[
+ {w:"Неделя 1",t:"Где вы сейчас",d:"Разбираем, из чего складывается ваша усталость и почему привычные способы отдыха не работают.",
+  li:["Карта нагрузки: что забирает силы на самом деле","Практика «сигналы тела» — ранние признаки перегруза","Групповая сессия: возвращение к себе"]},
+ {w:"Неделя 2",t:"Границы без вины",d:"Учимся отказывать так, чтобы отношения сохранялись, а вы — не разрушались.",
+  li:["Почему «нет» вырывается позже, чем нужно","Формулы отказа для работы, семьи и друзей","Групповая сессия: репетиция сложного разговора"]},
+ {w:"Неделя 3",t:"Опора внутри",d:"Ищем то, что держит вас независимо от чужой оценки.",
+  li:["Внутренний критик: чей это на самом деле голос","Практика опоры на телесное ощущение","Групповая сессия: работа с фигурой значимого взрослого"]},
+ {w:"Неделя 4",t:"Как не откатиться",d:"Собираем личный протокол на случай, когда снова накроет.",
+  li:["Ваши три ранних маркера отката","План поддержки на 90 дней","Финальная сессия и обратная связь от группы"]}
+];
+$("#prog").innerHTML=PROG.map(function(p,i){
+  return '<div class="ai"><button class="ah" aria-expanded="'+(i===0)+'" data-a="'+i+'">'+
+    '<span class="w">'+esc(p.w)+'</span><span class="t">'+esc(p.t)+'</span><span class="x">+</span></button>'+
+    '<div class="ab" id="ab'+i+'"'+(i===0?"":" hidden")+'><p>'+esc(p.d)+'</p><ul>'+
+    p.li.map(function(l){return '<li>'+esc(l)+'</li>'}).join("")+'</ul></div></div>';
+}).join("");
+$("#prog").addEventListener("click",function(e){
+  var b=e.target.closest("[data-a]");if(!b)return;
+  var i=b.getAttribute("data-a"),open=b.getAttribute("aria-expanded")==="true";
+  b.setAttribute("aria-expanded",String(!open));
+  $("#ab"+i).hidden=open;
+});
+
+var REVS=[
+ {n:"Ольга, 38",t:"«Впервые за год я сказала на работе „нет“ и не оправдывалась. Меня не уволили, мир не рухнул.»"},
+ {n:"Ирина, 45",t:"«Думала, это будет очередная мотивация. Оказалось — работа. Тяжёлая местами, но после неё легче дышать.»"},
+ {n:"Наталья, 31",t:"«Группа держала. Когда услышала свою историю из чужих уст, поняла, что я не сломанная и не одна.»"}
+];
+$("#revs").innerHTML=REVS.map(function(r){
+  return '<div class="card"><p style="font-family:Spectral,serif;font-size:17px;line-height:1.5;color:var(--ink);margin:0">'+esc(r.t)+'</p>'+
+    '<p class="small muted" style="margin-top:14px">'+esc(r.n)+' · участница потока</p></div>';
+}).join("");
+
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},2800)}
+
+document.addEventListener("click",function(e){
+  var d=e.target.closest("[data-doc]");
+  if(d){e.preventDefault();toast("Прототип: «"+d.getAttribute("data-doc")+"» — отдельная страница, ссылка ставится при сборке");return}
+  var p=e.target.closest("[data-pay]");
+  if(p){
+    var t=p.getAttribute("data-pay");
+    var sel=$("#tierSel");
+    for(var i=0;i<sel.options.length;i++){if(sel.options[i].text.indexOf(t)===0)sel.selectedIndex=i}
+    document.getElementById("zayavka").scrollIntoView({behavior:"smooth"});
+    toast("Прототип: здесь открывается оплата. Тариф «"+t+"» подставлен в заявку.");
+  }
+});
+
+$("#zForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var f=this.elements;
+  $("#zOk").innerHTML='<div class="ok"><h3>Заявка отправлена</h3>'+
+    '<p style="margin-top:10px">'+esc(f.name.value)+', спасибо. Формат: '+esc(f.tier.value)+'.</p>'+
+    '<p class="small muted" style="margin-top:12px">В прототипе письмо не уходит. На боевой странице сюда приходит подтверждение на '+esc(f.email.value)+
+    ', заявка падает в почту и Telegram, а в Метрике срабатывает цель «Отправлена заявка».</p>'+
+    '<button class="btn btn-s btn-sm" id="again" style="margin-top:16px">Отправить ещё одну</button></div>';
+  this.hidden=true;$("#zOk").hidden=false;
+  $("#zOk").scrollIntoView({behavior:"smooth",block:"center"});
+});
+$("#zOk").addEventListener("click",function(e){
+  if(e.target.id==="again"){$("#zForm").reset();$("#zForm").hidden=false;$("#zOk").hidden=true;$("#zOk").innerHTML=""}
+});
+
+$("#edBtn").addEventListener("click",function(){
+  var on=this.getAttribute("aria-pressed")!=="true";
+  this.setAttribute("aria-pressed",String(on));
+  this.textContent=on?"скрыть":"показать";
+  document.body.classList.toggle("show-ed",on);
+  if(on)toast("Оранжевым обведены блоки, которые помощница меняет сама при копировании страницы под новый курс");
+});
+
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+})();
+</script>
+
+</body>
+</html>
