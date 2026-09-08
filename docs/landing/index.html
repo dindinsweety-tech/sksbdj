@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демонстрационная вёрстка лендинга: mobile first, чистый CSS без фреймворков, карусель скриншотов, шаги регистрации и карусель дат.">
+<title>Слот — запись к мастеру</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
+
+</head>
+<body>
+<style>
+/* ============================================================
+   СОДЕРЖАНИЕ
+   1. Токены
+   2. База и типографика
+   3. Утилиты раскладки
+   4. Кнопки и поля
+   5. Секции: шапка, герой, преимущества
+   6. Компонент: карусель скриншотов
+   7. Компонент: карусель дат
+   8. Компонент: шаги регистрации
+   9. Подвал
+   10. Анимации
+   Подход: mobile first. Базовые правила — под телефон,
+   расширения — в min-width брейкпоинтах 640px и 1024px.
+   ============================================================ */
+
+/* 1. Токены ------------------------------------------------ */
+:root{
+  --c-bg:#F7F7FA;
+  --c-surface:#FFFFFF;
+  --c-surface-2:#EFEFF5;
+  --c-ink:#14131A;
+  --c-ink-2:#4B4A57;
+  --c-ink-3:#7C7B8A;
+  --c-line:#E1E1EA;
+  --c-line-2:#C9C9D6;
+  --c-accent:#4B3FD9;
+  --c-accent-dark:#3A2FB0;
+  --c-accent-soft:#EAE8FB;
+  --c-ok:#17886B;
+  --c-ok-soft:#DFF2EC;
+  --c-err:#C0392B;
+
+  --step-0:0.8125rem;   /* 13px */
+  --step-1:0.9375rem;   /* 15px */
+  --step-2:1.0625rem;   /* 17px */
+  --step-3:1.375rem;    /* 22px */
+  --step-4:1.75rem;     /* 28px */
+  --step-5:2.25rem;     /* 36px */
+
+  --sp-1:0.25rem; --sp-2:0.5rem; --sp-3:0.75rem; --sp-4:1rem;
+  --sp-5:1.5rem;  --sp-6:2rem;   --sp-7:3rem;    --sp-8:4rem;
+
+  --radius:10px;
+  --radius-sm:6px;
+  --shadow:0 1px 2px rgba(20,19,26,.05), 0 12px 30px -18px rgba(20,19,26,.35);
+  --ease:cubic-bezier(.2,.7,.3,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --c-bg:#0E0D13; --c-surface:#16151D; --c-surface-2:#1E1D28;
+    --c-ink:#F0EFF5; --c-ink-2:#B4B2C2; --c-ink-3:#84828F;
+    --c-line:#262532; --c-line-2:#34323F;
+    --c-accent:#9A92FF; --c-accent-dark:#B8B2FF; --c-accent-soft:#211E3D;
+    --c-ok:#5FD1B0; --c-ok-soft:#122B25; --c-err:#F2867A;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -20px rgba(0,0,0,.9);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --c-bg:#0E0D13; --c-surface:#16151D; --c-surface-2:#1E1D28;
+  --c-ink:#F0EFF5; --c-ink-2:#B4B2C2; --c-ink-3:#84828F;
+  --c-line:#262532; --c-line-2:#34323F;
+  --c-accent:#9A92FF; --c-accent-dark:#B8B2FF; --c-accent-soft:#211E3D;
+  --c-ok:#5FD1B0; --c-ok-soft:#122B25; --c-err:#F2867A;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 14px 34px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+
+/* 2. База -------------------------------------------------- */
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--c-bg);
+  color:var(--c-ink);
+  font-family:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:var(--step-1);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;font-family:"Rubik",system-ui,sans-serif;font-weight:600;line-height:1.15;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:var(--step-5)}
+h2{font-size:var(--step-4)}
+h3{font-size:var(--step-3)}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--c-accent)}
+:focus-visible{outline:2px solid var(--c-accent);outline-offset:2px;border-radius:3px}
+.u-muted{color:var(--c-ink-2)}
+.u-small{font-size:var(--step-0);line-height:1.5}
+.u-label{font-size:0.6875rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--c-ink-3)}
+.u-hidden{display:none !important}
+
+/* 3. Раскладка --------------------------------------------- */
+.l-wrap{width:100%;max-width:1120px;margin-inline:auto;padding-inline:var(--sp-4)}
+.l-section{padding-block:var(--sp-7)}
+.l-stack{display:grid;gap:var(--sp-4)}
+.l-grid{display:grid;gap:var(--sp-4)}
+@media (min-width:640px){
+  .l-wrap{padding-inline:var(--sp-5)}
+  .l-section{padding-block:var(--sp-8)}
+  .l-grid--2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  h1{font-size:2.75rem}
+}
+@media (min-width:1024px){
+  .l-grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .l-grid--2{gap:var(--sp-6)}
+  h1{font-size:3.25rem}
+}
+
+/* 4. Кнопки и поля ----------------------------------------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  min-height:48px;padding:0 var(--sp-5);border-radius:var(--radius-sm);
+  font-weight:700;font-size:var(--step-1);text-decoration:none;
+  transition:background-color .18s var(--ease), color .18s var(--ease),
+             border-color .18s var(--ease), transform .1s var(--ease);
+}
+.btn:active{transform:translateY(1px)}
+.btn--primary{background:var(--c-accent);color:#fff}
+.btn--primary:hover{background:var(--c-accent-dark)}
+.btn--ghost{border:1px solid var(--c-line-2);color:var(--c-ink)}
+.btn--ghost:hover{border-color:var(--c-accent);color:var(--c-accent)}
+.btn--block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
+
+.field{display:grid;gap:var(--sp-2)}
+.field__label{font-size:var(--step-0);font-weight:600;color:var(--c-ink-2)}
+.field__input{
+  width:100%;min-height:48px;padding:var(--sp-3);
+  font:inherit;font-size:var(--step-1);
+  color:var(--c-ink);background:var(--c-surface);
+  border:1px solid var(--c-line-2);border-radius:var(--radius-sm);
+  transition:border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.field__input:focus{outline:none;border-color:var(--c-accent);box-shadow:0 0 0 3px var(--c-accent-soft)}
+.field__error{font-size:var(--step-0);color:var(--c-err);font-weight:600}
+.field--invalid .field__input{border-color:var(--c-err)}
+
+/* 5. Шапка, герой, преимущества ---------------------------- */
+.header{position:sticky;top:0;z-index:20;background:var(--c-bg);border-bottom:1px solid var(--c-line)}
+.header__inner{display:flex;align-items:center;gap:var(--sp-3);min-height:60px}
+.header__logo{font-family:"Rubik",sans-serif;font-weight:700;font-size:var(--step-2);letter-spacing:-.02em}
+.header__logo span{color:var(--c-accent)}
+.header__actions{margin-left:auto;display:flex;align-items:center;gap:var(--sp-2)}
+.header__icon{width:40px;height:40px;border:1px solid var(--c-line);border-radius:var(--radius-sm);
+  display:grid;place-items:center;color:var(--c-ink-2)}
+.header__icon:hover{border-color:var(--c-accent);color:var(--c-accent)}
+
+.hero{padding-block:var(--sp-6) var(--sp-7)}
+.hero__badge{display:inline-block;padding:var(--sp-1) var(--sp-3);border-radius:100px;
+  background:var(--c-accent-soft);color:var(--c-accent);font-size:var(--step-0);font-weight:700}
+.hero__title{margin-top:var(--sp-4)}
+.hero__text{margin-top:var(--sp-4);color:var(--c-ink-2);font-size:var(--step-2);max-width:56ch}
+.hero__actions{margin-top:var(--sp-5);display:grid;gap:var(--sp-3)}
+.hero__note{margin-top:var(--sp-4);color:var(--c-ink-3)}
+@media (min-width:640px){
+  .hero__actions{grid-auto-flow:column;justify-content:start}
+}
+
+.feature{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--radius);padding:var(--sp-5)}
+.feature__icon{width:40px;height:40px;border-radius:var(--radius-sm);background:var(--c-accent-soft);
+  color:var(--c-accent);display:grid;place-items:center;font-size:var(--step-3);font-weight:700}
+.feature__title{margin-top:var(--sp-4);font-size:var(--step-2);font-weight:700}
+.feature__text{margin-top:var(--sp-2);color:var(--c-ink-2);font-size:var(--step-1)}
+
+/* 6. Карусель скриншотов ----------------------------------- */
+.shots{overflow:hidden}
+.shots__viewport{overflow:hidden;border-radius:var(--radius)}
+.shots__track{
+  display:flex;gap:var(--sp-4);
+  transition:transform .45s var(--ease);
+  will-change:transform;
+}
+.shots__slide{flex:0 0 100%;max-width:100%}
+.shots__frame{
+  aspect-ratio:9/16;border-radius:var(--radius);border:1px solid var(--c-line);
+  background:var(--c-surface);display:flex;flex-direction:column;overflow:hidden;
+}
+.shots__bar{height:26px;background:var(--c-surface-2);display:flex;align-items:center;gap:4px;padding-inline:var(--sp-3);flex:0 0 auto}
+.shots__dot{width:7px;height:7px;border-radius:50%;background:var(--c-line-2)}
+.shots__body{flex:1;padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-3)}
+.shots__cap{margin-top:var(--sp-3);text-align:center;color:var(--c-ink-2);font-size:var(--step-0)}
+.shots__nav{display:flex;align-items:center;justify-content:center;gap:var(--sp-3);margin-top:var(--sp-4)}
+.shots__arrow{width:44px;height:44px;border:1px solid var(--c-line-2);border-radius:50%;display:grid;place-items:center;
+  font-size:var(--step-2);color:var(--c-ink-2);transition:border-color .18s var(--ease),color .18s var(--ease)}
+.shots__arrow:hover{border-color:var(--c-accent);color:var(--c-accent)}
+.shots__dots{display:flex;gap:var(--sp-2)}
+.shots__bullet{width:8px;height:8px;border-radius:50%;background:var(--c-line-2);transition:width .25s var(--ease),background-color .25s var(--ease)}
+.shots__bullet[aria-current="true"]{width:24px;border-radius:4px;background:var(--c-accent)}
+@media (min-width:640px){ .shots__slide{flex-basis:calc(50% - var(--sp-4)/2)} }
+@media (min-width:1024px){ .shots__slide{flex-basis:calc(33.333% - var(--sp-4)*2/3)} }
+
+/* фейковые элементы внутри «скриншота» */
+.mock{display:grid;gap:var(--sp-2)}
+.mock__line{height:9px;border-radius:4px;background:var(--c-surface-2)}
+.mock__line--w70{width:70%}
+.mock__line--w45{width:45%}
+.mock__pill{height:34px;border-radius:var(--radius-sm);background:var(--c-accent-soft)}
+.mock__block{flex:1;border-radius:var(--radius-sm);background:var(--c-surface-2)}
+
+/* 7. Карусель дат ------------------------------------------ */
+.dates__head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3);margin-bottom:var(--sp-3)}
+.dates__month{font-weight:700}
+.dates__scroller{
+  display:flex;gap:var(--sp-2);overflow-x:auto;padding-bottom:var(--sp-2);
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+}
+.dates__day{
+  flex:0 0 auto;scroll-snap-align:start;
+  width:64px;padding:var(--sp-3) 0;border:1px solid var(--c-line-2);border-radius:var(--radius-sm);
+  background:var(--c-surface);text-align:center;
+  transition:border-color .18s var(--ease), background-color .18s var(--ease), color .18s var(--ease);
+}
+.dates__day:hover:not([disabled]){border-color:var(--c-accent)}
+.dates__day[aria-pressed="true"]{background:var(--c-accent);border-color:var(--c-accent);color:#fff}
+.dates__day[disabled]{opacity:.35;cursor:not-allowed}
+.dates__dow{display:block;font-size:var(--step-0);color:var(--c-ink-3)}
+.dates__day[aria-pressed="true"] .dates__dow{color:rgba(255,255,255,.8)}
+.dates__num{display:block;font-family:"Rubik",sans-serif;font-size:var(--step-3);font-weight:600;line-height:1.2}
+.slots{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-4)}
+.slots__item{
+  min-height:42px;padding:0 var(--sp-4);border:1px solid var(--c-line-2);border-radius:var(--radius-sm);
+  background:var(--c-surface);font-weight:600;font-size:var(--step-1);
+  transition:border-color .18s var(--ease), background-color .18s var(--ease), color .18s var(--ease);
+}
+.slots__item:hover:not([disabled]){border-color:var(--c-accent);color:var(--c-accent)}
+.slots__item[aria-pressed="true"]{background:var(--c-accent);border-color:var(--c-accent);color:#fff}
+.slots__item[disabled]{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+
+/* 8. Шаги регистрации -------------------------------------- */
+.steps{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--radius);padding:var(--sp-5);box-shadow:var(--shadow)}
+.steps__progress{display:flex;gap:var(--sp-2);margin-bottom:var(--sp-5)}
+.steps__seg{flex:1;height:4px;border-radius:2px;background:var(--c-surface-2);overflow:hidden}
+.steps__seg::after{content:"";display:block;height:100%;width:0;background:var(--c-accent);transition:width .4s var(--ease)}
+.steps__seg[data-done="1"]::after{width:100%}
+.steps__meta{display:flex;justify-content:space-between;gap:var(--sp-3);margin-bottom:var(--sp-4)}
+.steps__panel{display:grid;gap:var(--sp-4);animation:slide-in .32s var(--ease) both}
+.steps__panel[hidden]{display:none}
+.steps__nav{display:flex;gap:var(--sp-3);margin-top:var(--sp-5)}
+.steps__nav .btn{flex:1}
+.steps__saved{margin-top:var(--sp-3);color:var(--c-ink-3);display:flex;align-items:center;gap:var(--sp-2)}
+.steps__summary{background:var(--c-surface-2);border-radius:var(--radius-sm);padding:var(--sp-4);display:grid;gap:var(--sp-2)}
+.steps__row{display:flex;justify-content:space-between;gap:var(--sp-3);font-size:var(--step-1)}
+.steps__row dt{color:var(--c-ink-3)}
+.steps__row dd{margin:0;font-weight:600;text-align:right}
+.steps__done{text-align:center;padding:var(--sp-5) 0}
+.steps__check{width:56px;height:56px;margin:0 auto var(--sp-4);border-radius:50%;background:var(--c-ok-soft);color:var(--c-ok);
+  display:grid;place-items:center;font-size:var(--step-4);animation:pop .4s var(--ease) both}
+.radio-group{display:grid;gap:var(--sp-2)}
+.radio{display:flex;gap:var(--sp-3);align-items:flex-start;padding:var(--sp-3);border:1px solid var(--c-line-2);
+  border-radius:var(--radius-sm);cursor:pointer;transition:border-color .18s var(--ease),background-color .18s var(--ease)}
+.radio:has(input:checked){border-color:var(--c-accent);background:var(--c-accent-soft)}
+.radio input{margin-top:4px;accent-color:var(--c-accent)}
+.radio__title{font-weight:600}
+.radio__text{font-size:var(--step-0);color:var(--c-ink-2)}
+
+/* 9. Подвал ------------------------------------------------ */
+.footer{background:var(--c-ink);color:var(--c-bg);padding-block:var(--sp-6) var(--sp-5);margin-top:var(--sp-7)}
+.footer__grid{display:grid;gap:var(--sp-5)}
+.footer__title{font-family:"Rubik",sans-serif;font-weight:700;font-size:var(--step-2)}
+.footer__list{list-style:none;margin:0;padding:0;display:grid;gap:var(--sp-2);opacity:.75;font-size:var(--step-1)}
+.footer__bottom{margin-top:var(--sp-5);padding-top:var(--sp-4);border-top:1px solid rgba(255,255,255,.15);
+  opacity:.6;font-size:var(--step-0)}
+@media (min-width:640px){ .footer__grid{grid-template-columns:2fr 1fr 1fr} }
+
+/* 10. Анимации --------------------------------------------- */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes slide-in{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.a-rise{animation:rise .55s var(--ease) both}
+.a-rise--2{animation-delay:.08s}
+.a-rise--3{animation-delay:.16s}
+.a-rise--4{animation-delay:.24s}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+
+/* демо-плашка, в боевой вёрстке не нужна */
+.demo-note{background:var(--c-ink);color:var(--c-bg);font-size:var(--step-0);padding:var(--sp-2) var(--sp-4);text-align:center;line-height:1.45}
+.demo-note b{background:var(--c-accent);color:#fff;padding:1px 7px;border-radius:3px;font-size:0.6875rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:60;background:var(--c-ink);color:var(--c-bg);
+  padding:var(--sp-3) var(--sp-5);border-radius:var(--radius-sm);font-size:var(--step-0);max-width:92vw;text-align:center}
+.toast[hidden]{display:none}
+</style>
+
+<div class="demo-note"><b>ДЕМО</b> Прототип вёрстки: mobile first, чистый CSS без фреймворков, три JS-компонента. Тексты и данные условные.</div>
+
+<header class="header"><div class="l-wrap header__inner">
+  <span class="header__logo">СЛОТ<span>.</span></span>
+  <div class="header__actions">
+    <button class="header__icon" id="theme" aria-label="Сменить тему">◐</button>
+    <a class="btn btn--primary" href="#zapis" style="min-height:40px;padding-inline:var(--sp-4)">Записаться</a>
+  </div>
+</div></header>
+
+<main>
+  <section class="hero"><div class="l-wrap">
+    <p class="hero__badge a-rise">Бета-доступ открыт</p>
+    <h1 class="hero__title a-rise a-rise--2">Запись к мастеру за три касания</h1>
+    <p class="hero__text a-rise a-rise--3">Выбираете день, время и специалиста. Без звонков, переписки и «я вам перезвоню». Приложение помнит ваши прошлые записи и предлагает удобный слот само.</p>
+    <div class="hero__actions a-rise a-rise--4">
+      <a class="btn btn--primary" href="#zapis">Выбрать время</a>
+      <a class="btn btn--ghost" href="#screens">Посмотреть приложение</a>
+    </div>
+    <p class="hero__note u-small a-rise a-rise--4">Бесплатно на время беты. Отмена записи в один тап.</p>
+  </div></section>
+
+  <section class="l-section"><div class="l-wrap">
+    <h2 class="u-label">Почему так</h2>
+    <div class="l-grid l-grid--3" style="margin-top:var(--sp-4)">
+      <article class="feature"><div class="feature__icon">1</div>
+        <h3 class="feature__title">Свободное время видно сразу</h3>
+        <p class="feature__text">Календарь мастера подтягивается в реальном времени. Занятый слот нельзя выбрать даже случайно.</p></article>
+      <article class="feature"><div class="feature__icon">2</div>
+        <h3 class="feature__title">Запись не теряется</h3>
+        <p class="feature__text">Форма запоминает шаг, на котором вы остановились. Закрыли вкладку — вернётесь туда же.</p></article>
+      <article class="feature"><div class="feature__icon">3</div>
+        <h3 class="feature__title">Напоминание за сутки</h3>
+        <p class="feature__text">Push и сообщение в мессенджер. Перенести запись можно прямо из уведомления.</p></article>
+    </div>
+  </div></section>
+
+  <section class="l-section" id="screens"><div class="l-wrap">
+    <h2>Как выглядит приложение</h2>
+    <p class="u-muted" style="margin-top:var(--sp-3);max-width:56ch">Карусель: свайп на телефоне, стрелки и точки на десктопе, управление стрелками клавиатуры. Один слайд на мобильном, два на планшете, три на десктопе.</p>
+    <div class="shots" style="margin-top:var(--sp-5)">
+      <div class="shots__viewport"><div class="shots__track" id="shotsTrack"></div></div>
+      <div class="shots__nav">
+        <button class="shots__arrow" id="shotPrev" aria-label="Предыдущий скриншот">←</button>
+        <div class="shots__dots" id="shotDots" role="tablist"></div>
+        <button class="shots__arrow" id="shotNext" aria-label="Следующий скриншот">→</button>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="l-section" id="zapis"><div class="l-wrap">
+    <h2>Запись за три шага</h2>
+    <p class="u-muted" style="margin-top:var(--sp-3);max-width:56ch">Состояние сохраняется в браузере: обновите страницу на втором шаге — вернётесь на него же с заполненными полями.</p>
+    <div class="l-grid l-grid--2" style="margin-top:var(--sp-5);align-items:start">
+      <div class="steps" id="steps">
+        <div class="steps__progress" id="progress"></div>
+        <div class="steps__meta">
+          <span class="u-label" id="stepName"></span>
+          <span class="u-small u-muted" id="stepCount"></span>
+        </div>
+
+        <div class="steps__panel" data-step="0">
+          <div class="field" id="fName">
+            <label class="field__label" for="iName">Как вас зовут</label>
+            <input class="field__input" id="iName" type="text" placeholder="Анна" autocomplete="given-name">
+            <span class="field__error u-hidden">Введите имя</span>
+          </div>
+          <div class="field" id="fPhone">
+            <label class="field__label" for="iPhone">Телефон</label>
+            <input class="field__input" id="iPhone" type="tel" placeholder="+7 900 000-00-00" autocomplete="tel">
+            <span class="field__error u-hidden">Введите телефон полностью</span>
+          </div>
+        </div>
+
+        <div class="steps__panel" data-step="1" hidden>
+          <div class="field">
+            <span class="field__label">Что делаем</span>
+            <div class="radio-group" id="services"></div>
+          </div>
+        </div>
+
+        <div class="steps__panel" data-step="2" hidden>
+          <div class="dates">
+            <div class="dates__head"><span class="dates__month" id="month"></span>
+              <span class="u-small u-muted">Свайпните ленту дат</span></div>
+            <div class="dates__scroller" id="days"></div>
+            <div class="slots" id="slots"></div>
+            <span class="field__error u-hidden" id="slotErr">Выберите время</span>
+          </div>
+        </div>
+
+        <div class="steps__panel" data-step="3" hidden>
+          <dl class="steps__summary" id="summary"></dl>
+          <p class="u-small u-muted">Проверьте данные. После подтверждения запись появится в приложении, а мастеру уйдёт уведомление.</p>
+        </div>
+
+        <div class="steps__nav" id="nav">
+          <button class="btn btn--ghost" id="back">Назад</button>
+          <button class="btn btn--primary" id="next">Далее</button>
+        </div>
+        <p class="steps__saved u-small" id="saved"></p>
+      </div>
+
+      <aside class="feature">
+        <h3 class="feature__title" style="margin-top:0">Что здесь показано</h3>
+        <ul class="u-muted u-small" style="margin:var(--sp-3) 0 0;padding-left:1.1rem;display:grid;gap:var(--sp-2)">
+          <li>Валидация по шагам: дальше не пустит с пустым полем</li>
+          <li>Состояние в localStorage, восстановление после перезагрузки</li>
+          <li>Карусель дат: горизонтальный скролл со snap, занятые дни недоступны</li>
+          <li>Слоты времени зависят от выбранного дня</li>
+          <li>Финальный сабмит с экраном подтверждения</li>
+        </ul>
+        <button class="btn btn--ghost btn--block" id="reset" style="margin-top:var(--sp-5)">Сбросить и начать заново</button>
+      </aside>
+    </div>
+  </div></section>
+</main>
+
+<footer class="footer"><div class="l-wrap">
+  <div class="footer__grid">
+    <div>
+      <div class="footer__title">СЛОТ.</div>
+      <p class="u-small" style="opacity:.7;margin-top:var(--sp-3);max-width:34ch">Демонстрационный лендинг. Свёрстан вручную: mobile first, без фреймворков и сборщиков.</p>
+    </div>
+    <div><ul class="footer__list"><li>Возможности</li><li>Тарифы</li><li>Мастерам</li><li>Поддержка</li></ul></div>
+    <div><ul class="footer__list"><li>hello@example.ru</li><li>Telegram</li><li>Оферта</li><li>Политика</li></ul></div>
+  </div>
+  <div class="footer__bottom">© 2026 Демо-прототип. Данные условные.</div>
+</div></footer>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============================================================
+   1. Карусель скриншотов
+   2. Карусель дат и слотов
+   3. Шаги регистрации с сохранением состояния
+   Без зависимостей. Каждый компонент — своя область видимости.
+   ============================================================ */
+(function () {
+  "use strict";
+
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  var esc = function (s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  };
+
+  var toastEl = $("#toast"), toastTimer;
+  function toast(message) {
+    toastEl.textContent = message;
+    toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.hidden = true; }, 2600);
+  }
+
+  /* ---------- 1. Карусель скриншотов ---------------------- */
+  var SHOTS = [
+    { cap: "Главный экран", rows: ["pill", "line", "line70", "block"] },
+    { cap: "Выбор мастера", rows: ["line", "block", "line45", "pill"] },
+    { cap: "Календарь", rows: ["line70", "block", "pill", "line45"] },
+    { cap: "Подтверждение", rows: ["pill", "block", "line", "line70"] },
+    { cap: "Мои записи", rows: ["line", "line70", "block", "pill"] }
+  ];
+
+  var track = $("#shotsTrack");
+  var dotsBox = $("#shotDots");
+  var index = 0;
+
+  function mockRow(kind) {
+    if (kind === "pill") return '<span class="mock__pill"></span>';
+    if (kind === "block") return '<span class="mock__block"></span>';
+    if (kind === "line70") return '<span class="mock__line mock__line--w70"></span>';
+    if (kind === "line45") return '<span class="mock__line mock__line--w45"></span>';
+    return '<span class="mock__line"></span>';
+  }
+
+  track.innerHTML = SHOTS.map(function (shot) {
+    return '<div class="shots__slide">' +
+      '<div class="shots__frame">' +
+        '<div class="shots__bar"><span class="shots__dot"></span><span class="shots__dot"></span><span class="shots__dot"></span></div>' +
+        '<div class="shots__body mock">' + shot.rows.map(mockRow).join("") + '</div>' +
+      '</div>' +
+      '<p class="shots__cap">' + esc(shot.cap) + '</p>' +
+    '</div>';
+  }).join("");
+
+  function perView() {
+    if (window.matchMedia("(min-width:1024px)").matches) return 3;
+    if (window.matchMedia("(min-width:640px)").matches) return 2;
+    return 1;
+  }
+  function maxIndex() { return Math.max(0, SHOTS.length - perView()); }
+
+  function renderDots() {
+    var total = maxIndex() + 1;
+    dotsBox.innerHTML = "";
+    for (var i = 0; i < total; i++) {
+      var b = document.createElement("button");
+      b.className = "shots__bullet";
+      b.setAttribute("aria-current", String(i === index));
+      b.setAttribute("aria-label", "Слайд " + (i + 1));
+      b.dataset.slide = String(i);
+      dotsBox.appendChild(b);
+    }
+  }
+  function update() {
+    index = Math.min(Math.max(index, 0), maxIndex());
+    var slide = track.children[0];
+    if (!slide) return;
+    var step = slide.getBoundingClientRect().width + 16; /* ширина слайда + gap */
+    track.style.transform = "translateX(" + (-index * step) + "px)";
+    renderDots();
+  }
+
+  $("#shotPrev").addEventListener("click", function () { index--; update(); });
+  $("#shotNext").addEventListener("click", function () { index++; update(); });
+  dotsBox.addEventListener("click", function (e) {
+    var dot = e.target.closest("[data-slide]");
+    if (dot) { index = +dot.dataset.slide; update(); }
+  });
+  window.addEventListener("resize", update);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") { index--; update(); }
+    if (e.key === "ArrowRight") { index++; update(); }
+  });
+
+  /* свайп на тач-устройствах */
+  var startX = null;
+  track.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener("touchend", function (e) {
+    if (startX === null) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) { index += dx < 0 ? 1 : -1; update(); }
+    startX = null;
+  });
+  update();
+
+  /* ---------- 2. Карусель дат ----------------------------- */
+  var DOW = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+  var MONTHS = ["января", "февраля", "марта", "апреля", "мая", "июня",
+                "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+  var MONTHS_N = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+                  "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+  var SLOT_TIMES = ["10:00", "11:30", "13:00", "14:30", "16:00", "17:30", "19:00"];
+
+  var days = [];
+  (function buildDays() {
+    var today = new Date();
+    for (var i = 0; i < 21; i++) {
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      days.push({ date: d, closed: d.getDay() === 0 }); /* воскресенье — выходной */
+    }
+  })();
+
+  function dayKey(d) { return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function busySlots(d) {
+    /* детерминированная «занятость», чтобы демо выглядело живым */
+    var seed = d.getDate() + d.getMonth();
+    return SLOT_TIMES.filter(function (t, i) { return (seed + i * 3) % 4 === 0; });
+  }
+
+  function renderDays() {
+    $("#days").innerHTML = days.map(function (d, i) {
+      var dt = d.date;
+      return '<button class="dates__day" data-day="' + i + '"' +
+        (d.closed ? " disabled" : "") +
+        ' aria-pressed="' + (state.dayIndex === i) + '">' +
+        '<span class="dates__dow">' + DOW[dt.getDay()] + '</span>' +
+        '<span class="dates__num">' + dt.getDate() + '</span>' +
+      '</button>';
+    }).join("");
+    var shown = state.dayIndex != null ? days[state.dayIndex].date : days[0].date;
+    $("#month").textContent = MONTHS_N[shown.getMonth()];
+  }
+  function renderSlots() {
+    if (state.dayIndex == null) { $("#slots").innerHTML = '<p class="u-small u-muted">Выберите день, чтобы увидеть свободное время</p>'; return; }
+    var d = days[state.dayIndex].date, busy = busySlots(d);
+    $("#slots").innerHTML = SLOT_TIMES.map(function (t) {
+      var taken = busy.indexOf(t) > -1;
+      return '<button class="slots__item" data-slot="' + t + '"' + (taken ? " disabled" : "") +
+        ' aria-pressed="' + (state.time === t) + '">' + t + '</button>';
+    }).join("");
+  }
+  $("#days").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-day]");
+    if (!b || b.disabled) return;
+    state.dayIndex = +b.dataset.day;
+    state.time = null;
+    save(); renderDays(); renderSlots();
+  });
+  $("#slots").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-slot]");
+    if (!b || b.disabled) return;
+    state.time = b.dataset.slot;
+    save(); renderSlots();
+    $("#slotErr").classList.add("u-hidden");
+  });
+
+  /* ---------- 3. Шаги регистрации ------------------------- */
+  var SERVICES = [
+    { id: "cut", t: "Стрижка", d: "45 минут · 2 500 ₽" },
+    { id: "color", t: "Окрашивание", d: "2 часа · от 6 000 ₽" },
+    { id: "care", t: "Уход и укладка", d: "1 час · 3 200 ₽" }
+  ];
+  var STEP_NAMES = ["Контакты", "Услуга", "Дата и время", "Подтверждение"];
+  var STORAGE_KEY = "slot-booking";
+
+  var state = { step: 0, name: "", phone: "", service: null, dayIndex: null, time: null, done: false };
+  try {
+    var stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) state = Object.assign(state, JSON.parse(stored));
+  } catch (err) { /* приватный режим — просто работаем без сохранения */ }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (err) {}
+    $("#saved").textContent = state.step > 0 || state.name ? "Черновик сохранён — можно вернуться позже" : "";
+  }
+
+  $("#services").innerHTML = SERVICES.map(function (s) {
+    return '<label class="radio"><input type="radio" name="service" value="' + s.id + '"' +
+      (state.service === s.id ? " checked" : "") + '>' +
+      '<span><span class="radio__title">' + esc(s.t) + '</span>' +
+      '<span class="radio__text" style="display:block">' + esc(s.d) + '</span></span></label>';
+  }).join("");
+  $("#services").addEventListener("change", function (e) { state.service = e.target.value; save(); });
+
+  $("#iName").value = state.name;
+  $("#iPhone").value = state.phone;
+  $("#iName").addEventListener("input", function () { state.name = this.value; save(); });
+  $("#iPhone").addEventListener("input", function () { state.phone = this.value; save(); });
+
+  function showError(fieldId, show) {
+    var wrap = $(fieldId);
+    wrap.classList.toggle("field--invalid", show);
+    $(".field__error", wrap).classList.toggle("u-hidden", !show);
+  }
+  function validate(step) {
+    if (step === 0) {
+      var okName = state.name.trim().length > 1;
+      var okPhone = state.phone.replace(/\D/g, "").length >= 10;
+      showError("#fName", !okName);
+      showError("#fPhone", !okPhone);
+      return okName && okPhone;
+    }
+    if (step === 1) {
+      if (!state.service) { toast("Выберите услугу"); return false; }
+      return true;
+    }
+    if (step === 2) {
+      var ok = state.dayIndex != null && state.time;
+      $("#slotErr").classList.toggle("u-hidden", !!ok);
+      if (!ok) toast("Выберите день и время");
+      return !!ok;
+    }
+    return true;
+  }
+  function renderSummary() {
+    var d = state.dayIndex != null ? days[state.dayIndex].date : null;
+    var srv = SERVICES.filter(function (s) { return s.id === state.service; })[0];
+    $("#summary").innerHTML =
+      '<div class="steps__row"><dt>Имя</dt><dd>' + esc(state.name) + '</dd></div>' +
+      '<div class="steps__row"><dt>Телефон</dt><dd>' + esc(state.phone) + '</dd></div>' +
+      '<div class="steps__row"><dt>Услуга</dt><dd>' + esc(srv ? srv.t : "—") + '</dd></div>' +
+      '<div class="steps__row"><dt>Когда</dt><dd>' + (d ? d.getDate() + " " + MONTHS[d.getMonth()] + ", " + state.time : "—") + '</dd></div>';
+  }
+  function render() {
+    if (state.done) { renderDone(); return; }
+    $$(".steps__panel").forEach(function (p) { p.hidden = +p.dataset.step !== state.step; });
+    $("#progress").innerHTML = STEP_NAMES.map(function (_, i) {
+      return '<span class="steps__seg" data-done="' + (i <= state.step ? 1 : 0) + '"></span>';
+    }).join("");
+    $("#stepName").textContent = STEP_NAMES[state.step];
+    $("#stepCount").textContent = "Шаг " + (state.step + 1) + " из " + STEP_NAMES.length;
+    $("#back").disabled = state.step === 0;
+    $("#next").textContent = state.step === STEP_NAMES.length - 1 ? "Подтвердить запись" : "Далее";
+    if (state.step === 2) { renderDays(); renderSlots(); }
+    if (state.step === 3) renderSummary();
+    save();
+  }
+  function renderDone() {
+    var d = days[state.dayIndex] ? days[state.dayIndex].date : null;
+    $("#steps").innerHTML =
+      '<div class="steps__done"><div class="steps__check">✓</div>' +
+      '<h3>Вы записаны</h3>' +
+      '<p class="u-muted" style="margin-top:var(--sp-3)">' +
+      (d ? d.getDate() + " " + MONTHS[d.getMonth()] + " в " + state.time : "") +
+      '. Напомним за сутки.</p>' +
+      '<p class="u-small u-muted" style="margin-top:var(--sp-4)">Бэкенда в демо нет: данные никуда не уходят, состояние очищено.</p>' +
+      '<button class="btn btn--ghost" id="again" style="margin-top:var(--sp-5)">Записаться ещё раз</button></div>';
+    $("#again").addEventListener("click", resetAll);
+  }
+  function resetAll() {
+    state = { step: 0, name: "", phone: "", service: null, dayIndex: null, time: null, done: false };
+    try { localStorage.removeItem(STORAGE_KEY); } catch (err) {}
+    location.reload();
+  }
+
+  $("#next").addEventListener("click", function () {
+    if (!validate(state.step)) return;
+    if (state.step === STEP_NAMES.length - 1) {
+      state.done = true; save(); renderDone(); toast("Финальный сабмит: на боевом сайте здесь уходит запрос на сервер");
+      return;
+    }
+    state.step++; render();
+  });
+  $("#back").addEventListener("click", function () { if (state.step > 0) { state.step--; render(); } });
+  $("#reset").addEventListener("click", resetAll);
+
+  $("#theme").addEventListener("click", function () {
+    var current = document.documentElement.getAttribute("data-theme");
+    var isDark = current ? current === "dark" : window.matchMedia("(prefers-color-scheme:dark)").matches;
+    document.documentElement.setAttribute("data-theme", isDark ? "light" : "dark");
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
