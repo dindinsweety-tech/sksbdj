@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демонстрационный прототип магазина экипировки с партнёрской системой, учётом переходов, статусами заказов, комиссиями и симулятором Telegram-чата партнёра. Данные условные.">
+<title>Магазин экипировки с партнёрской системой</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --paper:#F3F3EF; --surface:#FFFFFF; --surface2:#E9E9E1; --surface3:#DCDCD1;
+  --ink:#1A1C17; --ink2:#4A4E44; --ink3:#787C70;
+  --line:#D7D8CD; --line2:#BEC0B2;
+  --olive:#4C6B2F; --olive-d:#3A5323; --olive-s:#E4EEDB;
+  --amber:#B96F14; --amber-s:#FAEEDC;
+  --red:#B3352A; --red-s:#FAE3E0;
+  --blue:#2C6FA8; --blue-s:#E1EDF7;
+  --sh:0 1px 2px rgba(26,28,23,.06),0 12px 30px -18px rgba(26,28,23,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#12130F; --surface:#1A1C16; --surface2:#22251D; --surface3:#2C3025;
+  --ink:#EEEFE8; --ink2:#B3B7A9; --ink3:#82877A;
+  --line:#282B21; --line2:#373B2E;
+  --olive:#8FBF63; --olive-d:#A9D181; --olive-s:#1B2612;
+  --amber:#DFA451; --amber-s:#2E2110; --red:#EC7A6D; --red-s:#301511;
+  --blue:#6FAEDF; --blue-s:#122536;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#12130F; --surface:#1A1C16; --surface2:#22251D; --surface3:#2C3025;
+  --ink:#EEEFE8; --ink2:#B3B7A9; --ink3:#82877A;
+  --line:#282B21; --line2:#373B2E;
+  --olive:#8FBF63; --olive-d:#A9D181; --olive-s:#1B2612;
+  --amber:#DFA451; --amber-s:#2E2110; --red:#EC7A6D; --red-s:#301511;
+  --blue:#6FAEDF; --blue-s:#122536;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font-family:"PT Sans",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.55}
+h1,h2,h3{margin:0;font-family:"Archivo",system-ui,sans-serif;font-weight:700;letter-spacing:-.015em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(24px,3.2vw,34px)}h2{font-size:clamp(19px,2.2vw,25px)}h3{font-size:16px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--olive)}
+:focus-visible{outline:2px solid var(--olive);outline-offset:2px;border-radius:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1400px;margin:0 auto;padding:0 16px}
+.small{font-size:12.5px;line-height:1.45}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink3)}
+
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--olive);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px}
+
+/* панель симулятора источника */
+.sim{background:var(--surface2);border-bottom:1px solid var(--line);padding:9px 0}
+.sim-in{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sim .lbl{margin-right:4px}
+.sim button{border:1px solid var(--line2);border-radius:3px;padding:6px 11px;font-size:12.5px;background:var(--surface)}
+.sim button:hover{border-color:var(--olive);color:var(--olive)}
+.sim button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.sim .st{margin-left:auto;font-size:12px}
+
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:56px}
+.brand{font-family:"Archivo",sans-serif;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.brand i{font-style:normal;color:var(--olive)}
+.tabs{display:flex;gap:2px;margin-left:8px;overflow-x:auto}
+.tabs button{padding:7px 12px;border-radius:3px;font-size:13.5px;font-weight:700;color:var(--ink2);white-space:nowrap}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--olive-s);color:var(--olive)}
+.hr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.ico{border:1px solid var(--line);width:32px;height:32px;border-radius:3px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--olive);color:var(--olive)}
+.cartb{position:relative;border:1px solid var(--line2);border-radius:3px;padding:7px 13px;font-weight:700;font-size:13px}
+.cartb .b{position:absolute;top:-8px;right:-8px;background:var(--olive);color:#fff;font-size:10.5px;font-weight:700;
+ min-width:19px;height:19px;border-radius:10px;display:grid;place-items:center;padding:0 5px}
+
+/* баннер партнёра */
+.pbanner{background:var(--olive);color:#fff;padding:11px 0;font-size:14px}
+.pbanner[hidden]{display:none}
+.pbanner b{font-weight:700}
+.pbanner .x{float:right;opacity:.8}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px;padding:18px 0 60px;align-items:start}
+@media (max-width:1100px){.layout{grid-template-columns:1fr}}
+
+input,select,textarea{font:inherit;font-size:14px;background:var(--surface);color:var(--ink);
+ border:1px solid var(--line2);border-radius:3px;padding:9px 11px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--olive);outline-offset:-1px;border-color:var(--olive)}
+label.f{display:grid;gap:4px;font-size:12px;color:var(--ink2);font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border-radius:3px;
+ border:1px solid transparent;font-size:13.5px;font-weight:700;font-family:"Archivo",sans-serif;
+ transition:background-color .15s,border-color .15s,color .15s}
+.btn-p{background:var(--olive);color:#fff}.btn-p:hover{background:var(--olive-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--olive);color:var(--olive)}
+.btn-sm{padding:7px 12px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.card-h{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:15px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+ padding:2px 7px;border-radius:2px;background:var(--surface2);color:var(--ink2)}
+.pill.o{background:var(--olive-s);color:var(--olive)}
+.pill.a{background:var(--amber-s);color:var(--amber)}
+.pill.r{background:var(--red-s);color:var(--red)}
+.pill.b{background:var(--blue-s);color:var(--blue)}
+
+/* товары */
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.g3,.g4,.g2{grid-template-columns:1fr}}
+@media (max-width:560px){.pgrid{grid-template-columns:1fr}}
+.p{background:var(--surface);border:1px solid var(--line);border-radius:5px;overflow:hidden;display:flex;flex-direction:column}
+.p .im{aspect-ratio:4/3;background:var(--surface2);display:grid;place-items:center;color:var(--olive)}
+.p .im svg{width:46%;height:auto}
+.p .bd{padding:13px;display:flex;flex-direction:column;gap:7px;flex:1}
+.p .nm{font-weight:700;font-size:14.5px;line-height:1.3}
+.p .pr{font-family:"Archivo",sans-serif;font-size:19px;font-weight:700;margin-top:auto}
+.p .pr .was{font-size:12px;color:var(--ink3);text-decoration:line-through;font-family:"PT Sans",sans-serif;margin-left:6px}
+.opts{display:flex;gap:5px;flex-wrap:wrap}
+.opt{border:1px solid var(--line2);border-radius:3px;padding:4px 9px;font-size:12px}
+.opt[aria-pressed="true"]{background:var(--olive);border-color:var(--olive);color:#fff}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line2);border-radius:3px}
+.qty button{width:30px;height:30px;font-size:15px}
+.qty span{width:34px;text-align:center;font-weight:700;font-size:13px}
+
+/* корзина/чекаут */
+.cline{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.cline:last-child{border-bottom:0}
+.cline .im{aspect-ratio:1;background:var(--surface2);border-radius:3px;display:grid;place-items:center;color:var(--olive)}
+.cline .im svg{width:64%;height:auto}
+.sum{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0}
+.sum.t{font-family:"Archivo",sans-serif;font-size:18px;font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:9px}
+
+/* таблицы */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+ color:var(--ink3);font-weight:500;padding:9px 11px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap}
+td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+td.n{text-align:right;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+td select{padding:5px 7px;font-size:12.5px}
+.empty{padding:34px;text-align:center;color:var(--ink3)}
+
+/* telegram-панель */
+.tg{position:sticky;top:74px;background:var(--surface);border:1px solid var(--line);border-radius:5px;overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 96px)}
+.tg-h{padding:12px 14px;border-bottom:1px solid var(--line);background:var(--blue-s);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tg-h .t{font-family:"Archivo",sans-serif;font-weight:700;font-size:14px;color:var(--blue)}
+.tg-b{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;background:var(--surface2);min-height:260px}
+.msg{background:var(--surface);border-radius:9px;border-top-left-radius:2px;padding:10px 12px;font-size:13px;line-height:1.5;
+ box-shadow:0 1px 1px rgba(0,0,0,.06);white-space:pre-line;animation:pop .3s ease}
+.msg .tm{display:block;font-size:10.5px;color:var(--ink3);margin-top:6px;font-family:"JetBrains Mono",monospace}
+.msg.test{border-left:3px solid var(--amber)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tg-f{padding:10px 14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink3)}
+
+.note{border-left:3px solid var(--amber);background:var(--amber-s);padding:12px 14px;border-radius:0 4px 4px 0;font-size:13px;color:var(--ink2)}
+.note.o{border-color:var(--olive);background:var(--olive-s)}
+.view[hidden]{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);
+ padding:10px 17px;border-radius:3px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+.dim{position:fixed;inset:0;background:rgba(12,14,10,.55);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;overflow:auto}
+.dim[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Прототип магазина с партнёрской системой. Товары, партнёры и заказы условные. Telegram-панель справа имитирует чат партнёра.</div>
+
+<div class="sim"><div class="wrap sim-in">
+  <span class="lbl">Симулятор входа:</span>
+  <button data-src="direct" aria-pressed="true">Обычный заход</button>
+  <button data-src="link">Ссылка ?ref=EGORA</button>
+  <button data-src="qr">QR-код партнёра</button>
+  <button data-src="tg">Внутри Telegram</button>
+  <button data-src="test">Тестовый режим</button>
+  <button data-src="clear">Сбросить cookie</button>
+  <span class="st mono" id="simState"></span>
+</div></div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">EXO<i>GEAR</i></span>
+  <nav class="tabs" id="tabs">
+    <button data-go="shop" aria-current="true">Магазин</button>
+    <button data-go="checkout">Оформление</button>
+    <button data-go="admin">Админка</button>
+    <button data-go="partners">Партнёры</button>
+    <button data-go="analytics">Аналитика</button>
+  </nav>
+  <div class="hr">
+    <button class="ico" id="theme" aria-label="Тема">◐</button>
+    <button class="cartb" data-go="checkout">Корзина <span class="b" id="cnt">0</span></button>
+  </div>
+</div></header>
+
+<div class="pbanner" id="pbanner" hidden><div class="wrap">
+  <span id="pbannerText"></span>
+</div></div>
+
+<div class="wrap layout">
+  <div>
+    <!-- SHOP -->
+    <section class="view" data-view="shop">
+      <h1>Экипировка</h1>
+      <p class="muted small" style="margin:6px 0 16px">Выберите размер и цвет, добавьте в корзину. Скидка партнёра применяется автоматически.</p>
+      <div class="pgrid" id="grid"></div>
+    </section>
+
+    <!-- CHECKOUT -->
+    <section class="view" data-view="checkout" hidden>
+      <h1>Оформление заказа</h1>
+      <div class="grid g2" style="margin-top:16px;align-items:start">
+        <form class="card" id="coForm"><div class="card-b grid">
+          <div class="grid g2">
+            <label class="f">Имя<input type="text" name="name" required placeholder="Иван"></label>
+            <label class="f">Телефон<input type="tel" name="phone" required placeholder="+7 900 000-00-00"></label>
+          </div>
+          <div class="grid g2">
+            <label class="f">Telegram / VK / другой контакт<input type="text" name="contact" placeholder="@ivan"></label>
+            <label class="f">Город<input type="text" name="city" required value="Санкт-Петербург"></label>
+          </div>
+          <label class="f">Способ получения
+            <select name="ship" id="ship">
+              <option value="spb">Доставка по Санкт-Петербургу</option>
+              <option value="pickup">Самовывоз / личная передача</option>
+              <option value="other">Доставка в другой город</option>
+            </select>
+          </label>
+          <label class="f" id="addrWrap">Адрес<input type="text" name="addr" placeholder="Улица, дом, квартира"></label>
+          <label class="f">Комментарий<textarea name="comment" rows="2" placeholder="Пожелания к заказу"></textarea></label>
+          <label class="f">Промокод
+            <div style="display:flex;gap:8px">
+              <input type="text" name="promo" id="promo" placeholder="Например, EGORA5">
+              <button class="btn btn-s" type="button" id="applyPromo">Применить</button>
+            </div>
+          </label>
+          <p class="small muted" id="promoHint">Если cookie партнёра потерялась, промокод восстановит привязку к партнёру.</p>
+          <button class="btn btn-p" type="submit">Оформить заказ</button>
+        </div></form>
+        <div class="card"><div class="card-h"><h3>Ваш заказ</h3><span class="pill" id="srcPill"></span></div>
+          <div class="card-b" id="coSummary"></div></div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section class="view" data-view="admin" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap">
+        <div><h1>Заказы</h1><p class="muted small" style="margin-top:5px">Смена статуса на «Оплачен» открывает поле фактической суммы и считает комиссию.</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input type="search" id="oSearch" placeholder="Номер или телефон" style="width:200px">
+          <button class="btn btn-s btn-sm" id="csvBtn">Выгрузить CSV</button>
+        </div>
+      </div>
+      <div class="tw" style="margin-top:14px"><table id="oTable">
+        <thead><tr><th>№</th><th>Дата</th><th>Клиент</th><th>Партнёр</th><th class="n">До скидки</th><th class="n">Скидка</th><th class="n">Итого</th><th>Статус</th><th class="n">Комиссия</th><th></th></tr></thead>
+        <tbody></tbody></table>
+        <div class="empty" id="oEmpty" hidden>Заказов пока нет — оформите заказ в магазине.</div>
+      </div>
+      <h2 style="margin-top:28px">Журнал изменений</h2>
+      <div class="tw" style="margin-top:12px"><table id="logTable">
+        <thead><tr><th>Время</th><th>Кто</th><th>Что изменил</th></tr></thead><tbody></tbody></table>
+        <div class="empty" id="logEmpty" hidden>Записей пока нет.</div>
+      </div>
+    </section>
+
+    <!-- PARTNERS -->
+    <section class="view" data-view="partners" hidden>
+      <h1>Партнёры</h1>
+      <p class="muted small" style="margin:6px 0 14px">Ссылка, QR, промокод, скидка покупателю, процент комиссии и chat_id — всё в карточке партнёра.</p>
+      <div class="grid g2" id="pCards"></div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="view" data-view="analytics" hidden>
+      <h1>Аналитика по партнёрам</h1>
+      <div class="tw" style="margin-top:14px"><table id="aTable">
+        <thead><tr><th>Партнёр</th><th class="n">Уник.</th><th class="n">Повт.</th><th class="n">Заказы</th><th class="n">Оплаты</th><th class="n">Конверсия</th><th class="n">Продажи</th><th class="n">Скидки</th><th class="n">Начислено</th><th class="n">Выплачено</th><th class="n">Отмены</th></tr></thead>
+        <tbody></tbody></table></div>
+      <div class="note" style="margin-top:16px">Тестовые переходы и заказы помечены и в эти цифры не попадают — включите «Тестовый режим» в панели сверху и проверьте.</div>
+    </section>
+  </div>
+
+  <!-- TELEGRAM -->
+  <aside class="tg">
+    <div class="tg-h">
+      <span class="t" id="tgTitle">Чат партнёра</span>
+      <button class="btn btn-s btn-sm" id="tgClear">Очистить</button>
+    </div>
+    <div class="tg-b" id="tgBody"></div>
+    <div class="tg-f">В чате партнёра нет телефона, адреса и других персональных данных — только номер, состав, сумма, статус и комиссия.</div>
+  </aside>
+</div>
+
+<div class="dim" id="dim" hidden><div id="dimIn"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var rub=function(n){return Math.round(n).toLocaleString("ru-RU")+" ₽"};
+var now=function(){return new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})};
+
+/* ---------- данные ---------- */
+var ICON={
+ jacket:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M22 10 12 16v14l6 2v22h28V32l6-2V16l-10-6-10 6-10-6Z"/><path d="M32 16v38"/></svg>',
+ boots:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M18 8h12v26l16 8v8H18V8Z"/><path d="M18 42h28"/></svg>',
+ pack:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="16" y="18" width="32" height="36" rx="6"/><path d="M24 18v-4a8 8 0 0 1 16 0v4M16 32h32"/></svg>',
+ helmet:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M12 38a20 20 0 0 1 40 0v6H12v-6Z"/><path d="M12 44h40M20 44v6h24v-6"/></svg>',
+ gloves:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 26V14a4 4 0 0 1 8 0v12M28 26V10a4 4 0 0 1 8 0v16M36 26V14a4 4 0 0 1 8 0v20c0 10-6 18-14 18s-14-6-14-16V24a4 4 0 0 1 8 0"/></svg>',
+ belt:'<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="6" y="26" width="52" height="12" rx="3"/><rect x="26" y="22" width="14" height="20" rx="3"/></svg>'
+};
+var PRODUCTS=[
+ {id:1,n:"Куртка тактическая Softshell",k:"jacket",cat:"Верх",p:12400,old:14900,sizes:["S","M","L","XL"],colors:["Олива","Чёрный","Койот"],st:1},
+ {id:2,n:"Ботинки трекинговые",k:"boots",cat:"Обувь",p:16800,sizes:["40","41","42","43","44"],colors:["Койот","Чёрный"],st:1},
+ {id:3,n:"Рюкзак штурмовой 35 л",k:"pack",cat:"Снаряжение",p:8900,old:10200,sizes:["35 л"],colors:["Олива","Чёрный","Мультикам"],st:1},
+ {id:4,n:"Шлем защитный",k:"helmet",cat:"Защита",p:23500,sizes:["M","L"],colors:["Олива","Чёрный"],st:0},
+ {id:5,n:"Перчатки тактические",k:"gloves",cat:"Защита",p:3400,sizes:["M","L","XL"],colors:["Чёрный","Койот"],st:1},
+ {id:6,n:"Ремень нагрузочный",k:"belt",cat:"Снаряжение",p:4200,sizes:["M","L"],colors:["Олива","Чёрный"],st:1}
+];
+var PARTNERS=[
+ {id:"EGORA",n:"Егора",promo:"EGORA5",disc:5,fee:10,chat:"-1001234567890",on:true},
+ {id:"SPBGEAR",n:"СПб Гир",promo:"SPB7",disc:7,fee:12,chat:"-1009876543210",on:true},
+ {id:"NORDCLUB",n:"Норд Клуб",promo:"NORD10",disc:10,fee:15,chat:"-1005556667770",on:false}
+];
+var STATUSES=["новый","связались с клиентом","подтверждён","ожидает оплаты","оплачен","передан в доставку","завершён","отменён","возврат"];
+var FEE_ST={none:"не начислена",wait:"ожидается",accrued:"начислена",paid:"выплачена",cancelled:"отменена из-за возврата"};
+
+/* ---------- состояние ---------- */
+var S={ref:null,visitor:null,test:false,src:"direct",cart:[],orders:[],visits:[],log:[],seq:1058};
+try{var raw=localStorage.getItem("exogear");if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
+function save(){try{localStorage.setItem("exogear",JSON.stringify(S))}catch(e){}}
+function partner(id){return PARTNERS.filter(function(p){return p.id===id})[0]||null}
+
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3000)}
+function logIt(who,what){S.log.unshift({t:new Date().toLocaleString("ru-RU"),who:who,what:what});save();renderLog()}
+
+/* ---------- telegram ---------- */
+function tg(text,test){
+  var d=document.createElement("div");
+  d.className="msg"+(test?" test":"");
+  d.innerHTML=(test?"⚠️ ТЕСТ\n":"")+esc(text)+'<span class="tm">'+now()+'</span>';
+  $("#tgBody").appendChild(d);
+  $("#tgBody").scrollTop=$("#tgBody").scrollHeight;
+}
+$("#tgClear").addEventListener("click",function(){$("#tgBody").innerHTML=""});
+
+/* ---------- источник входа ---------- */
+var SRC_NAME={direct:"прямой заход",link:"партнёрская ссылка",qr:"QR-код",tg:"Telegram",test:"тестовый режим"};
+function visitorId(){
+  if(!S.visitor)S.visitor="V-"+(1000+Math.floor(Math.random()*900));
+  return S.visitor;
+}
+function lastVisitKey(ref){return "visit:"+ref}
+function registerVisit(ref,src){
+  var p=partner(ref);if(!p)return;
+  var key=lastVisitKey(ref),last=0;
+  try{last=+localStorage.getItem(key)||0}catch(e){}
+  var fresh=Date.now()-last>24*3600*1000;
+  var v={ref:ref,src:src,unique:fresh,test:S.test,t:new Date().toLocaleString("ru-RU")};
+  S.visits.push(v);save();
+  if(fresh){
+    try{localStorage.setItem(key,String(Date.now()))}catch(e){}
+    tg("🟡 Новый уникальный переход\nПартнёр: «"+p.n+"»\nПосетитель: "+visitorId()+
+       "\nИсточник: "+(src==="qr"?"QR-код":"партнёрская ссылка")+"\nВремя: "+now(),S.test);
+  }else{
+    toast("Повторный переход в пределах 24 часов — уведомление в чат не отправляется");
+  }
+  renderAnalytics();
+}
+function setSource(src){
+  if(src==="clear"){
+    S.ref=null;S.visitor=null;
+    try{PARTNERS.forEach(function(p){localStorage.removeItem(lastVisitKey(p.id))})}catch(e){}
+    save();applyRef();toast("Cookie партнёра и счётчик 24 часов сброшены");renderSim();return;
+  }
+  if(src==="test"){S.test=!S.test;save();renderSim();toast(S.test?"Тестовый режим включён — переходы и заказы помечаются и не идут в статистику":"Тестовый режим выключен");return}
+  S.src=src;
+  if(src==="link"||src==="qr"){
+    S.ref="EGORA";S.refAt=Date.now();save();
+    registerVisit("EGORA",src);
+  }
+  applyRef();renderSim();
+  if(src==="tg")toast("Тот же сайт открыт как Telegram Web App — вёрстка и логика те же, меняется только оболочка");
+  if(src==="direct")toast("Прямой заход: партнёр не определён, скидка не применяется");
+}
+$$(".sim button").forEach(function(b){
+  b.addEventListener("click",function(){
+    var s=b.getAttribute("data-src");
+    setSource(s);
+    if(s!=="clear"&&s!=="test")$$(".sim button").forEach(function(x){
+      x.setAttribute("aria-pressed",String(x===b&&["direct","link","qr","tg"].indexOf(s)>-1));
+    });
+  });
+});
+function renderSim(){
+  var p=partner(S.ref);
+  $("#simState").textContent=(p?"ref="+p.id+" · скидка "+p.disc+"% · 90 дней":"партнёр не определён")+(S.test?" · ТЕСТ":"");
+  $("#tgTitle").textContent=p?"Чат партнёра «"+p.n+"»":"Чат партнёра";
+}
+function applyRef(){
+  var p=partner(S.ref);
+  $("#pbanner").hidden=!p;
+  if(p)$("#pbannerText").innerHTML='✅ Скидка '+p.disc+'% от партнёра «<b>'+esc(p.n)+'</b>» активирована. Действует 90 дней, промокод <span class="mono">'+esc(p.promo)+'</span>.';
+  renderGrid();renderSummary();renderSim();
+}
+
+/* ---------- магазин ---------- */
+var sel={};
+function renderGrid(){
+  var p=partner(S.ref);
+  $("#grid").innerHTML=PRODUCTS.map(function(x){
+    var st=sel[x.id]||(sel[x.id]={size:x.sizes[0],color:x.colors[0],q:1});
+    var price=p?Math.round(x.p*(1-p.disc/100)):x.p;
+    return '<article class="p"><div class="im">'+ICON[x.k]+'</div><div class="bd">'+
+      '<span class="pill">'+esc(x.cat)+'</span>'+
+      '<span class="nm">'+esc(x.n)+'</span>'+
+      '<span class="'+(x.st?"pill o":"pill a")+'" style="align-self:flex-start">'+(x.st?"в наличии":"под заказ")+'</span>'+
+      '<div><span class="lbl">Размер</span><div class="opts" style="margin-top:4px">'+
+        x.sizes.map(function(s){return '<button class="opt" data-size="'+x.id+'|'+esc(s)+'" aria-pressed="'+(st.size===s)+'">'+esc(s)+'</button>'}).join("")+'</div></div>'+
+      '<div><span class="lbl">Цвет</span><div class="opts" style="margin-top:4px">'+
+        x.colors.map(function(c){return '<button class="opt" data-color="'+x.id+'|'+esc(c)+'" aria-pressed="'+(st.color===c)+'">'+esc(c)+'</button>'}).join("")+'</div></div>'+
+      '<span class="pr">'+rub(price)+(p?'<span class="was">'+rub(x.p)+'</span>':'')+'</span>'+
+      '<div style="display:flex;gap:8px;align-items:center;margin-top:4px">'+
+      '<span class="qty"><button data-q="'+x.id+'|-1">−</button><span>'+st.q+'</span><button data-q="'+x.id+'|1">+</button></span>'+
+      '<button class="btn btn-p btn-sm" data-add="'+x.id+'" style="flex:1">В корзину</button></div>'+
+      '</div></article>';
+  }).join("");
+}
+document.addEventListener("click",function(e){
+  var sz=e.target.closest("[data-size]"),cl=e.target.closest("[data-color]"),q=e.target.closest("[data-q]"),ad=e.target.closest("[data-add]");
+  if(sz){var a=sz.getAttribute("data-size").split("|");sel[a[0]].size=a[1];renderGrid();return}
+  if(cl){var b=cl.getAttribute("data-color").split("|");sel[b[0]].color=b[1];renderGrid();return}
+  if(q){var c=q.getAttribute("data-q").split("|");sel[c[0]].q=Math.max(1,sel[c[0]].q+ +c[1]);renderGrid();return}
+  if(ad){
+    var id=+ad.getAttribute("data-add"),st=sel[id],pr=PRODUCTS.filter(function(x){return x.id===id})[0];
+    var ex=S.cart.filter(function(c){return c.id===id&&c.size===st.size&&c.color===st.color})[0];
+    if(ex)ex.q+=st.q;else S.cart.push({id:id,size:st.size,color:st.color,q:st.q});
+    save();renderCart();toast(pr.n+" — в корзине");
+    return;
+  }
+  var g=e.target.closest("[data-go]");if(g)go(g.getAttribute("data-go"));
+});
+
+function totals(){
+  var gross=S.cart.reduce(function(a,c){
+    var p=PRODUCTS.filter(function(x){return x.id===c.id})[0];return a+p.p*c.q},0);
+  var p=partner(S.ref);
+  var disc=p?Math.round(gross*p.disc/100):0;
+  return {gross:gross,disc:disc,total:gross-disc,partner:p};
+}
+function renderCart(){
+  $("#cnt").textContent=S.cart.reduce(function(a,c){return a+c.q},0);
+  renderSummary();
+}
+function renderSummary(){
+  var t=totals();
+  $("#srcPill").textContent=SRC_NAME[S.src]+(S.test?" · ТЕСТ":"");
+  if(!S.cart.length){$("#coSummary").innerHTML='<p class="muted small">Корзина пуста. Добавьте товары в магазине.</p>';return}
+  $("#coSummary").innerHTML=S.cart.map(function(c,i){
+    var p=PRODUCTS.filter(function(x){return x.id===c.id})[0];
+    return '<div class="cline"><span class="im">'+ICON[p.k]+'</span>'+
+      '<span><b style="font-size:13.5px">'+esc(p.n)+'</b><br><span class="small muted">'+esc(c.size)+' · '+esc(c.color)+' · '+c.q+' шт</span></span>'+
+      '<span style="text-align:right"><b class="mono">'+rub(p.p*c.q)+'</b>'+
+      '<button class="small" data-rm="'+i+'" style="display:block;color:var(--ink3)">удалить</button></span></div>';
+  }).join("")+
+  '<div style="margin-top:10px">'+
+  '<div class="sum"><span>Сумма до скидки</span><span class="mono">'+rub(t.gross)+'</span></div>'+
+  (t.partner?'<div class="sum" style="color:var(--olive)"><span>Скидка партнёра «'+esc(t.partner.n)+'» '+t.partner.disc+'%</span><span class="mono">−'+rub(t.disc)+'</span></div>':'')+
+  '<div class="sum t"><span>Итого</span><span class="mono">'+rub(t.total)+'</span></div></div>';
+}
+$("#coSummary").addEventListener("click",function(e){
+  var r=e.target.closest("[data-rm]");
+  if(r){S.cart.splice(+r.getAttribute("data-rm"),1);save();renderCart()}
+});
+$("#ship").addEventListener("change",function(){$("#addrWrap").hidden=this.value==="pickup"});
+$("#applyPromo").addEventListener("click",function(){
+  var code=$("#promo").value.trim().toUpperCase();
+  var p=PARTNERS.filter(function(x){return x.promo.toUpperCase()===code})[0];
+  if(!p){toast("Промокод не найден");return}
+  if(!p.on){toast("Партнёр отключён, промокод неактивен");return}
+  S.ref=p.id;save();applyRef();
+  $("#promoHint").innerHTML='Промокод восстановил привязку к партнёру «<b>'+esc(p.n)+'</b>» — так работает запасной сценарий при потере cookie.';
+  toast("Промокод применён: скидка "+p.disc+"%");
+});
+
+/* ---------- оформление ---------- */
+$("#coForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  if(!S.cart.length){toast("Корзина пуста");return}
+  var f=this.elements,t=totals();
+  var num=S.seq++;
+  var o={num:num,date:new Date().toLocaleDateString("ru-RU"),name:f.name.value.trim(),phone:f.phone.value.trim(),
+    contact:f.contact.value.trim(),city:f.city.value.trim(),ship:f.ship.value,addr:f.addr.value.trim(),
+    comment:f.comment.value.trim(),ref:S.ref,gross:t.gross,disc:t.disc,total:t.total,
+    status:"новый",paid:null,fee:0,feeSt:"none",test:S.test,src:S.src,
+    items:S.cart.map(function(c){var p=PRODUCTS.filter(function(x){return x.id===c.id})[0];
+      return {n:p.n,size:c.size,color:c.color,q:c.q,p:p.p}})};
+  S.orders.unshift(o);S.cart=[];save();
+  var p=partner(o.ref);
+  if(p)tg("🛒 Новый заказ №"+num+"\n\nПартнёр: «"+p.n+"»\nСумма: "+rub(o.gross)+
+    "\nСкидка "+p.disc+"%: "+rub(o.disc)+"\nИтого: "+rub(o.total)+"\nСтатус: новый",o.test);
+  else toast("Заказ №"+num+" создан без партнёра — уведомление уходит только администратору");
+  logIt("Клиент","создан заказ №"+num);
+  this.reset();$("#ship").value="spb";$("#addrWrap").hidden=false;
+  renderCart();renderOrders();renderAnalytics();go("admin");
+  toast("Заказ №"+num+" сохранён, номер присвоен, партнёр зафиксирован");
+});
+
+/* ---------- админка ---------- */
+function renderOrders(){
+  var q=($("#oSearch").value||"").toLowerCase();
+  var rows=S.orders.filter(function(o){
+    return !q||(String(o.num)+" "+o.phone).toLowerCase().indexOf(q)>-1;
+  });
+  $("#oTable").querySelector("tbody").innerHTML=rows.map(function(o){
+    var p=partner(o.ref);
+    return '<tr><td class="mono">№'+o.num+(o.test?' <span class="pill a">тест</span>':'')+'</td>'+
+      '<td class="mono">'+o.date+'</td>'+
+      '<td>'+esc(o.name)+'<br><span class="small muted mono">'+esc(o.phone)+'</span></td>'+
+      '<td>'+(p?'<select data-ref="'+o.num+'">'+PARTNERS.map(function(x){
+        return '<option value="'+x.id+'"'+(x.id===o.ref?" selected":"")+'>'+esc(x.n)+'</option>'}).join("")+'</select>':'<span class="muted">—</span>')+'</td>'+
+      '<td class="n">'+rub(o.gross)+'</td><td class="n">'+rub(o.disc)+'</td><td class="n"><b>'+rub(o.total)+'</b></td>'+
+      '<td><select data-st="'+o.num+'">'+STATUSES.map(function(s){
+        return '<option'+(s===o.status?" selected":"")+'>'+s+'</option>'}).join("")+'</select></td>'+
+      '<td class="n">'+(o.fee?rub(o.fee):"—")+'<br><span class="pill '+(o.feeSt==="paid"?"o":(o.feeSt==="cancelled"?"r":"a"))+'">'+FEE_ST[o.feeSt]+'</span></td>'+
+      '<td style="white-space:nowrap">'+(o.feeSt==="accrued"?'<button class="btn btn-s btn-sm" data-payfee="'+o.num+'">Комиссия выплачена</button>':'')+'</td></tr>';
+  }).join("");
+  $("#oEmpty").hidden=rows.length>0;
+}
+$("#oSearch").addEventListener("input",renderOrders);
+$("#oTable").addEventListener("change",function(e){
+  var st=e.target.getAttribute("data-st"),rf=e.target.getAttribute("data-ref");
+  if(rf){
+    var o=S.orders.filter(function(x){return x.num===+rf})[0];
+    o.ref=e.target.value;save();logIt("Администратор","заказ №"+o.num+": партнёр изменён на «"+partner(o.ref).n+"»");
+    renderOrders();renderAnalytics();return;
+  }
+  if(!st)return;
+  var o=S.orders.filter(function(x){return x.num===+st})[0];
+  var val=e.target.value,p=partner(o.ref);
+  o.status=val;
+  logIt("Администратор","заказ №"+o.num+": статус → "+val);
+  if(val==="оплачен"){
+    askPaid(o);
+  }else if(val==="отменён"){
+    o.fee=0;o.feeSt="none";save();
+    if(p)tg("❌ Заказ №"+o.num+" отменён\n\nКомиссия не начислена.",o.test);
+  }else if(val==="возврат"){
+    o.feeSt="cancelled";save();
+    if(p)tg("↩️ Возврат по заказу №"+o.num+"\n\nКомиссия отменена.",o.test);
+  }else{
+    save();
+  }
+  renderOrders();renderAnalytics();
+});
+function askPaid(o){
+  $("#dimIn").innerHTML='<div class="card" style="max-width:440px;width:100%;box-shadow:var(--sh)">'+
+    '<div class="card-h"><h3>Фактическая оплата по заказу №'+o.num+'</h3></div>'+
+    '<div class="card-b grid">'+
+    '<label class="f">Сумма, фактически оплаченная клиентом<input type="number" id="paidVal" value="'+o.total+'" min="0"></label>'+
+    '<p class="small muted">Комиссия = фактическая сумма × процент партнёра. Стоимость доставки в расчёт не входит.</p>'+
+    '<div style="display:flex;gap:8px"><button class="btn btn-p" id="paidOk">Зафиксировать</button>'+
+    '<button class="btn btn-s" id="paidCancel">Отмена</button></div></div></div>';
+  $("#dim").hidden=false;
+  $("#paidOk").addEventListener("click",function(){
+    var v=+$("#paidVal").value||0,p=partner(o.ref);
+    o.paid=v;
+    if(p){
+      o.fee=Math.round(v*p.fee/100);o.feeSt="accrued";
+      tg("💰 Заказ №"+o.num+" оплачен\n\nФактическая сумма: "+rub(v)+
+         "\nКомиссия "+p.fee+"%: "+rub(o.fee)+"\nСтатус комиссии: начислена",o.test);
+    }
+    save();logIt("Администратор","заказ №"+o.num+": оплата "+rub(v)+", комиссия "+rub(o.fee));
+    $("#dim").hidden=true;renderOrders();renderAnalytics();
+  });
+  $("#paidCancel").addEventListener("click",function(){$("#dim").hidden=true});
+}
+$("#oTable").addEventListener("click",function(e){
+  var b=e.target.closest("[data-payfee]");if(!b)return;
+  var o=S.orders.filter(function(x){return x.num===+b.getAttribute("data-payfee")})[0];
+  o.feeSt="paid";save();
+  var p=partner(o.ref);
+  if(p)tg("🤝 Комиссия по заказу №"+o.num+" выплачена\n\nСумма: "+rub(o.fee),o.test);
+  logIt("Администратор","заказ №"+o.num+": комиссия отмечена выплаченной");
+  renderOrders();renderAnalytics();
+});
+$("#csvBtn").addEventListener("click",function(){
+  var rows=[["Номер","Дата","Клиент","Телефон","Партнёр","До скидки","Скидка","Итого","Статус","Комиссия","Статус комиссии","Тест"]];
+  S.orders.forEach(function(o){
+    var p=partner(o.ref);
+    rows.push([o.num,o.date,o.name,o.phone,p?p.n:"",o.gross,o.disc,o.total,o.status,o.fee,FEE_ST[o.feeSt],o.test?"да":"нет"]);
+  });
+  var csv=rows.map(function(r){return r.join(";")}).join("\n");
+  $("#dimIn").innerHTML='<div class="card" style="max-width:700px;width:100%;box-shadow:var(--sh)">'+
+    '<div class="card-h"><h3>Выгрузка CSV</h3><button class="btn btn-s btn-sm" id="csvClose">Закрыть</button></div>'+
+    '<div class="card-b"><p class="small muted" style="margin-bottom:10px">В боевой версии файл скачивается. В демо содержимое показано здесь.</p>'+
+    '<textarea rows="12" class="mono" style="font-size:12px" readonly>'+esc(csv)+'</textarea></div></div>';
+  $("#dim").hidden=false;
+  $("#csvClose").addEventListener("click",function(){$("#dim").hidden=true});
+});
+$("#dim").addEventListener("click",function(e){if(e.target===$("#dim"))$("#dim").hidden=true});
+function renderLog(){
+  $("#logTable").querySelector("tbody").innerHTML=S.log.slice(0,20).map(function(l){
+    return '<tr><td class="mono">'+esc(l.t)+'</td><td>'+esc(l.who)+'</td><td>'+esc(l.what)+'</td></tr>';
+  }).join("");
+  $("#logEmpty").hidden=S.log.length>0;
+}
+
+/* ---------- партнёры ---------- */
+function qrSvg(text){
+  /* условный QR-паттерн: детерминированный по строке, только для вида */
+  var cells=[],seed=0;
+  for(var i=0;i<text.length;i++)seed+=text.charCodeAt(i)*(i+3);
+  for(var y=0;y<11;y++)for(var x=0;x<11;x++){
+    var on=((x*7+y*13+seed)%5<2)||(x<3&&y<3)||(x>7&&y<3)||(x<3&&y>7);
+    if(on)cells.push('<rect x="'+(x*8+4)+'" y="'+(y*8+4)+'" width="8" height="8"/>');
+  }
+  return '<svg viewBox="0 0 96 96" width="76" height="76" fill="currentColor" aria-label="QR-код партнёра">'+
+    '<rect width="96" height="96" fill="var(--surface)"/>'+cells.join("")+'</svg>';
+}
+function renderPartners(){
+  $("#pCards").innerHTML=PARTNERS.map(function(p){
+    var st=stats(p.id);
+    return '<div class="card"><div class="card-h"><h3>«'+esc(p.n)+'»</h3>'+
+      '<span class="pill '+(p.on?"o":"r")+'">'+(p.on?"активен":"отключён")+'</span></div>'+
+      '<div class="card-b" style="display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start">'+
+      '<div style="color:var(--ink)">'+qrSvg(p.id)+'</div>'+
+      '<div style="display:grid;gap:5px;font-size:13px">'+
+      '<div><span class="lbl">ID</span> <span class="mono">'+esc(p.id)+'</span></div>'+
+      '<div><span class="lbl">Ссылка</span> <span class="mono">shop.ru/?ref='+esc(p.id)+'</span></div>'+
+      '<div><span class="lbl">Промокод</span> <span class="mono">'+esc(p.promo)+'</span></div>'+
+      '<div><span class="lbl">Скидка</span> '+p.disc+'% · <span class="lbl">Комиссия</span> '+p.fee+'%</div>'+
+      '<div><span class="lbl">chat_id</span> <span class="mono">'+esc(p.chat)+'</span></div>'+
+      '<div style="margin-top:6px"><span class="pill">'+st.uniq+' уник.</span> <span class="pill">'+st.orders+' заказов</span> <span class="pill">'+rub(st.feeAcc)+' комиссии</span></div>'+
+      '<button class="btn btn-s btn-sm" data-usep="'+esc(p.id)+'" style="margin-top:8px;justify-self:start">Открыть магазин по его ссылке</button>'+
+      '</div></div></div>';
+  }).join("");
+}
+$("#pCards").addEventListener("click",function(e){
+  var b=e.target.closest("[data-usep]");if(!b)return;
+  var id=b.getAttribute("data-usep");
+  S.ref=id;save();registerVisit(id,"link");applyRef();go("shop");
+});
+
+/* ---------- аналитика ---------- */
+function stats(ref){
+  var vs=S.visits.filter(function(v){return v.ref===ref&&!v.test});
+  var os=S.orders.filter(function(o){return o.ref===ref&&!o.test});
+  var uniq=vs.filter(function(v){return v.unique}).length;
+  var rep=vs.length-uniq;
+  var paid=os.filter(function(o){return o.paid!=null}).length;
+  var sales=os.reduce(function(a,o){return a+(o.paid!=null?o.paid:0)},0);
+  var disc=os.reduce(function(a,o){return a+o.disc},0);
+  var feeAcc=os.filter(function(o){return o.feeSt==="accrued"}).reduce(function(a,o){return a+o.fee},0);
+  var feePaid=os.filter(function(o){return o.feeSt==="paid"}).reduce(function(a,o){return a+o.fee},0);
+  var cancel=os.filter(function(o){return o.status==="отменён"||o.status==="возврат"}).length;
+  return {uniq:uniq,rep:rep,orders:os.length,paid:paid,sales:sales,disc:disc,feeAcc:feeAcc,feePaid:feePaid,cancel:cancel,
+    conv:uniq?Math.round(os.length/uniq*100):0};
+}
+function renderAnalytics(){
+  $("#aTable").querySelector("tbody").innerHTML=PARTNERS.map(function(p){
+    var s=stats(p.id);
+    return '<tr><td><b>«'+esc(p.n)+'»</b></td><td class="n">'+s.uniq+'</td><td class="n">'+s.rep+'</td>'+
+      '<td class="n">'+s.orders+'</td><td class="n">'+s.paid+'</td><td class="n">'+s.conv+'%</td>'+
+      '<td class="n">'+rub(s.sales)+'</td><td class="n">'+rub(s.disc)+'</td>'+
+      '<td class="n">'+rub(s.feeAcc)+'</td><td class="n">'+rub(s.feePaid)+'</td><td class="n">'+s.cancel+'</td></tr>';
+  }).join("");
+  renderPartners();
+}
+
+/* ---------- навигация ---------- */
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===v))});
+  window.scrollTo(0,0);
+  if(v==="admin"){renderOrders();renderLog()}
+  if(v==="analytics")renderAnalytics();
+  if(v==="partners")renderPartners();
+  if(v==="checkout")renderSummary();
+}
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+applyRef();renderCart();renderOrders();renderLog();renderAnalytics();
+tg("Бот подключён к чату партнёра. Здесь появятся переходы, заказы, оплаты и комиссии.");
+})();
+</script>
+
+</body>
+</html>
