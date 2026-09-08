@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демонстрационный прототип сервиса отправки игр: заказ, уведомления в Telegram и автоотправка через API поставщика. Данные условные.">
+<title>Отправка игр — прототип сервиса</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#10141A; --surface:#19212B; --surface2:#212B37; --surface3:#2A3644;
+  --ink:#E8EEF4; --ink2:#A9BAC8; --ink3:#7A8B99;
+  --line:#25313D; --line2:#33424F;
+  --acc:#5AB2E8; --acc-d:#8CCBF2; --acc-s:#122735;
+  --ok:#7FBF4D; --ok-s:#18260F; --warn:#E0A64C; --warn-s:#2C2110; --err:#E2705E; --err-s:#2E1512;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --bg:#F2F5F8; --surface:#FFFFFF; --surface2:#E9EFF4; --surface3:#DCE5EC;
+  --ink:#131A21; --ink2:#465664; --ink3:#71828F;
+  --line:#D5DFE7; --line2:#BCC9D4;
+  --acc:#1B6FA8; --acc-d:#12547F; --acc-s:#E1EEF7;
+  --ok:#3E7A22; --ok-s:#E4F0DA; --warn:#96690F; --warn-s:#FAEFD9; --err:#B33F2C; --err-s:#FAE3DF;
+  --sh:0 1px 2px rgba(19,26,33,.06),0 12px 30px -18px rgba(19,26,33,.4);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:"Manrope",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.55}
+h1,h2,h3{margin:0;font-family:"Exo 2",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(24px,3.2vw,34px)}h2{font-size:clamp(19px,2.2vw,25px)}h3{font-size:16px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1340px;margin:0 auto;padding:0 16px}
+.small{font-size:12.5px;line-height:1.45}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink3)}
+
+.demo{background:var(--surface3);color:var(--ink);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#08121A;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:56px}
+.brand{font-family:"Exo 2",sans-serif;font-weight:700;font-size:18px;letter-spacing:.01em}
+.brand i{font-style:normal;color:var(--acc)}
+.tabs{display:flex;gap:2px;margin-left:8px;overflow-x:auto}
+.tabs button{padding:7px 12px;border-radius:3px;font-size:13.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--acc-s);color:var(--acc)}
+.hr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ico{border:1px solid var(--line2);width:32px;height:32px;border-radius:3px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;padding:18px 0 60px;align-items:start}
+@media (max-width:1080px){.layout{grid-template-columns:1fr}}
+
+input,select,textarea{font:inherit;font-size:14px;background:var(--bg);color:var(--ink);
+ border:1px solid var(--line2);border-radius:4px;padding:10px 12px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+input.bad{border-color:var(--err)}
+label.f{display:grid;gap:5px;font-size:12.5px;color:var(--ink2);font-weight:600}
+.err{color:var(--err);font-size:12px;font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:4px;
+ border:1px solid transparent;font-size:14px;font-weight:700;font-family:"Exo 2",sans-serif;
+ transition:background-color .15s,border-color .15s,color .15s}
+.btn-p{background:var(--acc);color:#08121A}.btn-p:hover{background:var(--acc-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:8px 14px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.card-h{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:15px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:820px){.g2,.g3{grid-template-columns:1fr}}
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+ padding:2px 7px;border-radius:2px;background:var(--surface2);color:var(--ink2)}
+.pill.a{background:var(--acc-s);color:var(--acc)}
+.pill.g{background:var(--ok-s);color:var(--ok)}
+.pill.w{background:var(--warn-s);color:var(--warn)}
+.pill.e{background:var(--err-s);color:var(--err)}
+
+/* витрина */
+.games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.games{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.games{grid-template-columns:1fr}}
+.game{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;
+ transition:border-color .16s,transform .16s;cursor:pointer;text-align:left}
+.game:hover{border-color:var(--acc);transform:translateY(-2px)}
+.game[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.game .im{aspect-ratio:16/9;background:linear-gradient(135deg,var(--surface3),var(--surface2));display:grid;place-items:center;color:var(--acc)}
+.game .im svg{width:34%;height:auto;opacity:.75}
+.game .bd{padding:12px 13px;display:flex;flex-direction:column;gap:6px;flex:1}
+.game .nm{font-weight:700;font-size:14.5px;line-height:1.25}
+.game .pr{font-family:"Exo 2",sans-serif;font-size:19px;font-weight:700;margin-top:auto}
+.game .pr small{font-size:12px;color:var(--ink3);font-family:"Manrope",sans-serif;margin-left:5px}
+
+/* шаги */
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.step{flex:1;min-width:150px;border:1px solid var(--line);border-radius:5px;padding:11px 13px;background:var(--surface)}
+.step .n{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink3)}
+.step .t{font-weight:700;font-size:13.5px;margin-top:3px}
+.step[data-on="1"]{border-color:var(--acc);background:var(--acc-s)}
+
+/* таблицы */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+ color:var(--ink3);font-weight:500;padding:9px 11px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap}
+td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+td.n{text-align:right;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+td select{padding:5px 7px;font-size:12.5px}
+.empty{padding:34px;text-align:center;color:var(--ink3)}
+
+/* панели справа */
+.dock{display:grid;gap:14px;position:sticky;top:72px}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.pane-h{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pane-h .t{font-family:"Exo 2",sans-serif;font-weight:700;font-size:13.5px}
+.pane-b{padding:12px 13px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:290px;background:var(--surface2)}
+.msg{background:var(--surface);border-radius:8px;border-top-left-radius:2px;padding:9px 11px;font-size:12.5px;line-height:1.5;
+ white-space:pre-line;animation:pop .28s ease}
+.msg .tm{display:block;font-size:10px;color:var(--ink3);margin-top:5px;font-family:"JetBrains Mono",monospace}
+@keyframes pop{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.logline{font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.5;padding:5px 8px;border-radius:3px;background:var(--bg);
+ border-left:2px solid var(--line2);animation:pop .28s ease;word-break:break-word}
+.logline.ok{border-color:var(--ok);color:var(--ok)}
+.logline.req{border-color:var(--acc);color:var(--acc)}
+.logline.err{border-color:var(--err);color:var(--err)}
+
+.note{border-left:3px solid var(--warn);background:var(--warn-s);padding:12px 14px;border-radius:0 4px 4px 0;font-size:13px;color:var(--ink2)}
+.note.a{border-color:var(--acc);background:var(--acc-s)}
+.view[hidden]{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--surface3);color:var(--ink);
+ padding:10px 17px;border-radius:4px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh);border:1px solid var(--line2)}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Прототип сервиса отправки игр. Игры, цены и заказы условные. Панели справа имитируют Telegram-уведомления и лог обращений к API поставщика.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">GIFT<i>GATE</i></span>
+  <nav class="tabs" id="tabs">
+    <button data-go="shop" aria-current="true">Заказать игру</button>
+    <button data-go="track">Статус заказа</button>
+    <button data-go="admin">Админка</button>
+  </nav>
+  <div class="hr"><button class="ico" id="theme" aria-label="Тема">◐</button></div>
+</div></header>
+
+<div class="wrap layout">
+  <div>
+    <!-- SHOP -->
+    <section class="view" data-view="shop">
+      <h1>Отправим игру в ваш Steam</h1>
+      <p class="muted small" style="margin:6px 0 16px">Выберите игру и регион, вставьте ссылку на профиль — остальное происходит автоматически.</p>
+
+      <div class="steps">
+        <div class="step" data-on="1" id="s1"><div class="n">ШАГ 1</div><div class="t">Выбор игры и региона</div></div>
+        <div class="step" id="s2"><div class="n">ШАГ 2</div><div class="t">Ссылка на профиль и контакт</div></div>
+        <div class="step" id="s3"><div class="n">ШАГ 3</div><div class="t">Заказ и автоотправка</div></div>
+      </div>
+
+      <div class="games" id="games"></div>
+
+      <div class="card" style="margin-top:18px"><div class="card-h"><h3>Оформление заказа</h3><span class="pill" id="pickedPill">игра не выбрана</span></div>
+        <form class="card-b grid" id="oForm">
+          <div class="grid g2">
+            <label class="f">Регион / страна аккаунта
+              <select name="country" id="country"></select>
+            </label>
+            <label class="f">Игра
+              <select name="game" id="gameSel"></select>
+            </label>
+          </div>
+          <label class="f">Ссылка на профиль Steam
+            <input type="text" name="steam" id="steam" placeholder="https://steamcommunity.com/id/nickname/">
+            <span class="err" id="steamErr" hidden>Не похоже на ссылку профиля Steam. Формат: steamcommunity.com/id/ник или /profiles/765611…</span>
+          </label>
+          <div class="grid g2">
+            <label class="f">Telegram для связи<input type="text" name="tg" placeholder="@nickname" required></label>
+            <label class="f">Email (для чека)<input type="email" name="email" placeholder="you@example.com"></label>
+          </div>
+          <label class="f">Комментарий<textarea name="comment" rows="2" placeholder="Например: подарок, отправить после 18:00"></textarea></label>
+          <div class="card" style="background:var(--surface2)"><div class="card-b" style="display:grid;gap:6px" id="preTotal"></div></div>
+          <label class="f" style="flex-direction:row"><span class="small muted"><input type="checkbox" required style="width:auto;margin-right:8px">Подтверждаю, что аккаунт открыт для подарков и регион указан верно</span></label>
+          <button class="btn btn-p" type="submit">Отправить заказ</button>
+          <p class="small muted">Прототип: заказ сохраняется в браузере, уведомления и вызовы API имитируются в панелях справа.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- TRACK -->
+    <section class="view" data-view="track" hidden>
+      <h1>Статус заказа</h1>
+      <p class="muted small" style="margin:6px 0 16px">Клиент проверяет заказ по номеру — без регистрации и личного кабинета.</p>
+      <div class="card"><div class="card-b" style="display:flex;gap:10px;flex-wrap:wrap">
+        <input type="text" id="trackNo" placeholder="Номер заказа, например 1042" style="max-width:260px">
+        <button class="btn btn-p" id="trackBtn">Проверить</button>
+      </div></div>
+      <div id="trackOut" style="margin-top:14px"></div>
+    </section>
+
+    <!-- ADMIN -->
+    <section class="view" data-view="admin" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap">
+        <div><h1>Заказы</h1><p class="muted small" style="margin-top:5px">Автоотправка запускается сама после оплаты. Кнопка «Отправить сейчас» — ручной повтор, если API вернул ошибку.</p></div>
+        <label class="f" style="min-width:200px">Режим обработки
+          <select id="mode"><option value="auto">Автоматически после оплаты</option><option value="manual">Вручную по кнопке</option></select>
+        </label>
+      </div>
+      <div class="tw" style="margin-top:14px"><table id="aTable">
+        <thead><tr><th>№</th><th>Игра</th><th>Регион</th><th>Профиль</th><th>Контакт</th><th class="n">Сумма</th><th>Статус</th><th></th></tr></thead>
+        <tbody></tbody></table>
+        <div class="empty" id="aEmpty" hidden>Заказов нет — оформите заказ на первой вкладке.</div>
+      </div>
+      <div class="note a" style="margin-top:16px">
+        <b>Где здесь автоматизация.</b> Статус «Оплачен» запускает вызов API поставщика, ответ пишется в лог, при успехе заказ переходит в «Отправлено» и клиенту с вами уходят уведомления. Если API ответил ошибкой — заказ падает в «Ошибка API» и не теряется: видно, что повторить.
+      </div>
+    </section>
+  </div>
+
+  <!-- DOCK -->
+  <aside class="dock">
+    <div class="pane">
+      <div class="pane-h"><span class="t">Telegram · уведомления</span><button class="btn btn-s btn-sm" id="clrTg">Очистить</button></div>
+      <div class="pane-b" id="tgBody"></div>
+    </div>
+    <div class="pane">
+      <div class="pane-h"><span class="t">Лог API поставщика</span><button class="btn btn-s btn-sm" id="clrLog">Очистить</button></div>
+      <div class="pane-b" id="logBody"></div>
+    </div>
+  </aside>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var rub=function(n){return Math.round(n).toLocaleString("ru-RU")+" ₽"};
+var now=function(){return new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit",second:"2-digit"})};
+
+var PAD='<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3"><rect x="6" y="20" width="52" height="26" rx="10"/><path d="M18 27v10M13 32h10M42 30h.01M48 36h.01"/></svg>';
+
+var GAMES=[
+ {id:"g1",n:"Space Odyssey: Reforged",base:2490},
+ {id:"g2",n:"Northern Siege",base:1890},
+ {id:"g3",n:"Neon Drift 2",base:1290},
+ {id:"g4",n:"Deep Harbor",base:3190},
+ {id:"g5",n:"Iron Company",base:990},
+ {id:"g6",n:"Last Outpost",base:2190}
+];
+var COUNTRIES=[
+ {c:"KZ",n:"Казахстан",k:0.78},{c:"TR",n:"Турция",k:0.72},{c:"AR",n:"Аргентина",k:0.65},
+ {c:"UA",n:"Украина",k:0.85},{c:"RU",n:"Россия",k:1.0}
+];
+
+var S={orders:[],seq:1042};
+try{var raw=localStorage.getItem("giftgate");if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
+function save(){try{localStorage.setItem("giftgate",JSON.stringify(S))}catch(e){}}
+
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3000)}
+
+function tg(text){
+  var d=document.createElement("div");d.className="msg";
+  d.innerHTML=esc(text)+'<span class="tm">'+now()+'</span>';
+  $("#tgBody").appendChild(d);$("#tgBody").scrollTop=$("#tgBody").scrollHeight;
+}
+function log(text,cls){
+  var d=document.createElement("div");d.className="logline "+(cls||"");
+  d.textContent=now()+"  "+text;
+  $("#logBody").appendChild(d);$("#logBody").scrollTop=$("#logBody").scrollHeight;
+}
+$("#clrTg").addEventListener("click",function(){$("#tgBody").innerHTML=""});
+$("#clrLog").addEventListener("click",function(){$("#logBody").innerHTML=""});
+
+/* ---------- витрина ---------- */
+var picked=null,country="KZ";
+$("#country").innerHTML=COUNTRIES.map(function(c){
+  return '<option value="'+c.c+'"'+(c.c===country?" selected":"")+'>'+esc(c.n)+' ('+c.c+')</option>'}).join("");
+function kof(){return (COUNTRIES.filter(function(c){return c.c===country})[0]||{k:1}).k}
+function price(g){return Math.round(g.base*kof()/10)*10}
+function renderGames(){
+  $("#games").innerHTML=GAMES.map(function(g){
+    return '<button class="game" data-g="'+g.id+'" aria-pressed="'+(picked===g.id)+'">'+
+      '<span class="im">'+PAD+'</span><span class="bd">'+
+      '<span class="nm">'+esc(g.n)+'</span>'+
+      '<span class="small muted">Регион: '+esc((COUNTRIES.filter(function(c){return c.c===country})[0]||{}).n)+'</span>'+
+      '<span class="pr">'+rub(price(g))+'<small>вместо '+rub(g.base)+'</small></span>'+
+      '</span></button>';
+  }).join("");
+  $("#gameSel").innerHTML=GAMES.map(function(g){
+    return '<option value="'+g.id+'"'+(picked===g.id?" selected":"")+'>'+esc(g.n)+' — '+rub(price(g))+'</option>'}).join("");
+  renderPre();
+}
+function renderPre(){
+  var g=GAMES.filter(function(x){return x.id===(picked||$("#gameSel").value)})[0];
+  $("#pickedPill").textContent=g?g.n:"игра не выбрана";
+  if(!g){$("#preTotal").innerHTML='<span class="small muted">Выберите игру</span>';return}
+  var c=COUNTRIES.filter(function(x){return x.c===country})[0];
+  $("#preTotal").innerHTML=
+    '<div style="display:flex;justify-content:space-between"><span class="small muted">Игра</span><span>'+esc(g.n)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between"><span class="small muted">Регион</span><span>'+esc(c.n)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;font-family:Exo 2,sans-serif;font-weight:700;font-size:18px;padding-top:6px;border-top:1px solid var(--line)">'+
+    '<span>К оплате</span><span class="mono">'+rub(price(g))+'</span></div>';
+}
+$("#games").addEventListener("click",function(e){
+  var b=e.target.closest("[data-g]");if(!b)return;
+  picked=b.getAttribute("data-g");renderGames();
+  $("#s2").setAttribute("data-on","1");
+  $("#steam").focus();
+});
+$("#country").addEventListener("change",function(){country=this.value;renderGames()});
+$("#gameSel").addEventListener("change",function(){picked=this.value;renderGames()});
+
+/* ---------- валидация ссылки Steam ---------- */
+var STEAM_RE=/^(https?:\/\/)?(www\.)?steamcommunity\.com\/(id\/[A-Za-z0-9_.-]+|profiles\/7656119[0-9]{10})\/?$/i;
+function validSteam(v){return STEAM_RE.test(v.trim())}
+$("#steam").addEventListener("blur",function(){
+  var ok=!this.value.trim()||validSteam(this.value);
+  this.classList.toggle("bad",!ok);$("#steamErr").hidden=ok;
+  if(ok&&this.value.trim())$("#s3").setAttribute("data-on","1");
+});
+
+/* ---------- оформление ---------- */
+$("#oForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var f=this.elements;
+  if(!validSteam(f.steam.value)){
+    $("#steam").classList.add("bad");$("#steamErr").hidden=false;
+    toast("Проверьте ссылку на профиль Steam");return;
+  }
+  var g=GAMES.filter(function(x){return x.id===$("#gameSel").value})[0];
+  var c=COUNTRIES.filter(function(x){return x.c===country})[0];
+  var num=S.seq++;
+  var o={num:num,at:new Date().toLocaleString("ru-RU"),game:g.n,gameId:g.id,country:c.c,countryName:c.n,
+    steam:f.steam.value.trim(),tg:f.tg.value.trim(),email:f.email.value.trim(),
+    comment:f.comment.value.trim(),sum:price(g),status:"новый",api:null};
+  S.orders.unshift(o);save();
+  tg("🎮 Новый заказ №"+num+"\n\nИгра: "+g.n+"\nРегион: "+c.n+"\nСумма: "+rub(o.sum)+
+     "\nПрофиль: "+o.steam+"\nКонтакт: "+o.tg+"\nСтатус: ожидает оплаты");
+  log("INSERT orders (id="+num+", game="+g.id+", region="+c.c+") → ok","ok");
+  this.reset();$("#country").value=country;renderGames();
+  renderAdmin();go("admin");
+  toast("Заказ №"+num+" создан. В админке смените статус на «Оплачен» — запустится автоотправка.");
+});
+
+/* ---------- админка ---------- */
+var ST=["новый","ожидает оплаты","оплачен","отправлено","ошибка API","отменён"];
+function renderAdmin(){
+  $("#aTable").querySelector("tbody").innerHTML=S.orders.map(function(o){
+    var cls=o.status==="отправлено"?"g":(o.status==="ошибка API"?"e":(o.status==="оплачен"?"a":"w"));
+    return '<tr><td class="mono">№'+o.num+'</td><td>'+esc(o.game)+'</td>'+
+      '<td><span class="pill">'+esc(o.country)+'</span></td>'+
+      '<td class="small" style="max-width:190px;word-break:break-all">'+esc(o.steam)+'</td>'+
+      '<td class="mono small">'+esc(o.tg)+'</td>'+
+      '<td class="n">'+rub(o.sum)+'</td>'+
+      '<td><select data-st="'+o.num+'">'+ST.map(function(s){
+        return '<option'+(s===o.status?" selected":"")+'>'+s+'</option>'}).join("")+'</select>'+
+      ' <span class="pill '+cls+'">'+esc(o.status)+'</span></td>'+
+      '<td style="white-space:nowrap">'+
+      (o.status==="оплачен"||o.status==="ошибка API"?'<button class="btn btn-s btn-sm" data-send="'+o.num+'">Отправить сейчас</button>':'')+
+      '</td></tr>';
+  }).join("");
+  $("#aEmpty").hidden=S.orders.length>0;
+}
+$("#aTable").addEventListener("change",function(e){
+  var st=e.target.getAttribute("data-st");if(!st)return;
+  var o=S.orders.filter(function(x){return x.num===+st})[0];
+  o.status=e.target.value;save();renderAdmin();
+  if(o.status==="оплачен"){
+    tg("💳 Заказ №"+o.num+" оплачен\n\nСумма: "+rub(o.sum)+"\nЗапускаю отправку.");
+    if($("#mode").value==="auto")sendGift(o);
+    else toast("Ручной режим: нажмите «Отправить сейчас»");
+  }
+  if(o.status==="отменён")tg("❌ Заказ №"+o.num+" отменён");
+});
+$("#aTable").addEventListener("click",function(e){
+  var b=e.target.closest("[data-send]");if(!b)return;
+  var o=S.orders.filter(function(x){return x.num===+b.getAttribute("data-send")})[0];
+  sendGift(o);
+});
+function sendGift(o){
+  log('POST /api/v1/gift/send  {"order":'+o.num+',"appid":"'+o.gameId+'","region":"'+o.country+'","steam":"'+o.steam+'"}',"req");
+  setTimeout(function(){
+    log("202 Accepted  {\"task\":\"tsk_"+o.num+"\",\"state\":\"queued\"}","");
+    setTimeout(function(){
+      /* один заказ из шести имитирует отказ API, чтобы показать обработку ошибки */
+      var fail=o.num%6===0;
+      if(fail){
+        log('GET /api/v1/gift/status/tsk_'+o.num+' → {"state":"failed","reason":"region_mismatch"}',"err");
+        o.status="ошибка API";save();renderAdmin();
+        tg("⚠️ Заказ №"+o.num+": API вернул ошибку\n\nПричина: регион аккаунта не совпадает с регионом ключа.\nЗаказ ждёт повторной отправки.");
+        toast("API вернул ошибку — заказ не потерян, видно в админке");
+      }else{
+        log('GET /api/v1/gift/status/tsk_'+o.num+' → {"state":"delivered"}',"ok");
+        o.status="отправлено";o.api="tsk_"+o.num;save();renderAdmin();
+        tg("✅ Заказ №"+o.num+" отправлен\n\nИгра: "+o.game+"\nПрофиль: "+o.steam+"\nЗадача: tsk_"+o.num);
+        toast("Игра отправлена автоматически, заказ закрыт");
+      }
+    },900);
+  },600);
+}
+$("#mode").addEventListener("change",function(){
+  toast(this.value==="auto"?"Автоматический режим: отправка стартует сразу после оплаты":"Ручной режим: отправка по кнопке");
+});
+
+/* ---------- статус заказа ---------- */
+$("#trackBtn").addEventListener("click",function(){
+  var n=+($("#trackNo").value||"").replace(/\D/g,"");
+  var o=S.orders.filter(function(x){return x.num===n})[0];
+  if(!o){$("#trackOut").innerHTML='<div class="note">Заказ с таким номером не найден. Проверьте номер из письма или Telegram.</div>';return}
+  var cls=o.status==="отправлено"?"g":(o.status==="ошибка API"?"e":"w");
+  $("#trackOut").innerHTML='<div class="card"><div class="card-h"><h3>Заказ №'+o.num+'</h3><span class="pill '+cls+'">'+esc(o.status)+'</span></div>'+
+    '<div class="card-b" style="display:grid;gap:7px">'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted small">Игра</span><span>'+esc(o.game)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted small">Регион</span><span>'+esc(o.countryName)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted small">Оформлен</span><span class="mono small">'+esc(o.at)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted small">Сумма</span><span class="mono">'+rub(o.sum)+'</span></div>'+
+    (o.api?'<div style="display:flex;justify-content:space-between"><span class="muted small">Задача поставщика</span><span class="mono">'+esc(o.api)+'</span></div>':'')+
+    '</div></div>';
+});
+
+/* ---------- навигация ---------- */
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===v))});
+  window.scrollTo(0,0);
+  if(v==="admin")renderAdmin();
+}
+$("#tabs").addEventListener("click",function(e){
+  var b=e.target.closest("[data-go]");if(b)go(b.getAttribute("data-go"));
+});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  document.documentElement.setAttribute("data-theme",cur==="light"?"dark":"light");
+});
+
+renderGames();renderAdmin();
+tg("Бот подключён. Сюда падают новые заказы, оплаты и результаты отправки.");
+log("service started · ожидание заказов","");
+})();
+</script>
+
+</body>
+</html>
