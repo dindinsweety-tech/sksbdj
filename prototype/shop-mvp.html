@@ -1,0 +1,692 @@
+<title>Магазин на WordPress — демо</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Commissioner:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#F5F3F1; --surface:#FFFFFF; --surface2:#EDE9E5; --surface3:#E2DCD6;
+  --ink:#17161A; --ink2:#4A4650; --ink3:#7A737F;
+  --line:#DCD5CE; --line2:#C6BCB3;
+  --acc:#8E2D4B; --acc-hi:#6E1F39; --acc-soft:#F7E7EC;
+  --ok:#4A6B44; --ok-soft:#E6EEE3;
+  --sh:0 1px 2px rgba(23,22,26,.05),0 12px 30px -18px rgba(23,22,26,.35);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131114; --surface:#1B181D; --surface2:#241F26; --surface3:#2E2831;
+  --ink:#F0ECEE; --ink2:#B8B0BB; --ink3:#8A8291;
+  --line:#2C2630; --line2:#3B333F;
+  --acc:#E48AA6; --acc-hi:#F3B3C6; --acc-soft:#331723;
+  --ok:#8FC085; --ok-soft:#1B2A18;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 34px -18px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#131114; --surface:#1B181D; --surface2:#241F26; --surface3:#2E2831;
+  --ink:#F0ECEE; --ink2:#B8B0BB; --ink3:#8A8291;
+  --line:#2C2630; --line2:#3B333F;
+  --acc:#E48AA6; --acc-hi:#F3B3C6; --acc-soft:#331723;
+  --ok:#8FC085; --ok-soft:#1B2A18;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 34px -18px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font-family:"Commissioner",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.6}
+h1,h2,h3{margin:0;font-family:"Jost",system-ui,sans-serif;font-weight:400;letter-spacing:.005em;text-wrap:balance}
+h1{font-size:clamp(26px,3.4vw,40px);line-height:1.12}
+h2{font-size:clamp(20px,2.2vw,26px)}
+h3{font-size:17px;font-weight:500}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.num{font-variant-numeric:tabular-nums}
+.small{font-size:13px;line-height:1.5}
+.muted{color:var(--ink2)}
+.eyebrow{font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink3)}
+
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:7px 20px;text-align:center;line-height:1.45}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-family:"Jost",sans-serif;letter-spacing:.1em}
+
+/* header */
+header.s{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:18px;height:64px}
+.logo{font-family:"Jost",sans-serif;font-size:20px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.logo span{color:var(--acc)}
+.hnav{display:flex;gap:4px;margin-left:10px}
+.hnav button{padding:8px 12px;border-radius:3px;color:var(--ink2);font-size:14.5px}
+.hnav button:hover{background:var(--surface2);color:var(--ink)}
+.hnav button[aria-current="true"]{color:var(--acc);font-weight:600}
+.hr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.srch{position:relative}
+.srch input{width:210px}
+.cartbtn{position:relative;border:1px solid var(--line2);border-radius:3px;padding:8px 14px;font-size:14px;font-weight:600}
+.cartbtn:hover{border-color:var(--acc);color:var(--acc)}
+.cartbtn .b{position:absolute;top:-7px;right:-7px;background:var(--acc);color:#fff;font-size:11px;font-weight:700;
+ min-width:19px;height:19px;border-radius:10px;display:grid;place-items:center;padding:0 5px}
+.ico{border:1px solid var(--line);width:34px;height:34px;border-radius:3px;display:grid;place-items:center;color:var(--ink2)}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+
+input,select,textarea{font:inherit;font-size:14px;background:var(--surface);color:var(--ink);
+ border:1px solid var(--line2);border-radius:3px;padding:9px 11px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+label.f{display:grid;gap:5px;font-size:12.5px;color:var(--ink2);font-weight:500}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:3px;
+ border:1px solid transparent;font-size:14.5px;font-weight:600;font-family:"Commissioner",sans-serif}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-hi)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:8px 14px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.view[hidden]{display:none}
+.page{padding:26px 0 70px}
+.crumbs{font-size:12.5px;color:var(--ink3);display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.crumbs button{color:var(--ink3);font-size:12.5px}
+.crumbs button:hover{color:var(--acc)}
+
+/* hero */
+.hero{background:var(--surface);border-bottom:1px solid var(--line)}
+.hero-in{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center;padding:44px 0}
+.hero .lead{color:var(--ink2);margin-top:14px;max-width:52ch}
+.hero-cta{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.hero-art{aspect-ratio:4/3;border-radius:4px;overflow:hidden;background:var(--surface2);display:grid;place-items:center}
+.hero-art svg{width:78%;height:auto}
+
+/* catalog */
+.cat{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:start}
+.side{position:sticky;top:80px;display:grid;gap:18px}
+.fgrp h4{font-family:"Jost",sans-serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3);margin:0 0 8px;font-weight:500}
+.fgrp label{display:flex;gap:8px;align-items:center;font-size:14px;padding:3px 0;cursor:pointer}
+.fgrp input[type="checkbox"]{width:auto}
+.toolbar{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.toolbar select{width:auto;min-width:200px}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.p{background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;display:flex;flex-direction:column;
+ transition:border-color .15s,transform .15s}
+.p:hover{border-color:var(--acc);transform:translateY(-2px)}
+.p .im{aspect-ratio:4/3;display:grid;place-items:center;position:relative;cursor:pointer}
+.p .im svg{width:56%;height:auto}
+.p .bd{padding:14px 15px 16px;display:flex;flex-direction:column;gap:7px;flex:1}
+.p .nm{font-size:15px;font-weight:600;line-height:1.3;text-align:left}
+.p .cat{font-size:12px;color:var(--ink3)}
+.p .pr{font-family:"Jost",sans-serif;font-size:20px;font-weight:500;margin-top:auto;display:flex;align-items:baseline;gap:8px}
+.p .old{font-size:13px;color:var(--ink3);text-decoration:line-through;font-family:"Commissioner",sans-serif}
+.badge{position:absolute;top:10px;left:10px;background:var(--acc);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:2px}
+.badge.o{background:var(--ok)}
+.stock{font-size:12px;color:var(--ok);font-weight:600}
+.stock.no{color:var(--ink3)}
+.empty{padding:50px;text-align:center;color:var(--ink3);border:1px dashed var(--line2);border-radius:4px}
+
+/* product page */
+.pp{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:36px;align-items:start}
+.gal{display:grid;gap:10px}
+.gal .main{aspect-ratio:4/3;border-radius:4px;display:grid;place-items:center;border:1px solid var(--line)}
+.gal .main svg{width:52%;height:auto}
+.thumbs{display:flex;gap:8px}
+.thumbs button{width:74px;aspect-ratio:1;border-radius:3px;border:1px solid var(--line);display:grid;place-items:center}
+.thumbs button[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.thumbs svg{width:56%;height:auto}
+.buy{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px;display:grid;gap:16px;position:sticky;top:80px}
+.price-big{font-family:"Jost",sans-serif;font-size:34px;font-weight:500;line-height:1;display:flex;align-items:baseline;gap:10px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{border:1px solid var(--line2);border-radius:3px;padding:7px 13px;font-size:13.5px}
+.opt[aria-pressed="true"]{border-color:var(--acc);background:var(--acc-soft);color:var(--acc-hi);font-weight:600}
+.qty{display:flex;align-items:center;border:1px solid var(--line2);border-radius:3px;width:fit-content}
+.qty button{width:38px;height:38px;font-size:17px}
+.qty span{width:44px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14px;margin-top:8px}
+.specs dt{color:var(--ink3)}
+.specs dd{margin:0}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:30px 0 18px}
+.tabs button{padding:10px 16px;color:var(--ink2);font-size:14.5px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-pressed="true"]{color:var(--acc);border-bottom-color:var(--acc);font-weight:600}
+
+/* cart drawer */
+.dim{position:fixed;inset:0;background:rgba(23,22,26,.5);z-index:60}
+.dim[hidden]{display:none}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:400px;max-width:92vw;background:var(--surface);z-index:61;
+ display:flex;flex-direction:column;box-shadow:var(--sh);border-left:1px solid var(--line)}
+.drawer[hidden]{display:none}
+.dh{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.db{flex:1;overflow-y:auto;padding:16px 20px;display:grid;gap:14px;align-content:start}
+.df{padding:18px 20px;border-top:1px solid var(--line);display:grid;gap:12px}
+.ci{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:start}
+.ci .im{aspect-ratio:1;border-radius:3px;display:grid;place-items:center}
+.ci .im svg{width:60%;height:auto}
+.ci .nm{font-size:14px;font-weight:600;line-height:1.3}
+.ci .vr{font-size:12px;color:var(--ink3)}
+.ci .pr{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ci .rm{font-size:12px;color:var(--ink3);margin-top:4px}
+.ci .rm:hover{color:var(--acc)}
+.sumrow{display:flex;justify-content:space-between;font-size:14px}
+.sumrow.t{font-size:19px;font-weight:700;font-family:"Jost",sans-serif;padding-top:10px;border-top:1px solid var(--line)}
+
+/* checkout */
+.co{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px}
+.card+.card{margin-top:16px}
+.radios{display:grid;gap:8px;margin-top:10px}
+.radio{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line2);border-radius:3px;padding:12px 14px;cursor:pointer}
+.radio[data-on="1"]{border-color:var(--acc);background:var(--acc-soft)}
+.radio input{width:auto;margin-top:3px}
+.radio .t{font-weight:600;font-size:14px}
+.radio .d{font-size:12.5px;color:var(--ink2)}
+
+/* wp panel */
+.wp{background:var(--surface2);border-top:1px solid var(--line)}
+.wpgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:34px 0}
+.wpc{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px}
+.wpc h4{margin:0 0 6px;font-family:"Jost",sans-serif;font-size:14px;font-weight:500}
+.wpc p{font-size:12.5px;color:var(--ink2);line-height:1.45}
+
+footer.s{background:var(--ink);color:var(--paper);padding:34px 0 26px;font-size:13.5px}
+footer.s a,footer.s button{color:var(--paper);opacity:.72}
+.fg{display:grid;grid-template-columns:1.3fr repeat(3,1fr);gap:26px}
+footer h4{font-family:"Jost",sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.5;margin:0 0 10px;font-weight:400}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fb{margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.15);opacity:.6;font-size:12px;
+ display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:90;background:var(--ink);color:var(--paper);
+ padding:11px 18px;border-radius:3px;font-size:13.5px;box-shadow:var(--sh);max-width:90vw;text-align:center}
+.toast[hidden]{display:none}
+
+@media (max-width:1000px){
+  .pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pp,.co{grid-template-columns:1fr}
+  .buy{position:static}
+  .wpgrid{grid-template-columns:repeat(2,1fr)}
+  .hero-in{grid-template-columns:1fr;gap:24px}
+}
+@media (max-width:760px){
+  .cat{grid-template-columns:1fr}
+  .side{position:static}
+  .hnav,.srch{display:none}
+  .fg{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){.pgrid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Демонстрационный прототип интернет-магазина. Товары, цены и контакты условные. Оформление заказа ничего не отправляет и не списывает.</div>
+
+<header class="s"><div class="wrap hbar">
+  <button class="logo" data-go="home">ДОМ<span>&amp;</span>ФОРМА</button>
+  <nav class="hnav">
+    <button data-go="catalog" data-cat="Все">Каталог</button>
+    <button data-go="catalog" data-cat="Освещение">Освещение</button>
+    <button data-go="catalog" data-cat="Текстиль">Текстиль</button>
+    <button data-go="catalog" data-cat="Посуда">Посуда</button>
+    <button data-go="catalog" data-cat="Декор">Декор</button>
+  </nav>
+  <div class="hr">
+    <div class="srch"><input type="search" id="q" placeholder="Поиск по каталогу"></div>
+    <button class="ico" id="theme" aria-label="Тема">◐</button>
+    <button class="cartbtn" id="openCart">Корзина <span class="b" id="cnt">0</span></button>
+  </div>
+</div></header>
+
+<main>
+<!-- HOME -->
+<section class="view" data-view="home">
+  <div class="hero"><div class="wrap hero-in">
+    <div>
+      <p class="eyebrow">Демо-витрина на WooCommerce</p>
+      <h1 style="margin-top:12px">Вещи для дома,<br>которые переживут моду</h1>
+      <p class="lead">Керамика, свет и текстиль от небольших мастерских. Доставка по России, самовывоз в день заказа.</p>
+      <div class="hero-cta">
+        <button class="btn btn-p" data-go="catalog" data-cat="Все">Смотреть каталог</button>
+        <button class="btn btn-s" data-go="catalog" data-cat="Освещение">Новинки света</button>
+      </div>
+    </div>
+    <div class="hero-art" id="heroArt"></div>
+  </div></div>
+  <div class="wrap page">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+      <h2>Хиты продаж</h2>
+      <button class="btn btn-s btn-sm" data-go="catalog" data-cat="Все">Весь каталог →</button>
+    </div>
+    <div class="pgrid" id="homeGrid" style="margin-top:18px"></div>
+  </div>
+  <div class="wp"><div class="wrap">
+    <p class="eyebrow" style="padding-top:26px">Что вы получаете в админке WordPress</p>
+    <div class="wpgrid">
+      <div class="wpc"><h4>Товары и цены</h4><p>Добавление, редактирование, варианты, остатки, скидки — без разработчика, в привычном интерфейсе.</p></div>
+      <div class="wpc"><h4>Заказы</h4><p>Статусы, уведомления на почту, накладные, выгрузка. История клиента на одном экране.</p></div>
+      <div class="wpc"><h4>Страницы и блоки</h4><p>Тексты, баннеры, меню и категории меняются визуальным редактором.</p></div>
+      <div class="wpc"><h4>Домен и хостинг</h4><p>Перенос вашего домена, SSL, почта, бэкапы и обновления — настраиваю до передачи.</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- CATALOG -->
+<section class="view" data-view="catalog" hidden><div class="wrap page">
+  <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span id="catName">Каталог</span></div>
+  <h1 style="margin-bottom:20px">Каталог</h1>
+  <div class="cat">
+    <aside class="side">
+      <div class="fgrp"><h4>Категория</h4><div id="fCats"></div></div>
+      <div class="fgrp"><h4>Цена, ₽</h4>
+        <div style="display:flex;gap:8px"><input type="number" id="pMin" placeholder="от" min="0"><input type="number" id="pMax" placeholder="до" min="0"></div>
+      </div>
+      <div class="fgrp"><h4>Наличие</h4>
+        <label><input type="checkbox" id="fStock"> Только в наличии</label>
+        <label><input type="checkbox" id="fSale"> Со скидкой</label>
+      </div>
+      <button class="btn btn-s btn-sm" id="fReset">Сбросить фильтры</button>
+    </aside>
+    <div>
+      <div class="toolbar">
+        <span class="small muted num" id="found"></span>
+        <select id="sort">
+          <option value="pop">Сначала популярные</option>
+          <option value="asc">Сначала дешёвые</option>
+          <option value="desc">Сначала дорогие</option>
+          <option value="new">Сначала новинки</option>
+        </select>
+      </div>
+      <div class="pgrid" id="grid"></div>
+      <div class="empty" id="noRes" hidden>По этим условиям товаров нет. Попробуйте сбросить фильтры.</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- PRODUCT -->
+<section class="view" data-view="product" hidden><div class="wrap page">
+  <div class="crumbs"><button data-go="home">Главная</button><span>/</span><button data-go="catalog" data-cat="Все">Каталог</button><span>/</span><span id="pCrumb"></span></div>
+  <div class="pp" id="ppBody"></div>
+  <div class="tabs" id="pTabs">
+    <button data-tab="desc" aria-pressed="true">Описание</button>
+    <button data-tab="spec" aria-pressed="false">Характеристики</button>
+    <button data-tab="del" aria-pressed="false">Доставка и оплата</button>
+  </div>
+  <div id="pTabBody" style="max-width:70ch"></div>
+  <h2 style="margin-top:40px">С этим покупают</h2>
+  <div class="pgrid" id="rel" style="margin-top:16px"></div>
+</div></section>
+
+<!-- CHECKOUT -->
+<section class="view" data-view="checkout" hidden><div class="wrap page">
+  <div class="crumbs"><button data-go="home">Главная</button><span>/</span><span>Оформление заказа</span></div>
+  <h1 style="margin-bottom:20px">Оформление заказа</h1>
+  <form class="co" id="coForm">
+    <div>
+      <div class="card">
+        <h3>Покупатель</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px">
+          <label class="f">Имя и фамилия<input type="text" name="name" required placeholder="Анна Петрова"></label>
+          <label class="f">Телефон<input type="tel" name="phone" required placeholder="+7 900 000-00-00"></label>
+          <label class="f" style="grid-column:1/-1">Email для чека<input type="email" name="email" required placeholder="anna@example.ru"></label>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Доставка</h3>
+        <div class="radios" id="delRadios"></div>
+        <label class="f" style="margin-top:12px" id="addrWrap">Адрес доставки<input type="text" name="addr" placeholder="Город, улица, дом, квартира"></label>
+      </div>
+      <div class="card">
+        <h3>Оплата</h3>
+        <div class="radios" id="payRadios"></div>
+        <p class="small muted" style="margin-top:12px">В прототипе оплата не подключена. На боевом сайте — эквайринг ЮKassa или Тинькофф, чек по 54-ФЗ уходит автоматически.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="position:sticky;top:80px">
+        <h3>Ваш заказ</h3>
+        <div style="display:grid;gap:10px;margin:14px 0" id="coItems"></div>
+        <div style="display:grid;gap:7px" id="coSums"></div>
+        <button class="btn btn-p" type="submit" style="width:100%;margin-top:16px">Подтвердить заказ</button>
+        <p class="small muted" style="margin-top:10px">Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.</p>
+      </div>
+    </div>
+  </form>
+</div></section>
+
+<!-- DONE -->
+<section class="view" data-view="done" hidden><div class="wrap page" style="max-width:640px">
+  <div class="card" style="text-align:center;padding:40px 28px">
+    <div style="width:56px;height:56px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center;margin:0 auto 16px;font-size:26px">✓</div>
+    <h1 id="dTitle">Заказ принят</h1>
+    <p class="muted" style="margin-top:12px" id="dText"></p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap">
+      <button class="btn btn-p" data-go="catalog" data-cat="Все">Вернуться в каталог</button>
+      <button class="btn btn-s" data-go="home">На главную</button>
+    </div>
+  </div>
+</div></section>
+</main>
+
+<footer class="s"><div class="wrap">
+  <div class="fg">
+    <div>
+      <div class="logo" style="color:var(--paper)">ДОМ&amp;ФОРМА</div>
+      <p class="small" style="opacity:.7;margin-top:10px;max-width:32ch">Демонстрационный магазин. Собран как прототип интернет-магазина на WordPress + WooCommerce.</p>
+    </div>
+    <div><h4>Каталог</h4><ul>
+      <li><button data-go="catalog" data-cat="Освещение">Освещение</button></li>
+      <li><button data-go="catalog" data-cat="Текстиль">Текстиль</button></li>
+      <li><button data-go="catalog" data-cat="Посуда">Посуда</button></li>
+      <li><button data-go="catalog" data-cat="Декор">Декор</button></li>
+    </ul></div>
+    <div><h4>Покупателю</h4><ul>
+      <li><button data-info="Доставка и оплата">Доставка и оплата</button></li>
+      <li><button data-info="Возврат товара">Возврат</button></li>
+      <li><button data-info="Гарантия">Гарантия</button></li>
+      <li><button data-info="Контакты">Контакты</button></li>
+    </ul></div>
+    <div><h4>Связь</h4><ul>
+      <li>+7 000 000-00-00</li><li>shop@example.ru</li><li>Ежедневно 10:00–20:00</li>
+    </ul></div>
+  </div>
+  <div class="fb"><span>© 2026 Демо-магазин. Данные условные.</span><span>WordPress + WooCommerce · демо-прототип</span></div>
+</div></footer>
+
+<div class="dim" id="dim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Корзина">
+  <div class="dh"><h3>Корзина</h3><button class="ico" id="closeCart" aria-label="Закрыть">✕</button></div>
+  <div class="db" id="cartBody"></div>
+  <div class="df" id="cartFoot"></div>
+</aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var rub=function(n){return Math.round(n).toLocaleString("ru-RU")+" ₽"};
+
+/* ---------- art ---------- */
+var ART={
+ lamp:'<path d="M60 14h40l26 44H34L60 14Z" fill="currentColor" opacity=".22"/><path d="M60 14h40l26 44H34L60 14Z" stroke="currentColor" stroke-width="3" fill="none"/><path d="M80 58v56" stroke="currentColor" stroke-width="3"/><ellipse cx="80" cy="120" rx="22" ry="6" fill="currentColor" opacity=".35"/>',
+ vase:'<path d="M56 16h48l-8 22c14 12 20 28 20 44 0 22-16 36-36 36s-36-14-36-36c0-16 6-32 20-44l-8-22Z" fill="currentColor" opacity=".22"/><path d="M56 16h48l-8 22c14 12 20 28 20 44 0 22-16 36-36 36s-36-14-36-36c0-16 6-32 20-44l-8-22Z" stroke="currentColor" stroke-width="3" fill="none"/>',
+ plaid:'<rect x="22" y="30" width="116" height="82" rx="6" fill="currentColor" opacity=".22"/><rect x="22" y="30" width="116" height="82" rx="6" stroke="currentColor" stroke-width="3" fill="none"/><path d="M22 58h116M22 84h116M58 30v82M102 30v82" stroke="currentColor" stroke-width="2" opacity=".6"/>',
+ cup:'<path d="M40 40h72v40c0 20-16 34-36 34S40 100 40 80V40Z" fill="currentColor" opacity=".22"/><path d="M40 40h72v40c0 20-16 34-36 34S40 100 40 80V40Z" stroke="currentColor" stroke-width="3" fill="none"/><path d="M112 52h14a14 14 0 0 1 0 28h-14" stroke="currentColor" stroke-width="3" fill="none"/><path d="M34 122h92" stroke="currentColor" stroke-width="3"/>',
+ frame:'<rect x="30" y="24" width="100" height="96" rx="4" fill="currentColor" opacity=".18"/><rect x="30" y="24" width="100" height="96" rx="4" stroke="currentColor" stroke-width="3" fill="none"/><path d="M44 100l24-30 18 22 14-16 16 24H44Z" fill="currentColor" opacity=".5"/><circle cx="102" cy="52" r="9" fill="currentColor" opacity=".55"/>',
+ candle:'<rect x="58" y="46" width="44" height="72" rx="5" fill="currentColor" opacity=".22"/><rect x="58" y="46" width="44" height="72" rx="5" stroke="currentColor" stroke-width="3" fill="none"/><path d="M80 46c0-12 10-14 10-24 6 6 8 12 8 18 0 8-8 10-18 6Z" fill="currentColor" opacity=".6"/>',
+ rug:'<path d="M26 96l54-58 54 58-54 22-54-22Z" fill="currentColor" opacity=".22"/><path d="M26 96l54-58 54 58-54 22-54-22Z" stroke="currentColor" stroke-width="3" fill="none"/><path d="M52 84l28 12 28-12" stroke="currentColor" stroke-width="2" opacity=".7" fill="none"/>',
+ bowl:'<path d="M28 62h104c0 30-23 52-52 52S28 92 28 62Z" fill="currentColor" opacity=".22"/><path d="M28 62h104c0 30-23 52-52 52S28 92 28 62Z" stroke="currentColor" stroke-width="3" fill="none"/><path d="M50 40c8-8 16-8 24 0M86 34c8-8 16-8 24 0" stroke="currentColor" stroke-width="3" fill="none" opacity=".7"/>'
+};
+var TONE=["#8E2D4B","#4A6B44","#8A5A2B","#3F5B7A","#6B4A7A","#2F6B6B"];
+function art(kind,i,cls){
+  var c=TONE[i%TONE.length];
+  return '<svg viewBox="0 0 160 140" style="color:'+c+'" aria-hidden="true">'+ART[kind]+'</svg>';
+}
+function tint(i){var c=TONE[i%TONE.length];return "background:linear-gradient(150deg,"+c+"14,"+c+"05)"}
+
+/* ---------- data ---------- */
+var PRODUCTS=[
+ {id:1,n:"Настольная лампа «Тор»",c:"Освещение",p:6900,old:8400,k:"lamp",st:1,pop:9,new:1,v:["Латунь","Чёрный"],d:"Металлическое основание, тканевый провод, диммируемая лампа E27 в комплекте."},
+ {id:2,n:"Подвесной светильник «Купол»",c:"Освещение",p:11400,k:"lamp",st:1,pop:7,d:"Керамический плафон ручной формовки, регулируемая высота подвеса до 180 см."},
+ {id:3,n:"Ваза «Волна», керамика",c:"Декор",p:4200,k:"vase",st:1,pop:10,new:1,v:["Песок","Графит"],d:"Ручная работа, матовая глазурь. Каждая ваза немного отличается — это не брак, а признак ручной формовки."},
+ {id:4,n:"Плед шерстяной, 130×180",c:"Текстиль",p:8900,old:10900,k:"plaid",st:1,pop:8,v:["Овсяный","Терракота","Хвоя"],d:"Шерсть мериноса, плотность 480 г/м². Не колется, держит форму после стирки."},
+ {id:5,n:"Набор кружек, 4 шт",c:"Посуда",p:3600,k:"cup",st:1,pop:6,d:"Керамика, 320 мл. Подходит для посудомоечной машины и микроволновки."},
+ {id:6,n:"Салатник «Круг», 26 см",c:"Посуда",p:2800,k:"bowl",st:0,pop:4,d:"Глубокий салатник из каменной керамики. Держит температуру, не впитывает запахи."},
+ {id:7,n:"Постер в раме, 40×50",c:"Декор",p:3400,k:"frame",st:1,pop:5,v:["Дуб","Чёрный"],d:"Печать на матовой бумаге 250 г, рама из массива, антибликовое стекло."},
+ {id:8,n:"Свеча в бетоне, 40 часов",c:"Декор",p:1900,k:"candle",st:1,pop:7,new:1,d:"Соевый воск, хлопковый фитиль, аромат кедра и мха. Бетонный стакан можно использовать повторно."},
+ {id:9,n:"Ковёр шерстяной, 160×230",c:"Текстиль",p:34900,old:41000,k:"rug",st:1,pop:6,v:["Молоко","Уголь"],d:"Ручное ткачество, ворс 12 мм, основа из хлопка. Подходит для тёплого пола."},
+ {id:10,n:"Набор льняных салфеток, 6 шт",c:"Текстиль",p:2400,k:"plaid",st:1,pop:3,d:"Умягчённый лён, декоративный шов. С каждой стиркой становится мягче."},
+ {id:11,n:"Бра «Линия»",c:"Освещение",p:7800,k:"lamp",st:0,pop:5,d:"Поворотный кронштейн, тёплый свет 2700K, монтаж в подрозетник."},
+ {id:12,n:"Кувшин «Терра», 1,2 л",c:"Посуда",p:3900,old:4700,k:"vase",st:1,pop:6,d:"Керамика с необожжённым горлышком. Для воды, вина и полевых букетов."}
+];
+var CATS=["Все","Освещение","Текстиль","Посуда","Декор"];
+
+/* ---------- state ---------- */
+var F={cat:"Все",min:null,max:null,stock:false,sale:false,sort:"pop",q:""};
+var CART=[];
+try{var raw=localStorage.getItem("shopcart");if(raw)CART=JSON.parse(raw)}catch(e){}
+function saveCart(){try{localStorage.setItem("shopcart",JSON.stringify(CART))}catch(e){}}
+var curP=null,curVar=null,curQty=1,curTab="desc";
+
+/* ---------- helpers ---------- */
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},2600)}
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  window.scrollTo(0,0);
+}
+function card(p){
+  var i=p.id;
+  return '<article class="p"><div class="im" style="'+tint(i)+'" data-p="'+p.id+'">'+
+    (p.old?'<span class="badge">−'+Math.round((1-p.p/p.old)*100)+'%</span>':(p.new?'<span class="badge o">Новинка</span>':''))+
+    art(p.k,i)+'</div>'+
+    '<div class="bd"><button class="nm" data-p="'+p.id+'">'+esc(p.n)+'</button>'+
+    '<span class="cat">'+esc(p.c)+'</span>'+
+    '<span class="stock'+(p.st?'':' no')+'">'+(p.st?'В наличии':'Под заказ, 10–14 дней')+'</span>'+
+    '<span class="pr">'+rub(p.p)+(p.old?'<span class="old">'+rub(p.old)+'</span>':'')+'</span>'+
+    '<button class="btn btn-s btn-sm" data-add="'+p.id+'" style="margin-top:4px">В корзину</button>'+
+    '</div></article>';
+}
+
+/* ---------- catalog ---------- */
+function applyFilters(){
+  var list=PRODUCTS.filter(function(p){
+    if(F.cat!=="Все"&&p.c!==F.cat)return false;
+    if(F.min!=null&&p.p<F.min)return false;
+    if(F.max!=null&&p.p>F.max)return false;
+    if(F.stock&&!p.st)return false;
+    if(F.sale&&!p.old)return false;
+    var q=F.q.toLowerCase().trim();
+    if(q&&(p.n+" "+p.c+" "+p.d).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  if(F.sort==="asc")list.sort(function(a,b){return a.p-b.p});
+  else if(F.sort==="desc")list.sort(function(a,b){return b.p-a.p});
+  else if(F.sort==="new")list.sort(function(a,b){return (b.new||0)-(a.new||0)});
+  else list.sort(function(a,b){return b.pop-a.pop});
+  return list;
+}
+function renderCatalog(){
+  var list=applyFilters();
+  $("#grid").innerHTML=list.map(card).join("");
+  $("#noRes").hidden=list.length>0;
+  $("#found").textContent="Найдено товаров: "+list.length;
+  $("#catName").textContent=F.cat==="Все"?"Каталог":F.cat;
+  $("#fCats").innerHTML=CATS.map(function(c){
+    return '<label><input type="radio" name="cat" value="'+esc(c)+'"'+(F.cat===c?" checked":"")+' style="width:auto"> '+esc(c)+'</label>';
+  }).join("");
+}
+$("#fCats").addEventListener("change",function(e){if(e.target.name==="cat"){F.cat=e.target.value;renderCatalog()}});
+$("#pMin").addEventListener("input",function(){F.min=this.value===""?null:+this.value;renderCatalog()});
+$("#pMax").addEventListener("input",function(){F.max=this.value===""?null:+this.value;renderCatalog()});
+$("#fStock").addEventListener("change",function(){F.stock=this.checked;renderCatalog()});
+$("#fSale").addEventListener("change",function(){F.sale=this.checked;renderCatalog()});
+$("#sort").addEventListener("change",function(){F.sort=this.value;renderCatalog()});
+$("#fReset").addEventListener("click",function(){
+  F={cat:"Все",min:null,max:null,stock:false,sale:false,sort:"pop",q:F.q};
+  $("#pMin").value="";$("#pMax").value="";$("#fStock").checked=false;$("#fSale").checked=false;$("#sort").value="pop";
+  renderCatalog();
+});
+$("#q").addEventListener("input",function(){
+  F.q=this.value;
+  if($('[data-view="catalog"]').hidden)go("catalog");
+  renderCatalog();
+});
+
+/* ---------- product ---------- */
+function openProduct(id){
+  var p=PRODUCTS.filter(function(x){return x.id===id})[0];if(!p)return;
+  curP=p;curVar=p.v?p.v[0]:null;curQty=1;curTab="desc";
+  $("#pCrumb").textContent=p.n;
+  $("#ppBody").innerHTML=
+   '<div class="gal"><div class="main" style="'+tint(p.id)+'">'+art(p.k,p.id)+'</div>'+
+   '<div class="thumbs">'+[0,1,2].map(function(t){
+      return '<button style="'+tint(p.id+t)+'" aria-pressed="'+(t===0)+'" data-th="'+t+'">'+art(p.k,p.id+t)+'</button>';
+   }).join("")+'</div>'+
+   '<p class="small muted" style="margin-top:6px">В прототипе вместо фотографий — иллюстрации-заглушки. На боевом сайте здесь галерея снимков товара с зумом.</p></div>'+
+   '<div class="buy"><h1 style="font-size:26px">'+esc(p.n)+'</h1>'+
+   '<span class="stock'+(p.st?'':' no')+'">'+(p.st?'В наличии на складе':'Под заказ, 10–14 дней')+'</span>'+
+   '<div class="price-big">'+rub(p.p)+(p.old?'<span class="old" style="font-size:16px">'+rub(p.old)+'</span>':'')+'</div>'+
+   (p.v?'<div><div class="small muted" style="margin-bottom:6px">Цвет / отделка</div><div class="opts" id="vOpts">'+
+     p.v.map(function(v,i){return '<button class="opt" data-v="'+esc(v)+'" aria-pressed="'+(i===0)+'">'+esc(v)+'</button>'}).join("")+'</div></div>':'')+
+   '<div><div class="small muted" style="margin-bottom:6px">Количество</div>'+
+   '<div class="qty"><button data-q="-1">−</button><span id="qv">1</span><button data-q="1">+</button></div></div>'+
+   '<button class="btn btn-p" id="addBig">Добавить в корзину</button>'+
+   '<dl class="specs"><dt>Артикул</dt><dd class="num">DF-'+(1000+p.id)+'</dd>'+
+   '<dt>Категория</dt><dd>'+esc(p.c)+'</dd>'+
+   '<dt>Доставка</dt><dd>от 2 дней</dd></dl></div>';
+  renderTab();
+  $("#rel").innerHTML=PRODUCTS.filter(function(x){return x.c===p.c&&x.id!==p.id}).slice(0,3).map(card).join("")
+    ||PRODUCTS.slice(0,3).map(card).join("");
+  go("product");
+}
+function renderTab(){
+  var p=curP;if(!p)return;
+  var html;
+  if(curTab==="desc")html='<p>'+esc(p.d)+'</p><p style="margin-top:12px" class="muted">Товар отправляем в защитной упаковке. Если при получении обнаружите повреждение — снимите видео вскрытия, заменим или вернём деньги.</p>';
+  else if(curTab==="spec")html='<dl class="specs" style="grid-template-columns:220px 1fr">'+
+    '<dt>Артикул</dt><dd class="num">DF-'+(1000+p.id)+'</dd>'+
+    '<dt>Категория</dt><dd>'+esc(p.c)+'</dd>'+
+    (p.v?'<dt>Варианты</dt><dd>'+p.v.map(esc).join(", ")+'</dd>':'')+
+    '<dt>Наличие</dt><dd>'+(p.st?"на складе":"под заказ")+'</dd>'+
+    '<dt>Гарантия</dt><dd>12 месяцев</dd></dl>';
+  else html='<p>Курьером по городу — 400 ₽, бесплатно от 10 000 ₽. По России транспортной компанией — по тарифу перевозчика. Самовывоз из шоурума — бесплатно, в день заказа.</p>'+
+    '<p style="margin-top:12px">Оплата картой онлайн, через СБП или при получении. Юридическим лицам — счёт и закрывающие документы.</p>';
+  $("#pTabBody").innerHTML=html;
+}
+$("#pTabs").addEventListener("click",function(e){
+  var b=e.target.closest("[data-tab]");if(!b)return;
+  curTab=b.getAttribute("data-tab");
+  $$("#pTabs button").forEach(function(x){x.setAttribute("aria-pressed",String(x===b))});
+  renderTab();
+});
+$("#ppBody").addEventListener("click",function(e){
+  var v=e.target.closest("[data-v]"),q=e.target.closest("[data-q]"),th=e.target.closest("[data-th]");
+  if(v){curVar=v.getAttribute("data-v");$$("#vOpts .opt").forEach(function(x){x.setAttribute("aria-pressed",String(x===v))});return}
+  if(q){curQty=Math.max(1,curQty+ +q.getAttribute("data-q"));$("#qv").textContent=curQty;return}
+  if(th){$$(".thumbs button").forEach(function(x){x.setAttribute("aria-pressed",String(x===th))});return}
+  if(e.target.id==="addBig"){addToCart(curP.id,curQty,curVar)}
+});
+
+/* ---------- cart ---------- */
+function addToCart(id,qty,vr){
+  var p=PRODUCTS.filter(function(x){return x.id===id})[0];if(!p)return;
+  vr=vr||(p.v?p.v[0]:null);
+  var ex=CART.filter(function(c){return c.id===id&&c.v===vr})[0];
+  if(ex)ex.q+=qty||1;else CART.push({id:id,v:vr,q:qty||1});
+  saveCart();renderCart();toast(p.n+" — в корзине");
+}
+function cartTotal(){
+  return CART.reduce(function(a,c){
+    var p=PRODUCTS.filter(function(x){return x.id===c.id})[0];
+    return a+(p?p.p*c.q:0);
+  },0);
+}
+function renderCart(){
+  var n=CART.reduce(function(a,c){return a+c.q},0);
+  $("#cnt").textContent=n;
+  if(!CART.length){
+    $("#cartBody").innerHTML='<p class="muted" style="padding:24px 0;text-align:center">Корзина пуста</p>';
+    $("#cartFoot").innerHTML='<button class="btn btn-s" data-go="catalog" data-cat="Все">В каталог</button>';
+    return;
+  }
+  $("#cartBody").innerHTML=CART.map(function(c,i){
+    var p=PRODUCTS.filter(function(x){return x.id===c.id})[0];
+    return '<div class="ci"><div class="im" style="'+tint(p.id)+'">'+art(p.k,p.id)+'</div>'+
+      '<div><div class="nm">'+esc(p.n)+'</div>'+(c.v?'<div class="vr">'+esc(c.v)+'</div>':'')+
+      '<div class="qty" style="margin-top:6px;transform:scale(.85);transform-origin:left">'+
+      '<button data-cq="'+i+'|-1">−</button><span>'+c.q+'</span><button data-cq="'+i+'|1">+</button></div></div>'+
+      '<div><div class="pr">'+rub(p.p*c.q)+'</div><button class="rm" data-rm="'+i+'">Удалить</button></div></div>';
+  }).join("");
+  var t=cartTotal(),del=t>=10000?0:400;
+  $("#cartFoot").innerHTML=
+    '<div class="sumrow"><span>Товары</span><span class="num">'+rub(t)+'</span></div>'+
+    '<div class="sumrow"><span>Доставка</span><span class="num">'+(del?rub(del):"бесплатно")+'</span></div>'+
+    '<div class="sumrow t"><span>Итого</span><span class="num">'+rub(t+del)+'</span></div>'+
+    '<button class="btn btn-p" id="toCo">Оформить заказ</button>';
+}
+$("#cartBody").addEventListener("click",function(e){
+  var q=e.target.closest("[data-cq]"),r=e.target.closest("[data-rm]");
+  if(q){var a=q.getAttribute("data-cq").split("|"),i=+a[0],d=+a[1];
+    CART[i].q+=d;if(CART[i].q<1)CART.splice(i,1);saveCart();renderCart();return}
+  if(r){CART.splice(+r.getAttribute("data-rm"),1);saveCart();renderCart()}
+});
+function openCart(){$("#drawer").hidden=false;$("#dim").hidden=false;renderCart()}
+function closeCart(){$("#drawer").hidden=true;$("#dim").hidden=true}
+$("#openCart").addEventListener("click",openCart);
+$("#closeCart").addEventListener("click",closeCart);
+$("#dim").addEventListener("click",closeCart);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeCart()});
+
+/* ---------- checkout ---------- */
+var DEL=[{id:"cour",t:"Курьер по городу",d:"1–2 дня, бесплатно от 10 000 ₽",p:400},
+         {id:"pick",t:"Самовывоз из шоурума",d:"Сегодня после 14:00, ул. Примерная, 1",p:0},
+         {id:"tk",t:"Транспортная компания",d:"По России, 3–7 дней, по тарифу перевозчика",p:0}];
+var PAY=[{id:"card",t:"Картой онлайн",d:"Visa, Mastercard, МИР"},
+         {id:"sbp",t:"СБП по QR-коду",d:"Без комиссии"},
+         {id:"cash",t:"При получении",d:"Наличными или картой курьеру"}];
+var selDel="cour",selPay="card";
+function renderCheckout(){
+  $("#delRadios").innerHTML=DEL.map(function(d){
+    return '<label class="radio" data-on="'+(selDel===d.id?1:0)+'"><input type="radio" name="del" value="'+d.id+'"'+(selDel===d.id?" checked":"")+'>'+
+      '<span><span class="t">'+esc(d.t)+'</span><span class="d">'+esc(d.d)+'</span></span>'+
+      '<span style="margin-left:auto;font-weight:600">'+(d.p?rub(d.p):"0 ₽")+'</span></label>';
+  }).join("");
+  $("#payRadios").innerHTML=PAY.map(function(d){
+    return '<label class="radio" data-on="'+(selPay===d.id?1:0)+'"><input type="radio" name="pay" value="'+d.id+'"'+(selPay===d.id?" checked":"")+'>'+
+      '<span><span class="t">'+esc(d.t)+'</span><span class="d">'+esc(d.d)+'</span></span></label>';
+  }).join("");
+  $("#addrWrap").hidden=selDel==="pick";
+  $("#coItems").innerHTML=CART.map(function(c){
+    var p=PRODUCTS.filter(function(x){return x.id===c.id})[0];
+    return '<div class="sumrow"><span>'+esc(p.n)+(c.v?' · '+esc(c.v):'')+' × '+c.q+'</span><span class="num">'+rub(p.p*c.q)+'</span></div>';
+  }).join("")||'<p class="muted small">Корзина пуста</p>';
+  var t=cartTotal();
+  var d=DEL.filter(function(x){return x.id===selDel})[0];
+  var del=(d.id==="cour"&&t>=10000)?0:d.p;
+  $("#coSums").innerHTML=
+    '<div class="sumrow"><span>Товары</span><span class="num">'+rub(t)+'</span></div>'+
+    '<div class="sumrow"><span>Доставка</span><span class="num">'+(del?rub(del):"бесплатно")+'</span></div>'+
+    '<div class="sumrow t"><span>Итого</span><span class="num">'+rub(t+del)+'</span></div>';
+}
+$("#delRadios").addEventListener("change",function(e){selDel=e.target.value;renderCheckout()});
+$("#payRadios").addEventListener("change",function(e){selPay=e.target.value;renderCheckout()});
+$("#coForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  if(!CART.length){toast("Корзина пуста");return}
+  var t=cartTotal(),d=DEL.filter(function(x){return x.id===selDel})[0];
+  var del=(d.id==="cour"&&t>=10000)?0:d.p;
+  var no="DF-"+(10000+Math.floor(Math.random()*9000));
+  $("#dText").innerHTML="Номер заказа <b class=\"num\">"+no+"</b> на сумму <b class=\"num\">"+rub(t+del)+"</b>. "+
+    esc(d.t)+", оплата: "+esc((PAY.filter(function(x){return x.id===selPay})[0]||{}).t)+
+    ".<br><span class=\"small\">В прототипе письмо не отправляется. На боевом сайте заказ попадает в админку WooCommerce, покупателю уходит письмо, вам — уведомление.</span>";
+  CART=[];saveCart();renderCart();this.reset();go("done");
+});
+
+/* ---------- global nav ---------- */
+document.addEventListener("click",function(e){
+  var g=e.target.closest("[data-go]");
+  if(g){
+    var v=g.getAttribute("data-go"),c=g.getAttribute("data-cat");
+    if(c){F.cat=c;renderCatalog()}
+    if(v==="catalog")renderCatalog();
+    closeCart();go(v);
+    $$(".hnav button").forEach(function(b){b.setAttribute("aria-current",String(b===g))});
+    return;
+  }
+  var p=e.target.closest("[data-p]");
+  if(p){closeCart();openProduct(+p.getAttribute("data-p"));return}
+  var a=e.target.closest("[data-add]");
+  if(a){addToCart(+a.getAttribute("data-add"),1,null);openCart();return}
+  if(e.target.id==="toCo"){closeCart();renderCheckout();go("checkout");return}
+  var inf=e.target.closest("[data-info]");
+  if(inf){toast("Прототип: страница «"+inf.getAttribute("data-info")+"» — обычная страница WordPress, редактируется в админке");return}
+});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+/* ---------- init ---------- */
+$("#heroArt").innerHTML=art("vase",2);
+$("#heroArt").setAttribute("style",tint(2));
+$("#homeGrid").innerHTML=PRODUCTS.slice().sort(function(a,b){return b.pop-a.pop}).slice(0,6).map(card).join("");
+renderCatalog();renderCart();
+})();
+</script>
