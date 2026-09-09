@@ -1,0 +1,709 @@
+<title>Аналитика продавца Ozon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F4F5F7; --surface:#FCFCFB; --surface2:#ECEEF1; --surface3:#DFE2E7;
+  --ink:#0B0B0B; --ink2:#52514E; --ink3:#7C7B78;
+  --line:#DCDFE4; --line2:#C2C6CD;
+  --acc:#2A78D6; --acc-d:#1F5CA6; --acc-s:#E3EEFB;
+  --s1:#2A78D6; --s2:#1BAF7A;
+  --ok:#0F7B4F; --ok-s:#E1F1E9; --warn:#8A6100; --warn-s:#FBF0D7; --bad:#C0342E; --bad-s:#FAE4E2;
+  --sh:0 1px 2px rgba(11,11,11,.06),0 12px 30px -18px rgba(11,11,11,.35);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131313; --surface:#1A1A19; --surface2:#232322; --surface3:#2E2E2C;
+  --ink:#FFFFFF; --ink2:#C3C2B7; --ink3:#8E8D85;
+  --line:#2A2A28; --line2:#3A3A37;
+  --acc:#3987E5; --acc-d:#6BA7ED; --acc-s:#132539;
+  --s1:#3987E5; --s2:#199E70;
+  --ok:#4FBB86; --ok-s:#122A1F; --warn:#DDA94E; --warn-s:#2B2110; --bad:#E66767; --bad-s:#301616;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#131313; --surface:#1A1A19; --surface2:#232322; --surface3:#2E2E2C;
+  --ink:#FFFFFF; --ink2:#C3C2B7; --ink3:#8E8D85;
+  --line:#2A2A28; --line2:#3A3A37;
+  --acc:#3987E5; --acc-d:#6BA7ED; --acc-s:#132539;
+  --s1:#3987E5; --s2:#199E70;
+  --ok:#4FBB86; --ok-s:#122A1F; --warn:#DDA94E; --warn-s:#2B2110; --bad:#E66767; --bad-s:#301616;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+ font-family:"Source Sans 3",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.012em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(22px,2.8vw,30px)}h2{font-size:19px}h3{font-size:15.5px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1320px;margin:0 auto;padding:0 16px}
+.small{font-size:12.5px;line-height:1.4}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:54px}
+.brand{font-weight:700;font-size:17px;letter-spacing:-.02em}
+.brand i{font-style:normal;color:var(--acc)}
+.tabs{display:flex;gap:2px;margin-left:8px;overflow-x:auto}
+.tabs button{padding:7px 12px;border-radius:4px;font-size:13.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--acc-s);color:var(--acc)}
+.hr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ico{border:1px solid var(--line2);width:31px;height:31px;border-radius:4px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+.sync{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.dot.warn{background:var(--warn)}
+
+.page{padding:20px 0 60px}
+.phead{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.card-h{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:15px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+
+input,select,textarea{font:inherit;font-size:14px;background:var(--surface);color:var(--ink);
+ border:1px solid var(--line2);border-radius:4px;padding:9px 11px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+label.f{display:grid;gap:5px;font-size:12.5px;color:var(--ink2);font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border-radius:4px;
+ border:1px solid transparent;font-size:13.5px;font-weight:700;transition:background-color .15s,border-color .15s,color .15s}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:7px 13px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+ padding:2px 7px;border-radius:2px;background:var(--surface2);color:var(--ink2)}
+.pill.g{background:var(--ok-s);color:var(--ok)}
+.pill.w{background:var(--warn-s);color:var(--warn)}
+.pill.b{background:var(--bad-s);color:var(--bad)}
+.pill.a{background:var(--acc-s);color:var(--acc)}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.kpis{grid-template-columns:1fr}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 15px}
+.kpi .t{font-size:12.5px;color:var(--ink2);font-weight:600}
+.kpi .v{font-family:"JetBrains Mono",monospace;font-size:24px;font-weight:500;letter-spacing:-.02em;margin-top:6px}
+.kpi .d{font-size:12px;margin-top:4px}
+.up{color:var(--ok)}.down{color:var(--bad)}
+
+/* графики */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-bottom:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line2);border-radius:5px;
+ padding:8px 10px;font-size:12.5px;box-shadow:var(--sh);white-space:nowrap;z-index:5}
+.tip[hidden]{display:none}
+.tip b{font-family:"JetBrains Mono",monospace;font-weight:500}
+
+/* таблицы */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+ color:var(--ink3);font-weight:500;padding:9px 11px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap;cursor:pointer}
+th:hover{color:var(--acc)}
+th.n{text-align:right}
+td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+tbody tr.loss{background:var(--bad-s)}
+tbody tr.loss:hover{background:var(--bad-s);filter:brightness(.97)}
+td.n{text-align:right;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+.empty{padding:34px;text-align:center;color:var(--ink3)}
+
+.note{border-left:3px solid var(--warn);background:var(--warn-s);padding:12px 14px;border-radius:0 5px 5px 0;font-size:13px;color:var(--ink2)}
+.note.a{border-color:var(--acc);background:var(--acc-s)}
+.note.b{border-color:var(--bad);background:var(--bad-s)}
+.note b{color:var(--ink)}
+
+.log{font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.6;background:var(--surface2);
+ border-radius:5px;padding:11px 13px;max-height:200px;overflow-y:auto;display:grid;gap:3px}
+.log div{word-break:break-word}
+.log .ok{color:var(--ok)}.log .warn{color:var(--warn)}.log .err{color:var(--bad)}
+
+.bar-row{display:grid;grid-template-columns:150px 1fr 96px;gap:12px;align-items:center;font-size:13px;padding:5px 0}
+.bar-track{height:14px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:var(--s1)}
+.bar-val{text-align:right;font-family:"JetBrains Mono",monospace;font-size:12.5px}
+
+.view[hidden]{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);
+ padding:10px 17px;border-radius:4px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Прототип сервиса аналитики. Магазин, товары и цифры условные, к реальному Ozon не подключён. Показывает интерфейс, состав данных и логику расчётов.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">МАРЖА<i>.</i></span>
+  <nav class="tabs" id="tabs">
+    <button data-go="dash" aria-current="true">Дашборд</button>
+    <button data-go="goods">Товары</button>
+    <button data-go="loss">Где теряем</button>
+    <button data-go="cost">Себестоимость</button>
+    <button data-go="conn">Подключение</button>
+  </nav>
+  <div class="hr">
+    <span class="sync"><span class="dot" id="syncDot"></span><span id="syncTxt">обновлено 09:14</span></span>
+    <button class="ico" id="theme" aria-label="Тема">◐</button>
+  </div>
+</div></header>
+
+<div class="wrap page">
+<!-- DASHBOARD -->
+<section class="view" data-view="dash">
+  <div class="phead">
+    <div><h1>Магазин «Демо-Селлер»</h1><p class="small muted">Ozon Seller API · FBO и FBS · период 90 дней</p></div>
+    <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+      <label class="f">Период<select id="period">
+        <option value="30">30 дней</option><option value="60">60 дней</option><option value="90" selected>90 дней</option>
+      </select></label>
+      <button class="btn btn-s btn-sm" id="syncNow">Синхронизировать</button>
+    </div>
+  </div>
+
+  <div class="note" id="warnBox" style="margin-bottom:14px"></div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid g2" style="margin-top:14px;align-items:start">
+    <div class="card"><div class="card-h"><h3>Выручка и прибыль по неделям</h3><span class="lbl">руб.</span></div>
+      <div class="card-b">
+        <div class="legend">
+          <span><i style="background:var(--s1)"></i>Выручка</span>
+          <span><i style="background:var(--s2)"></i>Прибыль до налогов</span>
+        </div>
+        <div class="chart" id="lineWrap">
+          <svg id="lineChart" viewBox="0 0 720 280" role="img" aria-label="Динамика выручки и прибыли по неделям"></svg>
+          <div class="tip" id="tip" hidden></div>
+        </div>
+        <p class="small muted" style="margin-top:8px">Наведите курсор на график — покажет обе величины за неделю.</p>
+      </div></div>
+    <div class="card"><div class="card-h"><h3>Куда уходит выручка</h3><span class="lbl">за период</span></div>
+      <div class="card-b" id="bars"></div></div>
+  </div>
+</section>
+
+<!-- GOODS -->
+<section class="view" data-view="goods" hidden>
+  <div class="phead">
+    <div><h1>Товары</h1><p class="small muted">Убыточные позиции подсвечены. Сортировка — клик по заголовку столбца.</p></div>
+    <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap">
+      <input type="search" id="gSearch" placeholder="Артикул или название" style="width:230px">
+      <label class="f">Показать<select id="gFilter">
+        <option value="all">все товары</option><option value="loss">только убыточные</option>
+        <option value="nocost">без себестоимости</option><option value="zero">нулевые остатки</option>
+      </select></label>
+      <button class="btn btn-s btn-sm" id="expBtn">Выгрузить CSV</button>
+    </div>
+  </div>
+  <div class="tw"><table id="gTable">
+    <thead><tr>
+      <th data-s="name">Товар</th><th data-s="sku">Артикул</th>
+      <th class="n" data-s="units">Продано</th><th class="n" data-s="revenue">Выручка</th>
+      <th class="n" data-s="cost">Себестоимость</th><th class="n" data-s="fees">Удержания</th>
+      <th class="n" data-s="ads">Реклама</th><th class="n" data-s="profit">Прибыль</th>
+      <th class="n" data-s="margin">Маржа</th><th class="n" data-s="stock">Остаток</th>
+    </tr></thead><tbody></tbody></table>
+    <div class="empty" id="gEmpty" hidden>Ничего не найдено.</div>
+  </div>
+  <p class="small muted" style="margin-top:10px">Прибыль до налогов = выручка − себестоимость − удержания Ozon − реклама. Возвраты вычтены из выручки и из себестоимости, отменённые заказы в продажи не попадают.</p>
+</section>
+
+<!-- LOSS -->
+<section class="view" data-view="loss" hidden>
+  <div class="phead"><div><h1>Где теряем деньги</h1>
+    <p class="small muted">То, ради чего сервис и нужен: не «сколько продали», а «где протекает».</p></div></div>
+  <div class="grid g3" id="lossCards"></div>
+  <div class="card" style="margin-top:14px"><div class="card-h"><h3>Топ убыточных позиций</h3></div>
+    <div class="tw" style="border:0;border-radius:0"><table id="lossTable">
+      <thead><tr><th>Товар</th><th class="n">Продано</th><th class="n">Выручка</th><th class="n">Прибыль</th><th class="n">Маржа</th><th>Причина</th></tr></thead>
+      <tbody></tbody></table></div></div>
+</section>
+
+<!-- COST -->
+<section class="view" data-view="cost" hidden>
+  <div class="phead"><div><h1>Себестоимость</h1>
+    <p class="small muted">Без неё прибыль не считается. Заполняйте руками или загрузите файл по шаблону.</p></div>
+    <button class="btn btn-s btn-sm" id="tplBtn">Шаблон CSV</button></div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card"><div class="card-h"><h3>Ввод по товарам</h3><span class="pill" id="costFill"></span></div>
+      <div class="tw" style="border:0;border-radius:0;max-height:420px;overflow-y:auto"><table id="cTable">
+        <thead><tr><th>Товар</th><th>Артикул</th><th class="n" style="width:150px">Себестоимость, ₽</th></tr></thead>
+        <tbody></tbody></table></div></div>
+    <div>
+      <div class="card"><div class="card-h"><h3>Импорт из CSV / XLSX</h3></div>
+        <div class="card-b grid">
+          <p class="small muted">Формат: артикул;себестоимость. Вставьте содержимое файла или перетащите его в поле.</p>
+          <textarea id="csvIn" rows="7" class="mono" style="font-size:12.5px" placeholder="SKU-1001;780&#10;SKU-1002;1240"></textarea>
+          <button class="btn btn-p" id="impBtn">Загрузить</button>
+          <p class="small muted" id="impRes"></p>
+        </div></div>
+      <div class="card" style="margin-top:14px"><div class="card-h"><h3>Дополнительные расходы</h3></div>
+        <div class="card-b grid">
+          <label class="f">Реклама за период, ₽<input type="number" id="adsTotal" value="48200" min="0"></label>
+          <label class="f">Прочие общие расходы, ₽<input type="number" id="otherTotal" value="12000" min="0"></label>
+          <label class="f">Распределять общие расходы
+            <select id="allocMode">
+              <option value="revenue">пропорционально выручке</option>
+              <option value="units">пропорционально штукам</option>
+              <option value="none">не распределять по товарам</option>
+            </select></label>
+          <p class="small muted">Способ распределения согласуется до старта — от него зависит, какие товары окажутся убыточными.</p>
+        </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECTION -->
+<section class="view" data-view="conn" hidden>
+  <div class="phead"><div><h1>Подключение магазина</h1>
+    <p class="small muted">Ключи хранятся зашифрованными, в интерфейс возвращается только маска.</p></div></div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card"><div class="card-h"><h3>Ozon Seller API</h3><span class="pill g" id="connPill">подключено</span></div>
+      <form class="card-b grid" id="connForm">
+        <label class="f">Client-Id<input type="text" id="clientId" value="123456"></label>
+        <label class="f">Api-Key<input type="password" id="apiKey" value="••••••••••••••••••••••"></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-p" type="submit">Проверить доступ</button>
+          <button class="btn btn-s" type="button" id="fullSync">Первичная загрузка за 90 дней</button>
+        </div>
+        <p class="small muted">Проверка делает один запрос к списку товаров: если ключ неверный или нет прав — увидите это сразу, а не через сутки.</p>
+      </form></div>
+    <div class="card"><div class="card-h"><h3>Журнал синхронизации</h3><button class="btn btn-s btn-sm" id="clrLog">Очистить</button></div>
+      <div class="card-b"><div class="log" id="log"></div>
+        <p class="small muted" style="margin-top:10px">Повторный запуск не создаёт дублей: записи кладутся по ключу «магазин + тип + идентификатор операции».</p></div></div>
+  </div>
+  <div class="note a" style="margin-top:14px">
+    <b>Ограничения, которые надо знать заранее.</b> Seller API отдаёт финансовые операции пачками с лимитом по частоте — первичная загрузка 90 дней идёт очередью с паузами, примерно 10–20 минут на магазин с тысячей товаров. Часть удержаний появляется в отчётах с задержкой до нескольких суток, поэтому цифры за последние дни уточняются задним числом. Это не баг сервиса, это поведение площадки, и в интерфейсе оно должно быть подписано.
+  </div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var rub=function(n){return Math.round(n).toLocaleString("ru-RU")+" ₽"};
+var pct=function(n){return (Math.round(n*10)/10).toLocaleString("ru-RU")+" %"};
+
+/* ---------- демо-данные ---------- */
+var GOODS=[
+ {sku:"SKU-1001",name:"Термокружка 450 мл",units:412,price:1290,cost:520,feeRate:.23,ads:9800,stock:186,ret:18},
+ {sku:"SKU-1002",name:"Плед флисовый 150×200",units:268,price:1890,cost:940,feeRate:.26,ads:7400,stock:54,ret:22},
+ {sku:"SKU-1003",name:"Органайзер для авто",units:531,price:790,cost:410,feeRate:.31,ads:11200,stock:0,ret:41},
+ {sku:"SKU-1004",name:"Набор контейнеров 5 шт",units:196,price:1490,cost:null,feeRate:.24,ads:3100,stock:92,ret:9},
+ {sku:"SKU-1005",name:"Лампа настольная LED",units:143,price:2390,cost:1310,feeRate:.22,ads:5200,stock:37,ret:6},
+ {sku:"SKU-1006",name:"Коврик придверный",units:308,price:990,cost:610,feeRate:.29,ads:8600,stock:121,ret:27},
+ {sku:"SKU-1007",name:"Сушилка для белья",units:87,price:3290,cost:1880,feeRate:.21,ads:2400,stock:19,ret:4},
+ {sku:"SKU-1008",name:"Подставка для ноутбука",units:224,price:1690,cost:null,feeRate:.25,ads:4900,stock:63,ret:11},
+ {sku:"SKU-1009",name:"Кофеварка гейзерная",units:64,price:2790,cost:1620,feeRate:.23,ads:1800,stock:8,ret:3},
+ {sku:"SKU-1010",name:"Полотенце банное 70×140",units:389,price:890,cost:465,feeRate:.30,ads:9100,stock:204,ret:35},
+ {sku:"SKU-1011",name:"Ночник детский",units:112,price:1190,cost:null,feeRate:.27,ads:2600,stock:44,ret:8},
+ {sku:"SKU-1012",name:"Держатель для телефона",units:476,price:590,cost:245,feeRate:.33,ads:10400,stock:0,ret:52}
+];
+GOODS.forEach(function(g){if(g.cost===undefined||g.cost===null||typeof g.cost!=="number")g.cost=null});
+
+var WEEKS=[
+ {w:"нед 1",rev:412000},{w:"нед 2",rev:468000},{w:"нед 3",rev:521000},
+ {w:"нед 4",rev:497000},{w:"нед 5",rev:583000},{w:"нед 6",rev:641000},
+ {w:"нед 7",rev:612000},{w:"нед 8",rev:704000},{w:"нед 9",rev:688000},
+ {w:"нед 10",rev:751000},{w:"нед 11",rev:809000},{w:"нед 12",rev:842000}
+];
+
+var COST_KEY="ozoncost";
+try{
+  var saved=JSON.parse(localStorage.getItem(COST_KEY)||"{}");
+  GOODS.forEach(function(g){if(saved[g.sku]!=null)g.cost=saved[g.sku]});
+}catch(e){}
+function saveCosts(){
+  var o={};GOODS.forEach(function(g){if(g.cost!=null)o[g.sku]=g.cost});
+  try{localStorage.setItem(COST_KEY,JSON.stringify(o))}catch(e){}
+}
+
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3000)}
+
+/* ---------- расчёты ---------- */
+function periodK(){return (+$("#period").value)/90}
+function calcGood(g,allocPerRev){
+  var k=periodK();
+  var units=Math.round(g.units*k), ret=Math.round(g.ret*k);
+  var sold=units-ret;                       /* возвраты вычитаем из продаж */
+  var revenue=sold*g.price;                 /* отменённые заказы в продажи не попадают */
+  var fees=Math.round(revenue*g.feeRate);   /* комиссия, логистика, эквайринг — одной строкой удержаний */
+  var ads=Math.round(g.ads*k);
+  var costSum=g.cost!=null?sold*g.cost:null;
+  var alloc=allocPerRev?Math.round(revenue*allocPerRev):0;
+  var profit=costSum!=null?revenue-costSum-fees-ads-alloc:null;
+  var margin=profit!=null&&revenue>0?profit/revenue*100:null;
+  return {sku:g.sku,name:g.name,units:sold,revenue:revenue,cost:costSum,fees:fees,ads:ads+alloc,
+    profit:profit,margin:margin,stock:g.stock,ret:ret,hasCost:g.cost!=null};
+}
+function rows(){
+  var k=periodK();
+  var totalRev=GOODS.reduce(function(a,g){
+    var sold=Math.round(g.units*k)-Math.round(g.ret*k);return a+sold*g.price},0);
+  var other=+$("#otherTotal").value||0;
+  var mode=$("#allocMode").value;
+  var allocPerRev=(mode==="revenue"&&totalRev>0)?(other*k)/totalRev:0;
+  return GOODS.map(function(g){return calcGood(g,allocPerRev)});
+}
+function totals(){
+  var r=rows();
+  var withCost=r.filter(function(x){return x.hasCost});
+  return {
+    revenue:r.reduce(function(a,x){return a+x.revenue},0),
+    fees:r.reduce(function(a,x){return a+x.fees},0),
+    ads:r.reduce(function(a,x){return a+x.ads},0),
+    cost:withCost.reduce(function(a,x){return a+x.cost},0),
+    profit:withCost.reduce(function(a,x){return a+x.profit},0),
+    units:r.reduce(function(a,x){return a+x.units},0),
+    ret:r.reduce(function(a,x){return a+x.ret},0),
+    covered:withCost.length,total:r.length,
+    revCovered:withCost.reduce(function(a,x){return a+x.revenue},0)
+  };
+}
+
+/* ---------- дашборд ---------- */
+function renderWarn(){
+  var t=totals();
+  if(t.covered===t.total){
+    $("#warnBox").className="note a";
+    $("#warnBox").innerHTML='<b>Данные полные.</b> Себестоимость заполнена по всем '+t.total+' товарам, прибыль считается по всему ассортименту.';
+  }else{
+    var share=Math.round((1-t.revCovered/t.revenue)*100);
+    $("#warnBox").className="note";
+    $("#warnBox").innerHTML='<b>Расчёт неполный: себестоимость есть у '+t.covered+' товаров из '+t.total+'.</b> '+
+      'На товары без себестоимости приходится '+share+' % выручки, поэтому прибыль ниже — это не итог, а часть картины. '+
+      'Заполните её на вкладке «Себестоимость», и цифры пересчитаются.';
+  }
+}
+function renderKpis(){
+  var t=totals();
+  var marg=t.revCovered>0?t.profit/t.revCovered*100:0;
+  var items=[
+   {t:"Выручка",v:rub(t.revenue),d:'<span class="up">+12,4 % к прошлому периоду</span>'},
+   {t:"Удержания Ozon",v:rub(t.fees),d:'<span class="muted">'+pct(t.fees/t.revenue*100)+' от выручки</span>'},
+   {t:"Реклама и прочее",v:rub(t.ads),d:'<span class="muted">'+pct(t.ads/t.revenue*100)+' от выручки</span>'},
+   {t:"Прибыль до налогов",v:rub(t.profit),d:t.covered<t.total?'<span class="down">по '+t.covered+' из '+t.total+' товаров</span>':'<span class="up">по всем товарам</span>'},
+   {t:"Маржинальность",v:pct(marg),d:'<span class="muted">'+t.units+' продаж, '+t.ret+' возвратов</span>'}
+  ];
+  $("#kpis").innerHTML=items.map(function(i){
+    return '<div class="kpi"><div class="t">'+i.t+'</div><div class="v">'+i.v+'</div><div class="d small">'+i.d+'</div></div>';
+  }).join("");
+}
+
+/* линейный график с наведением */
+var CH={w:720,h:280,l:58,r:14,t:14,b:28};
+function renderLine(){
+  var k=periodK(),n=Math.max(4,Math.round(WEEKS.length*k));
+  var data=WEEKS.slice(WEEKS.length-n).map(function(x){
+    return {w:x.w,rev:Math.round(x.rev*1),prof:Math.round(x.rev*0.17)};
+  });
+  var maxV=Math.max.apply(null,data.map(function(d){return d.rev}))*1.1;
+  var iw=CH.w-CH.l-CH.r, ih=CH.h-CH.t-CH.b;
+  var X=function(i){return CH.l+(data.length<2?iw/2:i*iw/(data.length-1))};
+  var Y=function(v){return CH.t+ih-(v/maxV)*ih};
+  var ticks=[0,.25,.5,.75,1].map(function(f){return Math.round(maxV*f)});
+  var grid=ticks.map(function(v){
+    return '<line x1="'+CH.l+'" y1="'+Y(v)+'" x2="'+(CH.w-CH.r)+'" y2="'+Y(v)+'" stroke="var(--line)" stroke-width="1"/>'+
+      '<text x="'+(CH.l-8)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="var(--ink3)" font-family="JetBrains Mono, monospace">'+
+      (v>=1000?Math.round(v/1000)+"к":v)+'</text>';
+  }).join("");
+  var path=function(key){
+    return data.map(function(d,i){return (i?"L":"M")+X(i)+" "+Y(d[key])}).join(" ");
+  };
+  var dots=function(key,color){
+    return data.map(function(d,i){
+      return '<circle cx="'+X(i)+'" cy="'+Y(d[key])+'" r="4" fill="'+color+'" stroke="var(--surface)" stroke-width="2"/>';
+    }).join("");
+  };
+  var last=data[data.length-1];
+  var xlabels=data.map(function(d,i){
+    if(data.length>8&&i%2)return "";
+    return '<text x="'+X(i)+'" y="'+(CH.h-8)+'" text-anchor="middle" font-size="11" fill="var(--ink3)">'+esc(d.w)+'</text>';
+  }).join("");
+  $("#lineChart").innerHTML=grid+
+    '<path d="'+path("rev")+'" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round"/>'+
+    '<path d="'+path("prof")+'" fill="none" stroke="var(--s2)" stroke-width="2" stroke-linejoin="round"/>'+
+    dots("rev","var(--s1)")+dots("prof","var(--s2)")+
+    '<text x="'+(X(data.length-1)-6)+'" y="'+(Y(last.rev)-12)+'" text-anchor="end" font-size="12" font-weight="600" fill="var(--ink)">'+Math.round(last.rev/1000)+'к ₽</text>'+
+    '<text x="'+(X(data.length-1)-6)+'" y="'+(Y(last.prof)-12)+'" text-anchor="end" font-size="12" font-weight="600" fill="var(--ink)">'+Math.round(last.prof/1000)+'к ₽</text>'+
+    xlabels+
+    '<line id="cross" x1="0" y1="'+CH.t+'" x2="0" y2="'+(CH.t+ih)+'" stroke="var(--line2)" stroke-width="1" style="display:none"/>';
+  var svg=$("#lineChart"),tip=$("#tip");
+  svg.onmousemove=function(e){
+    var box=svg.getBoundingClientRect();
+    var rel=(e.clientX-box.left)/box.width*CH.w;
+    var i=Math.round((rel-CH.l)/(iw/(data.length-1||1)));
+    i=Math.max(0,Math.min(data.length-1,i));
+    var d=data[i];
+    var cross=svg.querySelector("#cross");
+    cross.setAttribute("x1",X(i));cross.setAttribute("x2",X(i));cross.style.display="";
+    tip.hidden=false;
+    tip.innerHTML='<div style="font-weight:600;margin-bottom:4px">'+esc(d.w)+'</div>'+
+      '<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--s1);margin-right:6px"></i>Выручка <b>'+rub(d.rev)+'</b></div>'+
+      '<div><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--s2);margin-right:6px"></i>Прибыль <b>'+rub(d.prof)+'</b></div>';
+    var px=X(i)/CH.w*box.width;
+    tip.style.left=Math.min(box.width-tip.offsetWidth-4,Math.max(0,px-tip.offsetWidth/2))+"px";
+    tip.style.top="6px";
+  };
+  svg.onmouseleave=function(){
+    tip.hidden=true;
+    var c=svg.querySelector("#cross");if(c)c.style.display="none";
+  };
+}
+function renderBars(){
+  var t=totals();
+  var items=[
+   {n:"Комиссия и логистика",v:t.fees},
+   {n:"Себестоимость",v:t.cost},
+   {n:"Реклама и прочее",v:t.ads},
+   {n:"Прибыль до налогов",v:Math.max(0,t.profit)}
+  ];
+  var max=Math.max.apply(null,items.map(function(i){return i.v}));
+  $("#bars").innerHTML=items.map(function(i){
+    return '<div class="bar-row"><span class="muted">'+esc(i.n)+'</span>'+
+      '<span class="bar-track"><span class="bar-fill" style="width:'+(max?i.v/max*100:0)+'%"></span></span>'+
+      '<span class="bar-val">'+rub(i.v)+'</span></div>';
+  }).join("")+
+  '<p class="small muted" style="margin-top:10px">Себестоимость учтена только по товарам, где она заполнена.</p>';
+}
+
+/* ---------- товары ---------- */
+var sortKey="profit",sortDir=1;
+function renderGoods(){
+  var q=($("#gSearch").value||"").toLowerCase().trim();
+  var f=$("#gFilter").value;
+  var list=rows().filter(function(r){
+    if(q&&(r.name+" "+r.sku).toLowerCase().indexOf(q)<0)return false;
+    if(f==="loss")return r.profit!=null&&r.profit<0;
+    if(f==="nocost")return !r.hasCost;
+    if(f==="zero")return r.stock===0;
+    return true;
+  });
+  list.sort(function(a,b){
+    var x=a[sortKey],y=b[sortKey];
+    if(x==null)return 1;if(y==null)return -1;
+    if(typeof x==="string")return x.localeCompare(y,"ru")*sortDir;
+    return (x-y)*sortDir;
+  });
+  $("#gTable").querySelector("tbody").innerHTML=list.map(function(r){
+    var loss=r.profit!=null&&r.profit<0;
+    return '<tr'+(loss?' class="loss"':'')+'><td style="font-weight:600">'+esc(r.name)+
+      (!r.hasCost?' <span class="pill w">нет себестоимости</span>':'')+'</td>'+
+      '<td class="mono small">'+esc(r.sku)+'</td>'+
+      '<td class="n">'+r.units+'</td><td class="n">'+rub(r.revenue)+'</td>'+
+      '<td class="n">'+(r.cost!=null?rub(r.cost):"—")+'</td>'+
+      '<td class="n">'+rub(r.fees)+'</td><td class="n">'+rub(r.ads)+'</td>'+
+      '<td class="n" style="font-weight:700;color:'+(loss?"var(--bad)":"inherit")+'">'+(r.profit!=null?rub(r.profit):"—")+'</td>'+
+      '<td class="n">'+(r.margin!=null?pct(r.margin):"—")+'</td>'+
+      '<td class="n">'+(r.stock===0?'<span class="pill b">0</span>':r.stock)+'</td></tr>';
+  }).join("");
+  $("#gEmpty").hidden=list.length>0;
+}
+$("#gTable").querySelector("thead").addEventListener("click",function(e){
+  var th=e.target.closest("[data-s]");if(!th)return;
+  var k=th.getAttribute("data-s");
+  if(k===sortKey)sortDir*=-1;else{sortKey=k;sortDir=(k==="name"||k==="sku")?1:-1}
+  renderGoods();
+});
+$("#gSearch").addEventListener("input",renderGoods);
+$("#gFilter").addEventListener("change",renderGoods);
+$("#expBtn").addEventListener("click",function(){
+  var head=["Артикул","Товар","Продано","Выручка","Себестоимость","Удержания","Реклама","Прибыль","Маржа %","Остаток"];
+  var lines=[head.join(";")].concat(rows().map(function(r){
+    return [r.sku,r.name,r.units,r.revenue,r.cost==null?"":r.cost,r.fees,r.ads,
+      r.profit==null?"":r.profit,r.margin==null?"":Math.round(r.margin*10)/10,r.stock].join(";");
+  }));
+  showCsv("Выгрузка товаров",lines.join("\n"));
+});
+function showCsv(title,csv){
+  toast("В боевой версии файл скачивается. В демо содержимое показано ниже.");
+  var w=document.createElement("div");
+  w.style.cssText="position:fixed;inset:0;background:rgba(10,10,10,.55);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;overflow:auto";
+  w.innerHTML='<div class="card" style="max-width:760px;width:100%;box-shadow:var(--sh)">'+
+    '<div class="card-h"><h3>'+esc(title)+'</h3><button class="btn btn-s btn-sm" data-x="1">Закрыть</button></div>'+
+    '<div class="card-b"><textarea rows="14" class="mono" style="font-size:12px" readonly>'+esc(csv)+'</textarea></div></div>';
+  w.addEventListener("click",function(e){if(e.target===w||e.target.getAttribute("data-x"))w.remove()});
+  document.body.appendChild(w);
+}
+
+/* ---------- потери ---------- */
+function renderLoss(){
+  var r=rows(),t=totals();
+  var losses=r.filter(function(x){return x.profit!=null&&x.profit<0});
+  var lossSum=losses.reduce(function(a,x){return a+x.profit},0);
+  var retSum=r.reduce(function(a,x){return a+x.ret*(GOODS.filter(function(g){return g.sku===x.sku})[0].price)},0);
+  var zero=r.filter(function(x){return x.stock===0});
+  var cards=[
+   {t:"Убыточные позиции",v:rub(Math.abs(lossSum)),d:losses.length+" товаров работают в минус. Каждая продажа увеличивает убыток.",cls:"b"},
+   {t:"Возвраты",v:rub(retSum),d:t.ret+" возвратов за период. Логистика возврата оплачена, товар вернулся в оборот не весь.",cls:"w"},
+   {t:"Нет на складе",v:zero.length+" SKU",d:"Позиции с нулевым остатком: реклама на них могла продолжать крутиться.",cls:"w"}
+  ];
+  $("#lossCards").innerHTML=cards.map(function(c){
+    return '<div class="card"><div class="card-b"><span class="pill '+c.cls+'">'+esc(c.t)+'</span>'+
+      '<div class="mono" style="font-size:26px;font-weight:500;margin:8px 0 6px">'+esc(c.v)+'</div>'+
+      '<p class="small muted">'+esc(c.d)+'</p></div></div>';
+  }).join("");
+  losses.sort(function(a,b){return a.profit-b.profit});
+  $("#lossTable").querySelector("tbody").innerHTML=losses.map(function(x){
+    var g=GOODS.filter(function(y){return y.sku===x.sku})[0];
+    var reason=x.ads>Math.abs(x.profit)?"реклама съедает маржу":
+      (g.feeRate>=.3?"высокая комиссия категории":"низкая наценка");
+    return '<tr class="loss"><td style="font-weight:600">'+esc(x.name)+'</td><td class="n">'+x.units+'</td>'+
+      '<td class="n">'+rub(x.revenue)+'</td><td class="n" style="color:var(--bad);font-weight:700">'+rub(x.profit)+'</td>'+
+      '<td class="n">'+pct(x.margin)+'</td><td>'+esc(reason)+'</td></tr>';
+  }).join("")||'<tr><td colspan="6" class="empty">Убыточных позиций нет — по товарам, где заполнена себестоимость.</td></tr>';
+}
+
+/* ---------- себестоимость ---------- */
+function renderCost(){
+  var filled=GOODS.filter(function(g){return g.cost!=null}).length;
+  $("#costFill").textContent="заполнено "+filled+" из "+GOODS.length;
+  $("#costFill").className="pill "+(filled===GOODS.length?"g":"w");
+  $("#cTable").querySelector("tbody").innerHTML=GOODS.map(function(g){
+    return '<tr><td>'+esc(g.name)+'</td><td class="mono small">'+esc(g.sku)+'</td>'+
+      '<td class="n"><input type="number" data-cost="'+g.sku+'" value="'+(g.cost!=null?g.cost:"")+'" min="0" placeholder="—" style="text-align:right"></td></tr>';
+  }).join("");
+}
+$("#cTable").addEventListener("input",function(e){
+  var sku=e.target.getAttribute("data-cost");if(!sku)return;
+  var g=GOODS.filter(function(x){return x.sku===sku})[0];
+  g.cost=e.target.value===""?null:Math.max(0,+e.target.value||0);
+  saveCosts();refreshAll(false);
+});
+$("#impBtn").addEventListener("click",function(){
+  var txt=$("#csvIn").value.trim();
+  if(!txt){toast("Вставьте содержимое файла");return}
+  var ok=0,bad=0,unknown=[];
+  txt.split(/\r?\n/).forEach(function(line){
+    if(!line.trim())return;
+    var p=line.split(/[;,\t]/);
+    if(p.length<2){bad++;return}
+    var sku=p[0].trim(),v=parseFloat(String(p[1]).replace(",","."));
+    var g=GOODS.filter(function(x){return x.sku.toLowerCase()===sku.toLowerCase()})[0];
+    if(!g){unknown.push(sku);return}
+    if(isNaN(v)){bad++;return}
+    g.cost=v;ok++;
+  });
+  saveCosts();refreshAll(false);
+  $("#impRes").innerHTML="Загружено: <b>"+ok+"</b>. Ошибок формата: "+bad+
+    (unknown.length?". Артикулы не найдены: "+esc(unknown.slice(0,5).join(", "))+(unknown.length>5?" и ещё "+(unknown.length-5):""):"");
+  toast("Импорт завершён: "+ok+" позиций");
+});
+$("#tplBtn").addEventListener("click",function(){
+  showCsv("Шаблон себестоимости","Артикул;Себестоимость\n"+GOODS.map(function(g){return g.sku+";"}).join("\n"));
+});
+var drop=$("#csvIn");
+drop.addEventListener("dragover",function(e){e.preventDefault()});
+drop.addEventListener("drop",function(e){
+  e.preventDefault();
+  var f=e.dataTransfer.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){drop.value=String(r.result);toast("Файл прочитан, нажмите «Загрузить»")};
+  r.readAsText(f);
+});
+
+/* ---------- подключение и синхронизация ---------- */
+function logLine(text,cls){
+  var d=document.createElement("div");
+  d.className=cls||"";
+  d.textContent=new Date().toLocaleTimeString("ru-RU")+"  "+text;
+  $("#log").appendChild(d);$("#log").scrollTop=$("#log").scrollHeight;
+}
+$("#clrLog").addEventListener("click",function(){$("#log").innerHTML=""});
+$("#connForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  logLine("POST /v1/product/list  проверка доступа…","");
+  setTimeout(function(){
+    logLine("200 OK · доступ подтверждён, товаров: 12","ok");
+    $("#connPill").textContent="подключено";$("#connPill").className="pill g";
+    toast("Ключ рабочий. В боевой версии он тут же шифруется и в интерфейс больше не возвращается.");
+  },700);
+});
+function runSync(full){
+  var steps=full?[
+    ["GET /v2/product/list · страница 1/1","ok",400],
+    ["GET /v3/product/info/list · 12 товаров","ok",700],
+    ["POST /v2/posting/fbo/list · период 90 дней","ok",1000],
+    ["POST /v3/posting/fbs/list · период 90 дней","ok",1400],
+    ["429 Too Many Requests · пауза 5 с, повтор","warn",1800],
+    ["POST /v3/finance/transaction/list · страница 1/4","ok",2200],
+    ["POST /v3/finance/transaction/list · страница 4/4","ok",2600],
+    ["GET /v1/analytics/stock_on_warehouses","ok",2900],
+    ["Дедупликация по ключу operation_id ·0 дублей","ok",3100],
+    ["Готово: 12 товаров, 2 384 заказа, 41 302 операции","ok",3300]
+  ]:[
+    ["Инкрементальная синхронизация с 08.09.2026","",300],
+    ["POST /v3/posting/fbs/list · 34 новых отправления","ok",800],
+    ["POST /v3/finance/transaction/list · 512 операций","ok",1300],
+    ["Дедупликация: 0 дублей, обновлено 34 записи","ok",1600],
+    ["Готово. Следующий автозапуск в 06:00","ok",1800]
+  ];
+  steps.forEach(function(s){
+    setTimeout(function(){logLine(s[0],s[1])},s[2]);
+  });
+  var end=steps[steps.length-1][2];
+  $("#syncDot").className="dot warn";$("#syncTxt").textContent="синхронизация…";
+  setTimeout(function(){
+    $("#syncDot").className="dot";
+    $("#syncTxt").textContent="обновлено "+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+    toast(full?"Первичная загрузка завершена":"Данные обновлены");
+  },end+200);
+}
+$("#syncNow").addEventListener("click",function(){go("conn");runSync(false)});
+$("#fullSync").addEventListener("click",function(){runSync(true)});
+
+/* ---------- общее ---------- */
+function refreshAll(scroll){
+  renderWarn();renderKpis();renderLine();renderBars();renderGoods();renderLoss();renderCost();
+}
+$("#period").addEventListener("change",function(){refreshAll();toast("Период изменён — все цифры пересчитаны")});
+["adsTotal","otherTotal","allocMode"].forEach(function(id){
+  $("#"+id).addEventListener("change",function(){refreshAll()});
+});
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===v))});
+  window.scrollTo(0,0);
+  if(v==="dash")renderLine();
+}
+$("#tabs").addEventListener("click",function(e){
+  var b=e.target.closest("[data-go]");if(b)go(b.getAttribute("data-go"));
+});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+  renderLine();
+});
+window.addEventListener("resize",renderLine);
+refreshAll();
+logLine("Сервис запущен. Последняя успешная синхронизация: сегодня 09:14","ok");
+})();
+</script>
