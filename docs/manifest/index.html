@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Манифест доработок сервиса автосоздания поставок — внутренний документ.">
+<title>Манифест поставок</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#F2F3EE;
+    --surface:#FFFFFF;
+    --surface-2:#EAEBE4;
+    --ink:#1B211D;
+    --ink-soft:#5B645C;
+    --ink-faint:#8A9088;
+    --line:#D9DCD1;
+    --line-strong:#BFC4B6;
+    --accent:#FF6A13;
+    --accent-ink:#FFF6EE;
+    --good:#2E7D4F;
+    --good-bg:#E4F3EA;
+    --warn:#9C6B00;
+    --warn-bg:#FBF0D6;
+    --critical:#B23A24;
+    --critical-bg:#FBE7E0;
+    --watch:#3B6E8F;
+    --watch-bg:#E4EEF4;
+    --shadow: 0 1px 2px rgba(27,33,29,0.06), 0 6px 20px -8px rgba(27,33,29,0.14);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#141712;
+      --surface:#1C201A;
+      --surface-2:#242820;
+      --ink:#ECEEE6;
+      --ink-soft:#AEB5A6;
+      --ink-faint:#7C8377;
+      --line:#333828;
+      --line-strong:#454C39;
+      --accent:#FF7E32;
+      --accent-ink:#1B0E00;
+      --good:#57C084;
+      --good-bg:#1D3128;
+      --warn:#E4B94A;
+      --warn-bg:#332C13;
+      --critical:#E1725A;
+      --critical-bg:#3A2019;
+      --watch:#7DB3D6;
+      --watch-bg:#1B2C36;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px -10px rgba(0,0,0,0.5);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#141712;
+    --surface:#1C201A;
+    --surface-2:#242820;
+    --ink:#ECEEE6;
+    --ink-soft:#AEB5A6;
+    --ink-faint:#7C8377;
+    --line:#333828;
+    --line-strong:#454C39;
+    --accent:#FF7E32;
+    --accent-ink:#1B0E00;
+    --good:#57C084;
+    --good-bg:#1D3128;
+    --warn:#E4B94A;
+    --warn-bg:#332C13;
+    --critical:#E1725A;
+    --critical-bg:#3A2019;
+    --watch:#7DB3D6;
+    --watch-bg:#1B2C36;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px -10px rgba(0,0,0,0.5);
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Golos Text', 'Segoe UI', system-ui, sans-serif;
+    padding:clamp(20px,4vw,56px) 16px 64px;
+    line-height:1.55;
+  }
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  .wrap{max-width:840px;margin:0 auto;}
+
+  .mono{font-family:'JetBrains Mono','SFMono-Regular',monospace; font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums;}
+
+  /* ---- Header: manifest strip ---- */
+  .manifest-header{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    margin-bottom:28px;
+  }
+  .manifest-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:14px 22px;
+    background:var(--ink);
+    color:var(--bg);
+  }
+  .manifest-top .tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    opacity:.75;
+  }
+  .manifest-top .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.04em;
+    opacity:.9;
+  }
+  .manifest-body{
+    padding:26px 26px 22px;
+  }
+  h1.title{
+    font-family:'Unbounded', sans-serif;
+    font-weight:900;
+    font-size:clamp(28px,4.4vw,40px);
+    line-height:1.05;
+    letter-spacing:-.01em;
+    margin:0 0 8px;
+    text-wrap:balance;
+  }
+  .subtitle{
+    color:var(--ink-soft);
+    font-size:15.5px;
+    max-width:56ch;
+    margin:0 0 20px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 22px;
+    padding-top:16px;
+    border-top:1px dashed var(--line-strong);
+  }
+  .meta-item{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    min-width:110px;
+  }
+  .meta-item .k{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--ink-faint);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .meta-item .v{
+    font-size:14px;
+    font-weight:600;
+  }
+
+  /* ---- Summary panel ---- */
+  .summary{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:4px solid var(--accent);
+    border-radius:0 12px 12px 0;
+    padding:20px 22px;
+    margin-bottom:32px;
+    box-shadow:var(--shadow);
+  }
+  .summary .label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+    margin-bottom:8px;
+    display:block;
+  }
+  .summary p{margin:0; font-size:15.5px;}
+
+  /* ---- Section headers ---- */
+  .section{margin-bottom:36px;}
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .section-head .idx{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--ink-faint);
+  }
+  .section-head h2{
+    font-family:'Unbounded', sans-serif;
+    font-size:19px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:-.01em;
+  }
+
+  /* ---- Working checklist ---- */
+  .check-list{
+    display:grid;
+    gap:10px;
+  }
+  .check-item{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:13px 16px;
+  }
+  .check-mark{
+    flex:0 0 auto;
+    width:20px;height:20px;
+    border-radius:50%;
+    background:var(--good-bg);
+    color:var(--good);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    margin-top:1px;
+  }
+  .check-item .txt{font-size:14.5px;}
+  .check-item .txt b{font-weight:600;}
+  .check-item .ex{
+    display:block;
+    color:var(--ink-soft);
+    font-size:13px;
+    margin-top:3px;
+  }
+
+  /* ---- Recommendation cards ---- */
+  .cards{display:grid; gap:16px;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    padding:20px 22px;
+    position:relative;
+  }
+  .card-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:14px;
+    margin-bottom:10px;
+  }
+  .card-head h3{
+    font-family:'Unbounded', sans-serif;
+    font-size:16px;
+    font-weight:700;
+    margin:0;
+    line-height:1.3;
+  }
+  .stamp{
+    flex:0 0 auto;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:4px 9px;
+    border-radius:5px;
+    border:1.5px solid currentColor;
+    transform:rotate(-2deg);
+    white-space:nowrap;
+  }
+  .stamp.critical{color:var(--critical); background:var(--critical-bg);}
+  .stamp.warn{color:var(--warn); background:var(--warn-bg);}
+  .stamp.accent{color:var(--accent); background:color-mix(in srgb, var(--accent) 14%, var(--surface));}
+  .stamp.watch{color:var(--watch); background:var(--watch-bg);}
+
+  .card .block-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin:14px 0 5px;
+  }
+  .card .block-label:first-of-type{margin-top:4px;}
+  .card p{margin:0 0 4px; font-size:14.5px; color:var(--ink);}
+  .card .quote{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    font-style:italic;
+    border-left:2px solid var(--line-strong);
+    padding-left:10px;
+    margin:6px 0 2px;
+  }
+  .card .fix{
+    background:var(--surface-2);
+    border-radius:8px;
+    padding:11px 13px;
+    font-size:14px;
+    margin-top:6px;
+  }
+  .card .fix b{color:var(--accent); font-weight:700;}
+
+  /* ---- Open questions ---- */
+  .qlist{display:grid; gap:10px;}
+  .qitem{
+    display:flex;
+    gap:12px;
+    background:var(--surface);
+    border:1px dashed var(--line-strong);
+    border-radius:10px;
+    padding:13px 16px;
+    font-size:14.5px;
+  }
+  .qitem .qmark{
+    font-family:'Unbounded',sans-serif;
+    font-weight:900;
+    color:var(--ink-faint);
+    font-size:15px;
+  }
+
+  /* ---- Footer ---- */
+  .foot{
+    margin-top:40px;
+    padding-top:18px;
+    border-top:1px dashed var(--line-strong);
+    color:var(--ink-faint);
+    font-size:12.5px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  @media (max-width:520px){
+    .manifest-body{padding:20px 18px;}
+    .card{padding:17px 16px;}
+    .card-head{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="manifest-header">
+    <div class="manifest-top">
+      <span class="tag">Манифест доработок · Внутренний документ</span>
+      <span class="num">№ 2026-09-10 / SVC-POST</span>
+    </div>
+    <div class="manifest-body">
+      <h1 class="title">Манифест поставок</h1>
+      <p class="subtitle">Разбор звонка о сервисе автосоздания поставок на Ozon — что уже работает и что зафиксировано как задача на доработку.</p>
+      <div class="meta-row">
+        <div class="meta-item">
+          <span class="k">Дата звонка</span>
+          <span class="v">10.09.2026</span>
+        </div>
+        <div class="meta-item">
+          <span class="k">Участники</span>
+          <span class="v">Денис Шубин, Ольга (склад)</span>
+        </div>
+        <div class="meta-item">
+          <span class="k">Длительность</span>
+          <span class="v mono">≈ 29 мин</span>
+        </div>
+        <div class="meta-item">
+          <span class="k">Источник</span>
+          <span class="v">запись + автотранскрипт Zoom</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary">
+    <span class="label">Коротко</span>
+    <p>Основной механизм уже едет сам: сервис по остаткам считает потребность по кластерам, ждёт свободный слот на Ozon и без участия человека создаёт заявку (сработало на примере Картиндера в Казани). Ольга на звонке показала свой ручной процесс и обозначила три места, где автоматике не хватает данных или гибкости — упаковочные стандарты, ручная корректировка количества и просмотр расхода по ФБС день в день. Денис принял задачи в работу, детали — на завтрашней встрече на складе.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="idx">01</span>
+      <h2>Уже работает</h2>
+    </div>
+    <div class="check-list">
+      <div class="check-item">
+        <span class="check-mark">✓</span>
+        <span class="txt"><b>Расчёт потребности по кластерам</b> — сервис читает таблицу остатков и товаров «в пути» и сам понимает, куда и сколько грузить.</span>
+      </div>
+      <div class="check-item">
+        <span class="check-mark">✓</span>
+        <span class="txt"><b>Автопоиск свободного слота на Ozon</b> и самостоятельное создание заявки без участия человека.
+          <span class="ex">Пример из звонка: по Картиндеру в Казань слота долго не было — сервис дождался момента и сам добавил поставку.</span>
+        </span>
+      </div>
+      <div class="check-item">
+        <span class="check-mark">✓</span>
+        <span class="txt"><b>Учёт фиксированных дней отгрузки</b> (среда и воскресенье, по договорённости с Вовой) — на другие даты слоты не предлагаются.</span>
+      </div>
+      <div class="check-item">
+        <span class="check-mark">✓</span>
+        <span class="txt"><b>Настройка таблицы под себя</b> — нужные поля (например, «остаток», «отгрузить») можно перетащить и закрепить рядом, лишние столбцы — скрыть.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="idx">02</span>
+      <h2>Нужно доработать</h2>
+    </div>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Стандарты упаковки по товарам</h3>
+          <span class="stamp critical">Критично</span>
+        </div>
+        <p class="block-label">Проблема</p>
+        <p>Нет зафиксированных размеров коробок и вместимости по ~20 позициям товара (от самых крупных ~50 шт. до самых мелких). Сервис пока считает поставку только целыми коробками — а по факту нужны доли, и не абстрактные «половина», а привязанные к реальным отсекам коробки.</p>
+        <p class="quote">«Есть коробка 60/40 — если кладём половину, вторая половина будет пустая. Можем указать реальный размер отсека?» — Ольга</p>
+        <div class="fix"><b>Что сделать →</b> обмерить все ~20 SKU и коробки на складе (договорились сделать это вместе завтра), зафиксировать эталон «шт/коробка + реальные доли отсеков», научить сервис предлагать именно эти доли, а не произвольные дроби.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Ручная корректировка количества со сверкой</h3>
+          <span class="stamp warn">Важно</span>
+        </div>
+        <p class="block-label">Проблема</p>
+        <p>Если по факту на складе выходит другое число коробок, чем предложил сервис, — сейчас негде это скорректировать так, чтобы система знала о правке и не считала её ошибкой при следующем расчёте.</p>
+        <p class="quote">«Могу поменять количество прямо в поставке — и сервис поймёт, что это правильно, а не ошибка?» — Ольга</p>
+        <div class="fix"><b>Что сделать →</b> добавить ручное изменение количества (в заявке на Ozon или в самом сервисе) с автосверкой: если итог разошёлся с рекомендацией — подсветить расхождение, а не молча его игнорировать. Денис взял в работу, решение по месту правки — после обсуждения.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Расход по ФБС день в день, по товару</h3>
+          <span class="stamp warn">Важно</span>
+        </div>
+        <p class="block-label">Проблема</p>
+        <p>Вкладка «ФБС» показывает нарастающий итог с одной фиксированной даты (28 июля) без разбивки по дням и товарам. Чтобы понять, сколько конкретной позиции ушло вчера или за август, нужно листать вручную неделя за неделей — через год это будет «пролистывать десять лет».</p>
+        <p class="quote">«Хочется, чтобы в тот день, когда товар отгружается, сразу стояла цифра — приход и расход, — а не пять тысяч накопленным итогом» — Ольга</p>
+        <div class="fix"><b>Что сделать →</b> отдельная таблица/фильтр «приход и расход по дням» на уровне SKU с быстрыми пресетами (последний месяц, произвольный период). У Дениса уже есть зеркало таблицы на своём сервере с фильтрацией по колонкам — вынести это в интерфейс для склада.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Автозаполнение складской таблицы</h3>
+          <span class="stamp accent">Желательно</span>
+        </div>
+        <p class="block-label">Проблема / цель</p>
+        <p>Расчёт и создание заявки уже автоматические, но склад ещё не видит готовую задачу на отгрузку сам — приходится сверяться вручную.</p>
+        <p class="quote">«Хочу, чтобы это было всё по одному нажатию кнопки» — Денис</p>
+        <div class="fix"><b>Что сделать →</b> после автосоздания заявки сервис сам вносит план отгрузки в складскую таблицу, чтобы склад видел очередь работ без дублирования вручную.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Объём при дополнительной упаковке</h3>
+          <span class="stamp accent">Желательно</span>
+        </div>
+        <p class="block-label">Проблема</p>
+        <p>Если товар дополнительно обёрнут (пупыркой/упаковкой), он занимает больше места в коробке, чем расчётный объём самого товара — сервис это пока не учитывает.</p>
+        <div class="fix"><b>Что сделать →</b> добавить поправочный коэффициент объёма для товаров с доп. упаковкой, чтобы рекомендация по коробкам не занижала нужное место.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Защита от задвоения и пересортицы</h3>
+          <span class="stamp watch">В работе у Дениса</span>
+        </div>
+        <p class="block-label">Проблема</p>
+        <p>Сервис должен учитывать уже созданные, но не выполненные заявки, и товар «в пути» вместе с текущим остатком — иначе есть риск задвоить отгрузку или допустить пересортицу.</p>
+        <div class="fix"><b>Что сделать →</b> зафиксировать как требование к текущей доработке (Денис уже назвал это своей задачей) и проверить на реальных данных после реализации.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <span class="idx">03</span>
+      <h2>Открытые вопросы</h2>
+    </div>
+    <div class="qlist">
+      <div class="qitem"><span class="qmark">?</span><span>Дробление коробки — общий стандарт (½, ¾, ¼) или свой набор долей под каждый SKU и его реальные отсеки?</span></div>
+      <div class="qitem"><span class="qmark">?</span><span>Где должна жить ручная правка количества — в самой заявке на Ozon или в интерфейсе сервиса? (Денис пока не решил, обсудят на складе)</span></div>
+      <div class="qitem"><span class="qmark">?</span><span>Разбивка ФБС по дням — новая вкладка или фильтр в существующей «ФБС»?</span></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Источник — голосовая запись с автотранскрибацией, часть реплик восстановлена по смыслу; детали стоит сверить с Денисом и Ольгой при разногласиях.</span>
+    <span class="mono">SVC-POST · v1</span>
+  </div>
+
+</div>
+
+</body>
+</html>
