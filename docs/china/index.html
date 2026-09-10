@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демонстрация ядра логистической CRM Россия-Китай: разделение заказа при частичной поставке, упаковка в смешанные короба, распределение платежей и расчёт себестоимости. Данные условные.">
+<title>Ядро логистики: разделение, короба, оплаты</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --paper:#F1F3F5; --surface:#FFFFFF; --surface2:#E7EBEF; --surface3:#DAE0E6;
+  --ink:#0E1620; --ink2:#43525F; --ink3:#71818E;
+  --line:#D2DAE1; --line2:#B9C4CD;
+  --acc:#B3261E; --acc-d:#8C1D17; --acc-s:#FBE4E2;
+  --gold:#9A6B12; --gold-s:#FBF0D8;
+  --ok:#177A4C; --ok-s:#E0F1E7; --bad:#C0342E; --bad-s:#FAE4E2; --info:#1F5C8A; --info-s:#E2EEF6;
+  --sh:0 1px 2px rgba(14,22,32,.06),0 12px 30px -18px rgba(14,22,32,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0D1116; --surface:#151B22; --surface2:#1D242C; --surface3:#272F38;
+  --ink:#EAEFF3; --ink2:#AAB7C1; --ink3:#7A8794;
+  --line:#232B33; --line2:#323C46;
+  --acc:#E8756B; --acc-d:#F29A92; --acc-s:#301613;
+  --gold:#DDA94E; --gold-s:#2B2110;
+  --ok:#4FBB86; --ok-s:#122A1F; --bad:#E66767; --bad-s:#301616; --info:#5AAEDD; --info-s:#102838;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#0D1116; --surface:#151B22; --surface2:#1D242C; --surface3:#272F38;
+  --ink:#EAEFF3; --ink2:#AAB7C1; --ink3:#7A8794;
+  --line:#232B33; --line2:#323C46;
+  --acc:#E8756B; --acc-d:#F29A92; --acc-s:#301613;
+  --gold:#DDA94E; --gold-s:#2B2110;
+  --ok:#4FBB86; --ok-s:#122A1F; --bad:#E66767; --bad-s:#301616; --info:#5AAEDD; --info-s:#102838;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:14.5px;line-height:1.5}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+h1{font-size:22px}h2{font-size:17px}h3{font-size:14.5px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1320px;margin:0 auto;padding:0 16px}
+.small{font-size:12.5px;line-height:1.4}
+.muted{color:var(--ink2)}
+.lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)}
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:54px}
+.brand{font-weight:700;font-size:16px}
+.brand i{font-style:normal;color:var(--acc)}
+.tabs{display:flex;gap:2px;margin-left:8px;overflow-x:auto}
+.tabs button{padding:7px 12px;border-radius:4px;font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--acc-s);color:var(--acc)}
+.hr{margin-left:auto}
+.ico{border:1px solid var(--line2);width:30px;height:30px;border-radius:4px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+.page{padding:18px 0 60px}
+.phead{margin-bottom:14px}
+.phead p{margin-top:5px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.card-h{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:14px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:900px){.g2,.g3{grid-template-columns:1fr}}
+input,select{font:inherit;font-size:13.5px;background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:7px 9px;width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+input[type=number]{font-family:"IBM Plex Mono",monospace;text-align:right}
+label.f{display:grid;gap:4px;font-size:11.5px;color:var(--ink2);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:4px;border:1px solid transparent;font-size:13px;font-weight:700}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:6px 10px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--surface2);color:var(--ink2)}
+.pill.g{background:var(--ok-s);color:var(--ok)}
+.pill.w{background:var(--gold-s);color:var(--gold)}
+.pill.r{background:var(--bad-s);color:var(--bad)}
+.pill.b{background:var(--info-s);color:var(--info)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap}
+th.n{text-align:right}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+td.n{text-align:right;font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+td input[type=number]{padding:5px 7px;font-size:12.5px;width:78px}
+tr.split{background:var(--gold-s)}
+tr.new-row{animation:pop .4s ease}
+@keyframes pop{from{opacity:0;background:var(--ok-s)}to{opacity:1}}
+.note{border-left:3px solid var(--gold);background:var(--gold-s);padding:10px 13px;border-radius:0 5px 5px 0;font-size:13px;color:var(--ink2)}
+.note.a{border-color:var(--info);background:var(--info-s)}
+.note.o{border-color:var(--ok);background:var(--ok-s)}
+.view[hidden]{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:4px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+
+/* короба */
+.boxrow{display:flex;gap:12px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.box{flex:0 0 220px;border:1px solid var(--line);border-radius:6px;background:var(--surface2);padding:10px}
+.box h4{font-size:12.5px;display:flex;justify-content:space-between;align-items:center}
+.box .items{display:grid;gap:4px;margin-top:8px;min-height:28px}
+.chip{display:flex;justify-content:space-between;gap:6px;background:var(--surface);border:1px solid var(--line2);border-radius:3px;padding:4px 7px;font-size:12px}
+.chip button{color:var(--bad);font-weight:700}
+.box .stats{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line2);font-size:11.5px;color:var(--ink2);display:grid;gap:2px}
+.pool{border:1px dashed var(--line2);border-radius:6px;padding:10px;display:flex;flex-wrap:wrap;gap:6px;min-height:40px}
+.pool .chip{cursor:default}
+.dropz{flex:0 0 220px;border:2px dashed var(--line2);border-radius:6px;display:grid;place-items:center;color:var(--ink3);font-size:12px;min-height:120px}
+.dropz.over{border-color:var(--acc);color:var(--acc);background:var(--acc-s)}
+select.boxsel{width:auto;font-size:11.5px;padding:3px 5px}
+
+/* оплаты */
+.paybar{display:flex;height:26px;border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.paybar span{display:block}
+.paybar .adv{background:var(--info)}
+.paybar .rest{background:var(--acc)}
+.paybar .del{background:var(--gold)}
+.paybar .none{background:var(--surface2)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink2);margin-top:8px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* формулы */
+.calc-flow{display:grid;gap:6px;font-family:"IBM Plex Mono",monospace;font-size:12px;background:var(--surface2);border-radius:5px;padding:12px}
+.calc-flow .r{display:flex;justify-content:space-between;gap:10px}
+.calc-flow .r b{color:var(--ink)}
+.calc-flow .total{border-top:1px solid var(--line2);margin-top:4px;padding-top:6px;font-weight:700;font-size:13.5px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО ЯДРА</b>&nbsp; Прототип четырёх самых сложных механик из вашего ТЗ: разделение заказа, смешанные короба, распределение платежей, расчёт себестоимости. Не вся CRM — остальные экраны (карточки, справочники, статусы) типовые и здесь не показаны.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">ЗАКАЗ<i>.</i>ЯДРО</span>
+  <nav class="tabs" id="tabs">
+    <button data-go="split" aria-current="true">Разделение заказа</button>
+    <button data-go="boxes">Смешанные короба</button>
+    <button data-go="pay">Распределение оплат</button>
+    <button data-go="cost">Себестоимость</button>
+  </nav>
+  <div class="hr"><button class="ico" id="theme" aria-label="Тема">◐</button></div>
+</div></header>
+
+<div class="wrap page">
+
+<!-- SPLIT -->
+<section class="view" data-view="split">
+  <div class="phead"><h1>Разделение заказа при частичной поставке</h1>
+    <p class="muted small">Ровно ваш кейс из ТЗ: артикул IRA-KTM-1 заказан на 1000 шт, фабрика прислала на склад 700. Система откалывает пришедшую часть в дочерний артикул, а остаток остаётся «в производстве».</p></div>
+  <div class="card"><div class="card-h"><h3>Заказ №1 · сборный · клиент «ИП Смирнова»</h3><span class="pill b">пришло на склад</span></div>
+    <div class="card-b">
+      <div class="tw"><table id="splitTable">
+        <thead><tr><th>Артикул</th><th>Товар</th><th class="n">Заказано</th><th class="n">Пришло сейчас</th><th></th><th>Статус</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-p" id="doSplit">Разделить по факту прихода</button>
+        <button class="btn btn-s" id="resetSplit">Сбросить</button>
+      </div>
+      <div class="note a" style="margin-top:12px">
+        <b>Логика:</b> если «Пришло сейчас» &lt; «Заказано» — создаётся дочерний артикул с суффиксом (IRA-KTM-1 → IRA-KTM-1-1) на пришедшее количество со статусом «на складе», а родительский артикул остаётся с остатком и статусом «неполный заказ» с собственным сроком производства. Оплаты, себестоимость и упаковка считаются по каждому артикулу отдельно — это то самое, из-за чего в старой системе путаница.
+      </div>
+    </div></div>
+</section>
+
+<!-- BOXES -->
+<section class="view" data-view="boxes">
+  <div class="phead"><h1>Упаковка в смешанные короба</h1>
+    <p class="muted small">Один короб может содержать несколько артикулов разного веса. Перетащите позиции из пула в короба — габариты, вес и плотность короба считаются автоматически по вложенным позициям.</p></div>
+  <div class="card"><div class="card-h"><h3>Пул товаров, пришедших на склад</h3>
+    <button class="btn btn-s btn-sm" id="addBox">+ Новый короб</button></div>
+    <div class="card-b">
+      <div class="lbl" style="margin-bottom:6px">Не распределено</div>
+      <div class="pool" id="pool"></div>
+      <div class="lbl" style="margin:16px 0 6px">Короба</div>
+      <div class="boxrow" id="boxes"></div>
+      <div class="tw" style="margin-top:14px"><table id="boxSummary">
+        <thead><tr><th>Короб</th><th>Состав</th><th class="n">Вес, кг</th><th class="n">Объём, м³</th><th class="n">Плотность</th><th>Считать по</th></tr></thead>
+        <tbody></tbody></table></div>
+      <div class="note" style="margin-top:12px"><b>Плотность = вес / объём.</b> Если плотность выше 100 — доставку считаем по весу, если ниже — по объёму (правило из вашего ТЗ). Смешанный короб может перевернуть эту логику: лёгкий, но объёмный товар в одном коробе с тяжёлым меняет способ расчёта для всего короба, и это надо увидеть до отгрузки, а не после.</div>
+    </div></div>
+</section>
+
+<!-- PAY -->
+<section class="view" data-view="pay">
+  <div class="phead"><h1>Распределение платежей по заказу</h1>
+    <p class="muted small">Один платёж от клиента (в рублях) закрывает авансы/остатки/доставку сразу по нескольким артикулам, в разных валютах. Демо показывает, как один приход автоматически распределяется по строкам заказа.</p></div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card"><div class="card-h"><h3>Строки заказа и их этапы оплаты</h3></div>
+      <div class="card-b">
+        <div class="tw"><table id="payTable">
+          <thead><tr><th>Артикул</th><th class="n">Сумма, ¥</th><th>Аванс</th><th>Остаток</th><th>Доставка</th><th>Оплачено</th></tr></thead>
+          <tbody></tbody></table></div>
+        <div class="legend"><span><i style="background:var(--info)"></i>Аванс</span><span><i style="background:var(--acc)"></i>Остаток</span><span><i style="background:var(--gold)"></i>Доставка</span><span><i style="background:var(--surface2);border:1px solid var(--line2)"></i>Не оплачено</span></div>
+      </div></div>
+    <div class="card"><div class="card-h"><h3>Новый приход от клиента</h3></div>
+      <div class="card-b grid">
+        <label class="f">Сумма прихода, ₽<input type="number" id="payIn" value="150000" min="0" step="1000"></label>
+        <label class="f">Курс ₽→¥ на сегодня<input type="number" id="rateIn" value="13.1" min="1" step="0.01"></label>
+        <button class="btn btn-p" id="allocBtn">Распределить автоматически</button>
+        <div class="note a" id="allocLog">Правило распределения: сначала закрываем просроченные авансы по датам заказа (старые — первыми), затем текущие. Остаток прихода — в переплату по следующему аванс-этапу.</div>
+      </div></div>
+  </div>
+</section>
+
+<!-- COST -->
+<section class="view" data-view="cost">
+  <div class="phead"><h1>Расчёт себестоимости</h1>
+    <p class="muted small">Формула из вашего ТЗ, включая порог «вес/объём» и ступенчатую наценку на доставку по срокам (10–12 / 15–18 / 25–30 / 40 / 50 дней).</p></div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card"><div class="card-h"><h3>Входные данные</h3></div>
+      <div class="card-b grid">
+        <div class="grid g2">
+          <label class="f">Цена у фабрики, ¥/шт<input type="number" id="cPrice" value="12" step="0.1"></label>
+          <label class="f">Штук в заказе<input type="number" id="cQty" value="1000"></label>
+          <label class="f">Штук в коробе<input type="number" id="cPerBox" value="50"></label>
+          <label class="f">Вес короба, кг<input type="number" id="cBoxW" value="18" step="0.1"></label>
+          <label class="f">Габариты короба, см (Д×Ш×В)<input type="text" id="cDims" value="50×40×35"></label>
+          <label class="f">Срок доставки, дней<select id="cDays">
+            <option value="11">10–12</option><option value="16">15–18</option>
+            <option value="27" selected>25–30</option><option value="40">40</option><option value="50">50</option>
+          </select></label>
+          <label class="f">Наценка ¥/кг или ¥/м³ на срок<input type="number" id="cRate" value="3.5" step="0.1"></label>
+          <label class="f">Комиссия клиента, %<input type="number" id="cFee" value="15" step="1"></label>
+          <label class="f">Курс ¥→₽<input type="number" id="cCny" value="12.8" step="0.1"></label>
+        </div>
+      </div></div>
+    <div class="card"><div class="card-h"><h3>Разбор расчёта</h3></div>
+      <div class="card-b"><div class="calc-flow" id="costFlow"></div></div></div>
+  </div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var num=function(n,d){return (Math.round(n*Math.pow(10,d||1))/Math.pow(10,d||1)).toLocaleString("ru-RU")};
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3200)}
+
+/* ================= навигация ================= */
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===v))});
+  window.scrollTo(0,0);
+}
+$("#tabs").addEventListener("click",function(e){var b=e.target.closest("[data-go]");if(b)go(b.getAttribute("data-go"))});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+/* ================= 1. РАЗДЕЛЕНИЕ ЗАКАЗА ================= */
+var ORDER=[
+ {art:"IRA-KTM-1",name:"Комбинезон S",ordered:1000,arrived:700,status:"на складе",child:null},
+ {art:"IRA-KTM-2",name:"Комбинезон M",ordered:1000,arrived:700,status:"на складе",child:null},
+ {art:"IRA-KTM-3",name:"Комбинезон L",ordered:1000,arrived:800,status:"на складе",child:null},
+ {art:"IRA-KTM-4",name:"Комбинезон XL",ordered:1000,arrived:1000,status:"на складе",child:null}
+];
+function renderSplit(){
+  var body=$("#splitTable tbody");
+  body.innerHTML="";
+  ORDER.forEach(function(o){
+    var row=document.createElement("tr");
+    row.className=o.child?"split":"";
+    row.innerHTML='<td class="mono">'+esc(o.art)+'</td><td>'+esc(o.name)+'</td>'+
+      '<td class="n">'+o.ordered+'</td>'+
+      '<td class="n"><input type="number" data-art="'+esc(o.art)+'" value="'+o.arrived+'" min="0" max="'+o.ordered+'"></td>'+
+      '<td>'+(o.arrived<o.ordered?'<span class="pill w">частично</span>':'<span class="pill g">полностью</span>')+'</td>'+
+      '<td><span class="pill">'+esc(o.status)+'</span></td>';
+    body.appendChild(row);
+    if(o.child){
+      var cr=document.createElement("tr");
+      cr.className="new-row";
+      cr.innerHTML='<td class="mono">&nbsp;&nbsp;↳ '+esc(o.child.art)+'</td><td>'+esc(o.name)+'</td>'+
+        '<td class="n">'+o.child.qty+'</td><td class="n">'+o.child.qty+'</td>'+
+        '<td><span class="pill g">поступил</span></td><td><span class="pill b">на складе</span></td>';
+      body.appendChild(cr);
+      var pr=document.createElement("tr");
+      var rest=o.ordered-o.child.qty;
+      pr.innerHTML='<td class="mono">&nbsp;&nbsp;↳ '+esc(o.art)+' (остаток)</td><td>'+esc(o.name)+'</td>'+
+        '<td class="n">'+rest+'</td><td class="n">0</td>'+
+        '<td><span class="pill r">ожидает</span></td><td><span class="pill w">неполный заказ</span></td>';
+      body.appendChild(pr);
+    }
+  });
+}
+$("#splitTable").addEventListener("input",function(e){
+  var art=e.target.getAttribute("data-art");if(!art)return;
+  var o=ORDER.filter(function(x){return x.art===art})[0];
+  o.arrived=Math.max(0,Math.min(o.ordered,+e.target.value||0));
+});
+$("#doSplit").addEventListener("click",function(){
+  var n=0;
+  ORDER.forEach(function(o){
+    if(o.arrived>0&&o.arrived<o.ordered&&!o.child){
+      o.child={art:o.art+"-1",qty:o.arrived};
+      o.status="разделён";
+      n++;
+    }
+  });
+  renderSplit();
+  toast(n?"Разделено артикулов: "+n+". Дочерние ушли на упаковку, остатки — в «Неполные заказы» со своим сроком.":"Делить нечего — везде либо 0, либо полный приход");
+});
+$("#resetSplit").addEventListener("click",function(){
+  ORDER.forEach(function(o){o.child=null;o.status="на складе";});
+  renderSplit();
+});
+renderSplit();
+
+/* ================= 2. СМЕШАННЫЕ КОРОБА ================= */
+var ITEMS=[
+ {id:"i1",art:"IRA-KTM-1-1",name:"Комбинезон S",qty:700,w:0.42,vol:0.006},
+ {id:"i2",art:"IRA-KTM-2-1",name:"Комбинезон M",qty:700,w:0.46,vol:0.007},
+ {id:"i3",art:"IRA-KTM-3",name:"Комбинезон L",qty:800,w:0.5,vol:0.008},
+ {id:"i4",art:"IRA-KTM-4",name:"Комбинезон XL",qty:1000,w:0.55,vol:0.009},
+ {id:"i5",art:"SGT-902",name:"Сумка спортивная",qty:300,w:0.9,vol:0.02}
+];
+var BOXES=[{id:1,items:[]},{id:2,items:[]}];
+var boxSeq=3;
+function itemWeight(it){return it.w*it.qty}
+function itemVol(it){return it.vol*it.qty}
+function usedQty(itemId){
+  var used=0;
+  BOXES.forEach(function(b){b.items.forEach(function(x){if(x.id===itemId)used+=x.qty})});
+  return used;
+}
+function renderBoxes(){
+  var pool=$("#pool");
+  pool.innerHTML="";
+  ITEMS.forEach(function(it){
+    var left=it.qty-usedQty(it.id);
+    if(left<=0)return;
+    var c=document.createElement("div");
+    c.className="chip";c.draggable=true;c.dataset.item=it.id;
+    c.innerHTML='<span>'+esc(it.art)+' · '+left+' шт</span><span class="mono muted">'+num(it.w*left,1)+' кг</span>';
+    c.addEventListener("dragstart",function(e){e.dataTransfer.setData("text/plain",it.id)});
+    pool.appendChild(c);
+  });
+  if(!pool.children.length)pool.innerHTML='<span class="muted small">Все позиции распределены по коробам</span>';
+
+  var wrap=$("#boxes");
+  wrap.innerHTML="";
+  BOXES.forEach(function(b){
+    var totW=b.items.reduce(function(a,x){return a+ITEMS.filter(function(i){return i.id===x.id})[0].w*x.qty},0);
+    var totV=b.items.reduce(function(a,x){return a+ITEMS.filter(function(i){return i.id===x.id})[0].vol*x.qty},0);
+    var dens=totV>0?totW/totV:0;
+    var el=document.createElement("div");
+    el.className="box";el.dataset.box=b.id;
+    el.innerHTML='<h4>Короб #'+b.id+' <button class="btn btn-s btn-sm" data-delbox="'+b.id+'" style="padding:2px 7px">✕</button></h4>'+
+      '<div class="items">'+(b.items.length?b.items.map(function(x){
+        var it=ITEMS.filter(function(i){return i.id===x.id})[0];
+        return '<div class="chip"><span>'+esc(it.art)+' · '+x.qty+' шт</span><button data-rm="'+b.id+'|'+x.id+'">✕</button></div>';
+      }).join(""):'<span class="muted small">перетащите сюда</span>')+'</div>'+
+      '<div class="stats"><span>Вес: <b class="mono">'+num(totW,1)+' кг</b></span>'+
+      '<span>Объём: <b class="mono">'+num(totV,3)+' м³</b></span>'+
+      '<span>Плотность: <b class="mono">'+(totV>0?num(dens,0):"—")+'</b> · считать по <b>'+(totV>0?(dens>100?"весу":"объёму"):"—")+'</b></span></div>';
+    el.addEventListener("dragover",function(e){e.preventDefault();el.classList.add("over")});
+    el.addEventListener("dragleave",function(){el.classList.remove("over")});
+    el.addEventListener("drop",function(e){
+      e.preventDefault();el.classList.remove("over");
+      var id=e.dataTransfer.getData("text/plain");
+      var it=ITEMS.filter(function(x){return x.id===id})[0];if(!it)return;
+      var left=it.qty-usedQty(id);if(left<=0)return;
+      var take=Math.min(left,it.qty>200?Math.round(it.qty*0.3):left);
+      var ex=b.items.filter(function(x){return x.id===id})[0];
+      if(ex)ex.qty+=take;else b.items.push({id:id,qty:take});
+      renderBoxes();
+      toast(it.art+": добавлено "+take+" шт в короб #"+b.id+(b.items.length>1?" — короб стал смешанным":""));
+    });
+    wrap.appendChild(el);
+  });
+  var dz=document.createElement("div");dz.className="dropz";dz.textContent="+ перетащите сюда, чтобы создать новый короб";
+  dz.addEventListener("dragover",function(e){e.preventDefault();dz.classList.add("over")});
+  dz.addEventListener("dragleave",function(){dz.classList.remove("over")});
+  dz.addEventListener("drop",function(e){
+    e.preventDefault();dz.classList.remove("over");
+    var id=e.dataTransfer.getData("text/plain");
+    var it=ITEMS.filter(function(x){return x.id===id})[0];if(!it)return;
+    var left=it.qty-usedQty(id);if(left<=0)return;
+    BOXES.push({id:boxSeq++,items:[{id:id,qty:left}]});
+    renderBoxes();
+  });
+  wrap.appendChild(dz);
+
+  $("#boxSummary").querySelector("tbody").innerHTML=BOXES.map(function(b){
+    var totW=b.items.reduce(function(a,x){return a+ITEMS.filter(function(i){return i.id===x.id})[0].w*x.qty},0);
+    var totV=b.items.reduce(function(a,x){return a+ITEMS.filter(function(i){return i.id===x.id})[0].vol*x.qty},0);
+    var dens=totV>0?totW/totV:0;
+    var mixed=b.items.length>1;
+    return '<tr><td>#'+b.id+(mixed?' <span class="pill w">смешанный</span>':'')+'</td>'+
+      '<td>'+(b.items.map(function(x){return ITEMS.filter(function(i){return i.id===x.id})[0].art}).join(", ")||"—")+'</td>'+
+      '<td class="n">'+num(totW,1)+'</td><td class="n">'+num(totV,3)+'</td>'+
+      '<td class="n">'+(totV>0?num(dens,0):"—")+'</td>'+
+      '<td>'+(totV>0?(dens>100?"<b>вес</b>":"<b>объём</b>"):"—")+'</td></tr>';
+  }).join("")||'<tr><td colspan="6" class="muted" style="text-align:center;padding:20px">Коробов нет</td></tr>';
+}
+$("#boxes").addEventListener("click",function(e){
+  var rm=e.target.closest("[data-rm]"),del=e.target.closest("[data-delbox]");
+  if(rm){var a=rm.getAttribute("data-rm").split("|"),b=BOXES.filter(function(x){return x.id==a[0]})[0];
+    b.items=b.items.filter(function(x){return x.id!==a[1]});renderBoxes();return}
+  if(del){BOXES=BOXES.filter(function(x){return x.id!=del.getAttribute("data-delbox")});renderBoxes()}
+});
+$("#addBox").addEventListener("click",function(){BOXES.push({id:boxSeq++,items:[]});renderBoxes()});
+renderBoxes();
+
+/* ================= 3. РАСПРЕДЕЛЕНИЕ ПЛАТЕЖЕЙ ================= */
+var PAY=[
+ {art:"IRA-KTM-1",sum:12000,adv:12000*0.4,rest:0,del:0},
+ {art:"IRA-KTM-2",sum:12000,adv:0,rest:0,del:0},
+ {art:"IRA-KTM-3",sum:14000,adv:0,rest:0,del:0},
+ {art:"IRA-KTM-4",sum:16000,adv:16000*0.4,rest:0,del:0}
+];
+function stageNeed(p,stage){
+  if(stage==="adv")return p.sum*0.4;
+  if(stage==="rest")return p.sum*0.5;
+  return p.sum*0.1;
+}
+function renderPay(){
+  $("#payTable").querySelector("tbody").innerHTML=PAY.map(function(p){
+    var need={adv:stageNeed(p,"adv"),rest:stageNeed(p,"rest"),del:stageNeed(p,"del")};
+    var pct={adv:p.adv/need.adv*100,rest:p.rest/need.rest*100,del:p.del/need.del*100};
+    var total=need.adv+need.rest+need.del, paid=p.adv+p.rest+p.del;
+    function seg(v,cls){return v>0?'<span class="'+cls+'" style="width:'+Math.min(100,v)+'%"></span>':''}
+    return '<tr><td class="mono">'+esc(p.art)+'</td><td class="n">'+num(p.sum,0)+'</td>'+
+      '<td>'+(pct.adv>=99?'<span class="pill g">'+num(p.adv,0)+' ¥</span>':pct.adv>0?'<span class="pill w">'+num(p.adv,0)+' ¥</span>':'<span class="pill">0</span>')+'</td>'+
+      '<td>'+(pct.rest>=99?'<span class="pill g">'+num(p.rest,0)+' ¥</span>':pct.rest>0?'<span class="pill w">'+num(p.rest,0)+' ¥</span>':'<span class="pill">0</span>')+'</td>'+
+      '<td>'+(pct.del>=99?'<span class="pill g">'+num(p.del,0)+' ¥</span>':pct.del>0?'<span class="pill w">'+num(p.del,0)+' ¥</span>':'<span class="pill">0</span>')+'</td>'+
+      '<td><div class="paybar">'+seg(pct.adv,"adv")+seg(pct.rest,"rest")+seg(pct.del,"del")+
+      (paid<total?'<span class="none" style="flex:1"></span>':'')+'</div>'+
+      '<span class="small muted mono">'+num(paid,0)+' / '+num(total,0)+' ¥</span></td></tr>';
+  }).join("");
+}
+$("#allocBtn").addEventListener("click",function(){
+  var rub=+$("#payIn").value||0, rate=+$("#rateIn").value||1;
+  var pool=rub/rate; /* переводим в юани по курсу */
+  var log=[];
+  var order=["adv","rest","del"];
+  PAY.forEach(function(p){
+    order.forEach(function(stage){
+      if(pool<=0)return;
+      var need=stageNeed(p,stage)-p[stage];
+      if(need<=0)return;
+      var take=Math.min(need,pool);
+      p[stage]+=take;pool-=take;
+      log.push(p.art+" · "+({adv:"аванс",rest:"остаток",del:"доставка"})[stage]+": +"+num(take,0)+" ¥");
+    });
+  });
+  renderPay();
+  $("#allocLog").innerHTML="<b>Распределено:</b><br>"+(log.length?log.join("<br>"):"Все этапы уже закрыты")+
+    (pool>0?"<br><b>Остаток непривязанным: "+num(pool,0)+" ¥</b> — уходит в переплату клиента.":"");
+  toast("Приход "+num(rub,0)+" ₽ распределён по "+log.length+" позициям оплат");
+});
+renderPay();
+
+/* ================= 4. СЕБЕСТОИМОСТЬ ================= */
+function parseDims(s){
+  var p=String(s).split(/[×xX]/).map(function(x){return parseFloat(x)||0});
+  return {l:p[0]||0,w:p[1]||0,h:p[2]||0};
+}
+function renderCost(){
+  var price=+$("#cPrice").value||0, qty=+$("#cQty").value||0, perBox=+$("#cPerBox").value||1;
+  var boxW=+$("#cBoxW").value||0, dims=parseDims($("#cDims").value);
+  var rate=+$("#cRate").value||0, fee=+$("#cFee").value||0, cny=+$("#cCny").value||1;
+  var boxes=Math.ceil(qty/perBox);
+  var totalW=boxes*boxW;
+  var boxVol=(dims.l*dims.w*dims.h)/1000000;
+  var totalVol=boxes*boxVol;
+  var density=totalVol>0?totalW/totalVol:0;
+  var byWeight=density>100;
+  var deliveryCny=byWeight?totalW*rate:totalVol*rate*1000;
+  var goodsCny=price*qty;
+  var feeCny=goodsCny*fee/100;
+  var totalCny=goodsCny+feeCny+deliveryCny;
+  var perUnitCny=totalCny/(qty||1);
+  var perUnitRub=perUnitCny*cny;
+  $("#costFlow").innerHTML=
+    '<div class="r"><span>Короба (шт/в коробе → округление вверх)</span><b>'+qty+' / '+perBox+' = '+boxes+' кор.</b></div>'+
+    '<div class="r"><span>Общий вес = коробов × вес короба</span><b>'+boxes+' × '+num(boxW,1)+' = '+num(totalW,1)+' кг</b></div>'+
+    '<div class="r"><span>Объём короба = Д×Ш×В / 1 000 000</span><b>'+num(boxVol,4)+' м³</b></div>'+
+    '<div class="r"><span>Общий объём = коробов × объём короба</span><b>'+num(totalVol,3)+' м³</b></div>'+
+    '<div class="r"><span>Плотность = вес / объём</span><b>'+num(density,0)+'</b></div>'+
+    '<div class="r"><span>Правило: плотность '+(byWeight?"&gt; 100 → считаем по весу":"&le; 100 → считаем по объёму")+'</span><b>'+(byWeight?"по весу":"по объёму")+'</b></div>'+
+    '<div class="r"><span>Стоимость доставки</span><b>'+num(deliveryCny,0)+' ¥</b></div>'+
+    '<div class="r"><span>Стоимость товара = цена × штук</span><b>'+num(goodsCny,0)+' ¥</b></div>'+
+    '<div class="r"><span>Комиссия клиента ('+fee+'%)</span><b>'+num(feeCny,0)+' ¥</b></div>'+
+    '<div class="r total"><span>Итого себестоимость заказа</span><b>'+num(totalCny,0)+' ¥ ≈ '+num(totalCny*cny,0)+' ₽</b></div>'+
+    '<div class="r"><span>Цена за 1 шт клиенту</span><b>'+num(perUnitCny,2)+' ¥ ≈ '+num(perUnitRub,1)+' ₽</b></div>';
+}
+["cPrice","cQty","cPerBox","cBoxW","cDims","cRate","cFee","cCny"].forEach(function(id){
+  $("#"+id).addEventListener("input",renderCost);
+});
+$("#cDays").addEventListener("change",function(){
+  var map={11:3.2,16:3.5,27:3.9,40:4.4,50:5.1};
+  $("#cRate").value=map[this.value]||3.5;
+  renderCost();
+});
+renderCost();
+})();
+</script>
+
+</body>
+</html>
