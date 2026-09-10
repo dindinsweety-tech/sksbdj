@@ -1,0 +1,393 @@
+<title>Конвейер касаний для amoCRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@500;700&family=Open+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F5F4F1; --surface:#FFFFFF; --surface2:#ECEAE4; --surface3:#DFDCD3;
+  --ink:#191712; --ink2:#4E4A41; --ink3:#7E7A6F;
+  --line:#DCD8CF; --line2:#C4BFB2;
+  --acc:#A85D00; --acc-d:#834800; --acc-s:#FAEEDD;
+  --ok:#1C7A4B; --ok-s:#E0F1E8; --warn:#8A6200; --warn-s:#FBF1D8; --bad:#B3352A; --bad-s:#FAE5E2; --info:#25607F; --info-s:#E2EEF5;
+  --sh:0 1px 2px rgba(25,23,18,.06),0 12px 30px -18px rgba(25,23,18,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131210; --surface:#1B1917; --surface2:#242220; --surface3:#2F2C29;
+  --ink:#F0EEE9; --ink2:#B5B0A6; --ink3:#847F75;
+  --line:#282521; --line2:#38342F;
+  --acc:#E09B4D; --acc-d:#EDB273; --acc-s:#2C1F0F;
+  --ok:#55C089; --ok-s:#12291D; --warn:#DDAC4E; --warn-s:#2B2210; --bad:#E5685C; --bad-s:#301715; --info:#63A9CE; --info-s:#122732;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#131210; --surface:#1B1917; --surface2:#242220; --surface3:#2F2C29;
+  --ink:#F0EEE9; --ink2:#B5B0A6; --ink3:#847F75;
+  --line:#282521; --line2:#38342F;
+  --acc:#E09B4D; --acc-d:#EDB273; --acc-s:#2C1F0F;
+  --ok:#55C089; --ok-s:#12291D; --warn:#DDAC4E; --warn-s:#2B2210; --bad:#E5685C; --bad-s:#301715; --info:#63A9CE; --info-s:#122732;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Open Sans",system-ui,-apple-system,sans-serif;font-size:14.5px;line-height:1.5}
+h1,h2,h3{margin:0;font-family:"Ubuntu",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+h1{font-size:clamp(20px,2.5vw,27px)}h2{font-size:17px}h3{font-size:14.5px;font-weight:500}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1300px;margin:0 auto;padding:0 16px}
+.small{font-size:12.5px;line-height:1.42}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:54px}
+.brand{font-family:"Ubuntu",sans-serif;font-weight:700;font-size:16px}
+.brand i{font-style:normal;color:var(--acc)}
+.tabs{display:flex;gap:2px;margin-left:8px;overflow-x:auto}
+.tabs button{padding:7px 12px;border-radius:4px;font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--acc-s);color:var(--acc)}
+.hr{margin-left:auto}
+.ico{border:1px solid var(--line2);width:30px;height:30px;border-radius:4px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+.page{padding:18px 0 60px}
+.phead{margin-bottom:14px}
+.phead p{margin-top:6px;max-width:82ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.card-h{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:14px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:960px){.g2{grid-template-columns:1fr}}
+input,select,textarea{font:inherit;font-size:13.5px;background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:8px 10px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+label.f{display:grid;gap:4px;font-size:11.5px;color:var(--ink2);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:4px;border:1px solid transparent;font-size:13px;font-weight:700}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:7px 11px;font-size:12px}
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--surface2);color:var(--ink2)}
+.pill.g{background:var(--ok-s);color:var(--ok)}
+.pill.w{background:var(--warn-s);color:var(--warn)}
+.pill.r{background:var(--bad-s);color:var(--bad)}
+.pill.b{background:var(--info-s);color:var(--info)}
+.pill.a{background:var(--acc-s);color:var(--acc)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap}
+th.n{text-align:right}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+td.n{text-align:right;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+tr.dup{background:var(--warn-s)}
+.note{border-left:3px solid var(--warn);background:var(--warn-s);padding:11px 13px;border-radius:0 5px 5px 0;font-size:13px;color:var(--ink2)}
+.note.a{border-color:var(--acc);background:var(--acc-s)}
+.note.r{border-color:var(--bad);background:var(--bad-s)}
+.note b{color:var(--ink)}
+/* конвейер */
+.seq{display:grid;gap:8px}
+.stepcard{display:grid;grid-template-columns:64px 1fr auto;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:var(--surface);align-items:center}
+.stepcard .day{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--acc);font-weight:600}
+.stepcard .msg{font-size:12.5px;color:var(--ink2)}
+.lanes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+@media (max-width:900px){.lanes{grid-template-columns:1fr}}
+.lane{background:var(--surface);padding:10px;min-height:150px}
+.lane h4{font-size:11.5px;margin:0 0 8px;display:flex;justify-content:space-between;gap:6px;font-family:"Ubuntu",sans-serif}
+.lane .cnt{font-family:"JetBrains Mono",monospace;color:var(--ink3);font-weight:400}
+.lead{background:var(--surface2);border-radius:4px;padding:6px 8px;font-size:12px;margin-bottom:5px;animation:in .35s ease}
+.lead .nm{font-weight:600}
+.lead .st{font-size:10.5px;color:var(--ink3);font-family:"JetBrains Mono",monospace}
+@keyframes in{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
+.clock{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.clock .d{font-family:"Ubuntu",sans-serif;font-size:22px;font-weight:700}
+/* воронка */
+.funnel{display:grid;gap:6px}
+.fstep{display:grid;grid-template-columns:210px 1fr 120px;gap:12px;align-items:center;font-size:13px}
+@media (max-width:760px){.fstep{grid-template-columns:1fr}}
+.ftrack{height:26px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.ffill{height:100%;background:var(--acc);display:flex;align-items:center;padding-left:8px;color:#fff;font-size:11.5px;font-weight:700;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+.fnum{text-align:right;font-family:"JetBrains Mono",monospace}
+.fnum small{color:var(--ink3);display:block;font-size:11px}
+.view[hidden]{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:4px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Прототип логики автоматизации: дедупликация при импорте, конвейер касаний с остановкой на ответе, аналитика воронки. К реальной amoCRM не подключён, данные условные.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">КОНВЕЙЕР<i>.</i>AMO</span>
+  <nav class="tabs" id="tabs">
+    <button data-go="imp" aria-current="true">Импорт и дубли</button>
+    <button data-go="seq">Конвейер касаний</button>
+    <button data-go="fun">Аналитика воронки</button>
+  </nav>
+  <div class="hr"><button class="ico" id="theme" aria-label="Тема">◐</button></div>
+</div></header>
+
+<div class="wrap page">
+
+<!-- ИМПОРТ -->
+<section class="view" data-view="imp">
+  <div class="phead"><h1>Импорт базы и поиск дублей</h1>
+    <p class="muted small">Единственный ключ у контакта — Telegram-аккаунт, а он приходит в базе в пяти разных видах. Нормализация до сравнения — то, без чего 25 000 строк превращаются в 25 000 сделок вместо 23 000.</p></div>
+  <div class="grid g2" style="align-items:start">
+    <div class="card"><div class="card-h"><h3>Строки из файла</h3><span class="pill" id="rawCount"></span></div>
+      <div class="card-b">
+        <textarea id="raw" rows="9" class="mono" style="font-size:12.5px"></textarea>
+        <button class="btn btn-p" id="runImp" style="margin-top:10px">Обработать импорт</button>
+      </div></div>
+    <div class="card"><div class="card-h"><h3>Результат обработки</h3></div>
+      <div class="card-b" id="impRes"><p class="small muted">Нажмите «Обработать импорт».</p></div></div>
+  </div>
+  <div class="tw" style="margin-top:14px"><table id="impTable">
+    <thead><tr><th>Строка из файла</th><th>Нормализованный ключ</th><th>Решение</th><th>Действие в amoCRM</th></tr></thead>
+    <tbody></tbody></table></div>
+  <div class="note" style="margin-top:12px">
+    <b>Что происходит с дублями.</b> В amoCRM нет встроенного нечёткого поиска: сравнение идёт по точному значению поля. Поэтому <span class="mono">@Ivan_Petrov</span>, <span class="mono">ivan_petrov</span>, <span class="mono">t.me/ivan_petrov</span> и <span class="mono">https://t.me/Ivan_Petrov?start=1</span> — для неё четыре разных контакта. Нормализация приводит их к одному ключу до записи, а не после.
+  </div>
+</section>
+
+<!-- КОНВЕЙЕР -->
+<section class="view" data-view="seq">
+  <div class="phead"><h1>Конвейер касаний и остановка на ответе</h1>
+    <p class="muted small">Пять этапов вашей воронки, по которым работает автоматика. Промотайте дни — контакты пойдут по цепочке. Как только контакт отвечает, рассылка по нему замолкает навсегда, сделка двигается, менеджеру падает задача.</p></div>
+  <div class="grid g2" style="align-items:start;grid-template-columns:300px minmax(0,1fr)">
+    <div>
+      <div class="card"><div class="card-h"><h3>Последовательность</h3></div>
+        <div class="card-b seq">
+          <div class="stepcard"><span class="day">День 0</span><span><b>Первое касание</b><span class="msg" style="display:block">Приветствие + суть партнёрства</span></span><span class="pill a">авто</span></div>
+          <div class="stepcard"><span class="day">День 2</span><span><b>Напоминание</b><span class="msg" style="display:block">Короткий кейс с цифрами</span></span><span class="pill a">авто</span></div>
+          <div class="stepcard"><span class="day">День 5</span><span><b>Другой угол</b><span class="msg" style="display:block">Условия и ответ на «нет времени»</span></span><span class="pill a">авто</span></div>
+          <div class="stepcard"><span class="day">День 9</span><span><b>Закрывающее</b><span class="msg" style="display:block">Последнее сообщение, вежливый выход</span></span><span class="pill a">авто</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px"><div class="card-h"><h3>Управление</h3></div>
+        <div class="card-b grid" style="gap:10px">
+          <div class="clock"><span class="d mono" id="dayNum">День 0</span>
+            <button class="btn btn-p btn-sm" id="tick">+1 день</button>
+            <button class="btn btn-s btn-sm" id="reset">Сброс</button></div>
+          <label class="f">Лимит сообщений в сутки с одного аккаунта
+            <input type="number" id="limit" value="40" min="1" max="500"></label>
+          <p class="small muted" id="limitNote"></p>
+        </div></div>
+    </div>
+    <div>
+      <div class="lanes" id="lanes"></div>
+      <div class="card" style="margin-top:12px"><div class="card-h"><h3>Журнал событий</h3>
+        <button class="btn btn-s btn-sm" id="clrLog">Очистить</button></div>
+        <div class="card-b"><div id="log" class="mono small" style="display:grid;gap:3px;max-height:200px;overflow-y:auto"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ВОРОНКА -->
+<section class="view" data-view="fun">
+  <div class="phead"><h1>Аналитика от загрузки до первой продажи</h1>
+    <p class="muted small">Сквозной путь контакта. Каждый шаг — считаемое событие, а не оценка на глаз. Проценты — от предыдущего шага и от всей базы.</p></div>
+  <div class="card"><div class="card-b"><div class="funnel" id="funnel"></div></div></div>
+  <div class="grid g2" style="margin-top:14px;align-items:start">
+    <div class="card"><div class="card-h"><h3>Что считаем событиями</h3></div>
+      <div class="card-b small muted" style="display:grid;gap:6px">
+        <div>Загружен — контакт создан или обновлён при импорте.</div>
+        <div>Отправлено касание — факт ухода сообщения, а не постановка в очередь.</div>
+        <div>Есть диалог — входящее сообщение от контакта, любое.</div>
+        <div>Квалифицирован — менеджер прошёл скрипт и заполнил поля.</div>
+        <div>Отработаны возражения — переход на соответствующий этап вручную.</div>
+        <div>Подключён партнёр — смена статуса сделки на успешный.</div>
+        <div>Первая рекомендация и первая продажа — события из связанных сделок партнёра.</div>
+      </div></div>
+    <div class="card"><div class="card-h"><h3>Нагрузка на менеджера</h3></div>
+      <div class="card-b" id="load"></div></div>
+  </div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3000)}
+
+/* ============ 1. ИМПОРТ И ДУБЛИ ============ */
+var SAMPLE=[
+ "@Ivan_Petrov;Иван Петров",
+ "ivan_petrov;Петров И.",
+ "https://t.me/Ivan_Petrov?start=partner;Иван П.",
+ "@marina.sav;Марина Савельева",
+ "t.me/marina.sav;Марина С.",
+ "@dm_orlov;Дмитрий Орлов",
+ "@Sergey2024;Сергей Ким",
+ "sergey2024 ;Сергей К.",
+ "@nataly_biz;Наталья Б.",
+ "@;без аккаунта",
+ "@kirill_v;Кирилл Волков"
+].join("\n");
+$("#raw").value=SAMPLE;
+function normTg(s){
+  var v=String(s||"").trim().toLowerCase();
+  v=v.replace(/^https?:\/\//,"").replace(/^t\.me\//,"").replace(/^telegram\.me\//,"");
+  v=v.split("?")[0];
+  v=v.replace(/^@/,"").replace(/[^a-z0-9_\.]/g,"");
+  return v;
+}
+function updRawCount(){
+  var n=$("#raw").value.split(/\r?\n/).filter(function(l){return l.trim()}).length;
+  $("#rawCount").textContent=n+" строк";
+}
+$("#raw").addEventListener("input",updRawCount);updRawCount();
+$("#runImp").addEventListener("click",function(){
+  var lines=$("#raw").value.split(/\r?\n/).filter(function(l){return l.trim()});
+  var seen={},rows=[],created=0,updated=0,skipped=0;
+  lines.forEach(function(l){
+    var p=l.split(";");
+    var key=normTg(p[0]);
+    var name=(p[1]||"").trim();
+    if(!key){rows.push({src:p[0],key:"—",dec:"пропуск",act:"нет ключа, в отдельный список на ручную сверку",cls:"r"});skipped++;return}
+    if(seen[key]){
+      rows.push({src:p[0],key:key,dec:"дубль",act:"обновляем контакт #"+seen[key]+", новую сделку не создаём",cls:"w"});
+      updated++;
+    }else{
+      seen[key]=1000+created;
+      rows.push({src:p[0],key:key,dec:"новый",act:"создаём контакт и сделку в воронке «Партнёры»",cls:"g"});
+      created++;
+    }
+  });
+  $("#impTable").querySelector("tbody").innerHTML=rows.map(function(r){
+    return '<tr'+(r.cls==="w"?' class="dup"':'')+'><td class="mono small">'+esc(r.src)+'</td>'+
+      '<td class="mono">'+esc(r.key)+'</td>'+
+      '<td><span class="pill '+r.cls+'">'+r.dec+'</span></td>'+
+      '<td class="small muted">'+esc(r.act)+'</td></tr>';
+  }).join("");
+  var uniq=Object.keys(seen).length;
+  $("#impRes").innerHTML=
+    '<div style="display:grid;gap:8px">'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted">Строк в файле</span><b class="mono">'+lines.length+'</b></div>'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted">Уникальных контактов</span><b class="mono">'+uniq+'</b></div>'+
+    '<div style="display:flex;justify-content:space-between;color:var(--ok)"><span>Создано новых</span><b class="mono">'+created+'</b></div>'+
+    '<div style="display:flex;justify-content:space-between;color:var(--warn)"><span>Схлопнуто дублей</span><b class="mono">'+updated+'</b></div>'+
+    '<div style="display:flex;justify-content:space-between;color:var(--bad)"><span>Без ключа</span><b class="mono">'+skipped+'</b></div>'+
+    '</div>'+
+    '<div class="note a" style="margin-top:12px"><b>На вашей базе.</b> При такой доле дублей из 25 000 строк получится примерно '+
+    Math.round(25000*uniq/lines.length).toLocaleString("ru-RU")+' сделок вместо 25 000. Это разница в нагрузке на менеджера и в лимитах amoCRM.</div>';
+  toast("Обработано "+lines.length+" строк, дублей: "+updated);
+});
+
+/* ============ 2. КОНВЕЙЕР ============ */
+var STAGES=["Первое касание","Отказ","Есть диалог","Квалифицирован","Отработал возражения"];
+var TOUCH_DAYS=[0,2,5,9];
+var NAMES=["Иван П.","Марина С.","Дмитрий О.","Сергей К.","Наталья Б.","Кирилл В.","Ольга Р.","Артём Л.","Елена М.","Павел Т."];
+var LEADS=[],day=0;
+function initLeads(){
+  LEADS=NAMES.map(function(n,i){
+    return {n:n,stage:0,touch:-1,replyDay:[3,6,null,2,null,11,4,null,7,null][i],done:false,refused:false};
+  });
+}
+function logLine(t,cls){
+  var d=document.createElement("div");
+  d.style.color=cls==="ok"?"var(--ok)":(cls==="bad"?"var(--bad)":(cls==="acc"?"var(--acc)":"var(--ink2)"));
+  d.textContent="день "+day+" · "+t;
+  $("#log").appendChild(d);$("#log").scrollTop=$("#log").scrollHeight;
+}
+$("#clrLog").addEventListener("click",function(){$("#log").innerHTML=""});
+function renderLanes(){
+  $("#lanes").innerHTML=STAGES.map(function(s,i){
+    var inLane=LEADS.filter(function(l){return l.stage===i});
+    return '<div class="lane"><h4>'+esc(s)+'<span class="cnt">'+inLane.length+'</span></h4>'+
+      inLane.map(function(l){
+        var st=l.done?"диалог, автоматика выключена":(l.refused?"вышел из цепочки":
+          (l.touch>=0?"касание "+(l.touch+1)+" из "+TOUCH_DAYS.length:"ожидает первого касания"));
+        return '<div class="lead"><span class="nm">'+esc(l.n)+'</span><span class="st">'+esc(st)+'</span></div>';
+      }).join("")+'</div>';
+  }).join("");
+  $("#dayNum").textContent="День "+day;
+  var lim=+$("#limit").value||40;
+  $("#limitNote").innerHTML="При лимите <b>"+lim+"</b> сообщений в сутки с одного аккаунта вся база в 25 000 контактов проходит первое касание за <b>"+
+    Math.ceil(25000/lim)+" дней</b> с одного аккаунта. Это и есть главный узкий проход проекта, а не код.";
+}
+$("#limit").addEventListener("input",renderLanes);
+$("#tick").addEventListener("click",function(){
+  day++;
+  LEADS.forEach(function(l){
+    if(l.done||l.refused)return;
+    if(l.replyDay!=null&&l.replyDay===day){
+      l.done=true;l.stage=2;
+      logLine(l.n+" ответил → рассылка остановлена, сделка на «Есть диалог», менеджеру поставлена задача","ok");
+      return;
+    }
+    var idx=TOUCH_DAYS.indexOf(day);
+    if(idx>-1){
+      l.touch=idx;
+      logLine(l.n+" → отправлено касание "+(idx+1),"acc");
+      if(idx===TOUCH_DAYS.length-1){
+        l.refused=true;l.stage=1;
+        logLine(l.n+" не ответил на всю цепочку → сделка на «Отказ», автоматика выключена");
+      }
+    }
+  });
+  renderLanes();
+});
+$("#reset").addEventListener("click",function(){day=0;initLeads();$("#log").innerHTML="";renderLanes()});
+initLeads();renderLanes();
+
+/* ============ 3. ВОРОНКА ============ */
+var FUNNEL=[
+ {n:"Загружено контактов",v:25000},
+ {n:"После дедупликации",v:22400},
+ {n:"Отправлено первое касание",v:22400},
+ {n:"Есть диалог",v:3136},
+ {n:"Квалифицирован по скрипту",v:1254},
+ {n:"Отработаны возражения",v:690},
+ {n:"Подключён партнёр",v:214},
+ {n:"Первая рекомендация клиента",v:97},
+ {n:"Первая продажа",v:58}
+];
+function renderFunnel(){
+  var base=FUNNEL[0].v;
+  $("#funnel").innerHTML=FUNNEL.map(function(f,i){
+    var prev=i?FUNNEL[i-1].v:f.v;
+    var fromPrev=prev?f.v/prev*100:0;
+    var fromBase=f.v/base*100;
+    return '<div class="fstep"><span>'+esc(f.n)+'</span>'+
+      '<span class="ftrack"><span class="ffill" style="width:'+Math.max(3,fromBase)+'%">'+
+      (fromBase>8?f.v.toLocaleString("ru-RU"):"")+'</span></span>'+
+      '<span class="fnum">'+(fromBase<=8?f.v.toLocaleString("ru-RU"):Math.round(fromPrev)+" %")+
+      '<small>'+(i?"из пред. "+Math.round(fromPrev)+" %":"вся база")+'</small></span></div>';
+  }).join("");
+  var dialogs=FUNNEL[3].v;
+  $("#load").innerHTML=
+    '<div style="display:grid;gap:8px;font-size:13.5px">'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted">Сейчас: менеджер пишет всем вручную</span><b class="mono">22 400 диалогов</b></div>'+
+    '<div style="display:flex;justify-content:space-between"><span class="muted">После автоматизации: приходит к ответившим</span><b class="mono" style="color:var(--ok)">'+dialogs.toLocaleString("ru-RU")+' диалогов</b></div>'+
+    '<div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:8px"><span class="muted">Снятая нагрузка</span><b class="mono">−'+Math.round((1-dialogs/22400)*100)+' %</b></div>'+
+    '</div>'+
+    '<p class="small muted" style="margin-top:12px">Конверсии условные, для демонстрации структуры отчёта. На реальных данных они подставятся из amoCRM автоматически.</p>';
+}
+renderFunnel();
+
+/* ============ навигация ============ */
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===v))});
+  window.scrollTo(0,0);
+}
+$("#tabs").addEventListener("click",function(e){var b=e.target.closest("[data-go]");if(b)go(b.getAttribute("data-go"))});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+})();
+</script>
