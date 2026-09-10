@@ -1,0 +1,478 @@
+<title>Конфигуратор внедрения для клининга</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700&family=Noto+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F4F4F8; --surface:#FFFFFF; --surface2:#EAEAF2; --surface3:#DDDDE9;
+  --ink:#14131C; --ink2:#4A4859; --ink3:#78768A;
+  --line:#D9D9E4; --line2:#C0BFD0;
+  --acc:#5B4BC4; --acc-d:#453796; --acc-s:#E9E6FA;
+  --coral:#D2553A; --coral-s:#FBE7E1;
+  --ok:#1B7A52; --ok-s:#E0F1EA; --warn:#96690F; --warn-s:#FBF0D9; --bad:#B93327; --bad-s:#FAE3E0;
+  --sh:0 1px 2px rgba(20,19,28,.06),0 12px 30px -18px rgba(20,19,28,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0F0E15; --surface:#17161F; --surface2:#1F1E2A; --surface3:#292838;
+  --ink:#EDECF3; --ink2:#B0AEC2; --ink3:#807E94;
+  --line:#252434; --line2:#343247;
+  --acc:#9B8CF0; --acc-d:#B5AAF6; --acc-s:#1D1A38;
+  --coral:#EE8A72; --coral-s:#331A13;
+  --ok:#4FBF8E; --ok-s:#0F2A20; --warn:#DCA94B; --warn-s:#2B2110; --bad:#E7695C; --bad-s:#301614;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#0F0E15; --surface:#17161F; --surface2:#1F1E2A; --surface3:#292838;
+  --ink:#EDECF3; --ink2:#B0AEC2; --ink3:#807E94;
+  --line:#252434; --line2:#343247;
+  --acc:#9B8CF0; --acc-d:#B5AAF6; --acc-s:#1D1A38;
+  --coral:#EE8A72; --coral-s:#331A13;
+  --ok:#4FBF8E; --ok-s:#0F2A20; --warn:#DCA94B; --warn-s:#2B2110; --bad:#E7695C; --bad-s:#301614;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans",system-ui,-apple-system,sans-serif;font-size:14.5px;line-height:1.5}
+h1,h2,h3{margin:0;font-family:"Raleway",system-ui,sans-serif;font-weight:700;letter-spacing:-.01em;line-height:1.2;text-wrap:balance}
+h1{font-size:clamp(21px,2.6vw,28px)}h2{font-size:18px}h3{font-size:15px}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1340px;margin:0 auto;padding:0 16px}
+.small{font-size:12.5px;line-height:1.42}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:54px}
+.brand{font-family:"Raleway",sans-serif;font-weight:700;font-size:16px}
+.brand i{font-style:normal;color:var(--acc)}
+.tabs{display:flex;gap:2px;margin-left:8px;overflow-x:auto}
+.tabs button{padding:7px 12px;border-radius:4px;font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--acc-s);color:var(--acc)}
+.hr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ico{border:1px solid var(--line2);width:30px;height:30px;border-radius:4px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+.page{padding:18px 0 60px}
+.phead{margin-bottom:16px}
+.phead p{margin-top:6px;max-width:80ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.card-h{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:14px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+input,select{font:inherit;font-size:13.5px;background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:8px 10px;width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+input[type=number]{font-family:"JetBrains Mono",monospace;text-align:right}
+label.f{display:grid;gap:4px;font-size:11.5px;color:var(--ink2);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:4px;border:1px solid transparent;font-size:13px;font-weight:700}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:7px 11px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--surface2);color:var(--ink2)}
+.pill.g{background:var(--ok-s);color:var(--ok)}
+.pill.w{background:var(--warn-s);color:var(--warn)}
+.pill.r{background:var(--bad-s);color:var(--bad)}
+.pill.a{background:var(--acc-s);color:var(--acc)}
+
+/* конфигуратор */
+.cfg{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
+@media (max-width:1080px){.cfg{grid-template-columns:1fr}}
+.side{position:sticky;top:70px;display:grid;gap:12px}
+.mod{border:1px solid var(--line);border-radius:6px;background:var(--surface);margin-bottom:10px;overflow:hidden}
+.mod-h{padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.mod-h .t{font-weight:700;font-size:14px}
+.mod-h .n{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink3);margin-right:6px}
+.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+@media (max-width:760px){.levels{grid-template-columns:1fr}}
+.lv{background:var(--surface);padding:11px 12px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:104px;transition:background .15s}
+.lv:hover{background:var(--surface2)}
+.lv[aria-pressed="true"]{background:var(--acc-s);box-shadow:inset 0 0 0 2px var(--acc)}
+.lv .lvname{font-weight:700;font-size:12.5px;display:flex;justify-content:space-between;gap:6px;align-items:center}
+.lv .lvdesc{font-size:11.5px;color:var(--ink2);line-height:1.35}
+.lv .lvfoot{margin-top:auto;display:flex;justify-content:space-between;gap:6px;align-items:center;font-size:11px}
+.lv .days{font-family:"JetBrains Mono",monospace;font-weight:600}
+.tot{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px}
+.tot .row{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:4px 0}
+.tot .big{font-family:"Raleway",sans-serif;font-size:26px;font-weight:700;letter-spacing:-.02em}
+.tot .sep{border-top:1px solid var(--line);margin:8px 0;padding-top:8px}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.stack{display:grid;gap:6px;font-size:12.5px}
+.stack .r{display:grid;grid-template-columns:100px 1fr;gap:8px}
+.stack .k{color:var(--ink3);font-family:"JetBrains Mono",monospace;font-size:11px}
+.note{border-left:3px solid var(--warn);background:var(--warn-s);padding:11px 13px;border-radius:0 5px 5px 0;font-size:13px;color:var(--ink2)}
+.note.a{border-color:var(--acc);background:var(--acc-s)}
+.note b{color:var(--ink)}
+
+/* сценарий */
+.tl{display:grid;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.step{display:grid;grid-template-columns:76px 1fr auto;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);align-items:start;opacity:.35;transition:opacity .3s,background .3s}
+.step:last-child{border-bottom:0}
+.step.on{opacity:1}
+.step.on.fire{background:var(--acc-s)}
+.step .tm{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink3);padding-top:2px}
+.step .t{font-weight:700;font-size:13.5px}
+.step .d{font-size:12.5px;color:var(--ink2);margin-top:3px}
+.step .ch{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.ch span{font-size:10.5px;padding:2px 7px;border-radius:10px;background:var(--surface2);color:var(--ink2);font-family:"JetBrains Mono",monospace}
+.ch span.hit{background:var(--ok-s);color:var(--ok)}
+.ch span.miss{background:var(--bad-s);color:var(--bad)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap}
+th.n{text-align:right}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--surface2)}
+td.n{text-align:right;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+.score{display:inline-flex;align-items:center;gap:6px}
+.bar{width:52px;height:6px;border-radius:3px;background:var(--surface3);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc)}
+.bar i.g{background:var(--ok)}
+.bar i.w{background:var(--warn)}
+.view[hidden]{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:4px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Прототип для оценки проекта: конфигуратор модулей с тремя уровнями и сценарий срочного закрытия смены. Оценки в днях — экспертные ориентиры, уточняются после ТЗ.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">СМЕНА<i>.</i>ЯДРО</span>
+  <nav class="tabs" id="tabs">
+    <button data-go="cfg" aria-current="true">Конфигуратор внедрения</button>
+    <button data-go="shift">Закрытие смены при невыходе</button>
+    <button data-go="pick">Подбор и рейтинг</button>
+  </nav>
+  <div class="hr"><button class="ico" id="theme" aria-label="Тема">◐</button></div>
+</div></header>
+
+<div class="wrap page">
+
+<!-- КОНФИГУРАТОР -->
+<section class="view" data-view="cfg">
+  <div class="phead"><h1>Конфигуратор внедрения</h1>
+    <p class="muted small">Тринадцать модулей из вашего ТЗ. По каждому — три уровня и пометка, что берём готовым, что настраиваем, а что пишем. Выберите нужный уровень — смета и срок пересчитаются. Модуль можно вынести за пределы первого этапа.</p></div>
+  <div class="cfg">
+    <div id="mods"></div>
+    <aside class="side">
+      <div class="tot">
+        <div class="lbl">Итог по выбранному составу</div>
+        <div class="big mono" id="sumMoney" style="margin:6px 0">—</div>
+        <div class="row"><span class="muted">Трудоёмкость</span><span class="mono" id="sumDays">—</span></div>
+        <div class="row"><span class="muted">Календарный срок</span><span class="mono" id="sumWeeks">—</span></div>
+        <div class="row"><span class="muted">Модулей в этапе</span><span class="mono" id="sumMods">—</span></div>
+        <div class="sep"></div>
+        <label class="f">Ставка команды, ₽/день<input type="number" id="rate" value="12000" step="1000" min="1000"></label>
+        <label class="f" style="margin-top:8px">Людей в команде<select id="team">
+          <option value="1">1 — последовательно</option>
+          <option value="2" selected>2 — фронт и бэк</option>
+          <option value="3">3 — плюс интеграции</option>
+        </select></label>
+        <div class="sep"></div>
+        <div class="lbl" style="margin-bottom:6px">Быстрый выбор</div>
+        <div class="presets">
+          <button class="btn btn-p btn-sm" data-pre="first">Рекомендуемый 1-й этап</button>
+          <button class="btn btn-s btn-sm" data-pre="mvp">Всё по MVP</button>
+          <button class="btn btn-s btn-sm" data-pre="max">Максимум</button>
+          <button class="btn btn-s btn-sm" data-pre="none">Сбросить</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-h"><h3>Что берём готовым</h3></div>
+        <div class="card-b stack">
+          <div class="r"><span class="k">канал</span><span>Telegram Bot API — бесплатно, кнопки «Готов / Не могу»</span></div>
+          <div class="r"><span class="k">канал</span><span>SMS-агрегатор (SMS.RU, Devino) — от 3 ₽ за сообщение</span></div>
+          <div class="r"><span class="k">канал</span><span>Телефония и автодозвон — Mango, Voximplant</span></div>
+          <div class="r"><span class="k">карты</span><span>2ГИС или Яндекс.Карты API — расстояние до объекта</span></div>
+          <div class="r"><span class="k">сценарии</span><span>n8n — каскады уведомлений без кода</span></div>
+          <div class="r"><span class="k">аналитика</span><span>Metabase — дашборды поверх той же базы</span></div>
+          <div class="r"><span class="k">выплаты</span><span>Банк API + сервис самозанятых (чеки в ФНС)</span></div>
+        </div></div>
+      <div class="note" style="font-size:12.5px">
+        <b>Про MAX.</b> Бот-платформа мессенджера появилась недавно, и её возможности уступают Telegram. Закладываю её как отдельный адаптер за общим интерфейсом рассылки: если API окажется ограниченным, канал отключается тумблером, а не переписыванием модуля.
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- СЦЕНАРИЙ -->
+<section class="view" data-view="shift" hidden>
+  <div class="phead"><h1>Срочное закрытие смены при невыходе</h1>
+    <p class="muted small">Самая дорогая операция в вашем процессе: сейчас её закрывает менеджер звонками. Ниже — как её проходит система. Нажмите «Запустить» и смотрите каскад: канал за каналом, с эскалацией и повышением ставки.</p></div>
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <div class="card" style="margin-bottom:12px"><div class="card-h">
+        <div><h3>БЦ «Северный», 07:00–16:00, уборщик</h3>
+          <p class="small muted" style="margin-top:3px">Критичный объект · ставка 2 400 ₽ · старт через <span class="mono" id="clock">2 ч 40 мин</span></p></div>
+        <span class="pill r" id="shiftStatus">невыход</span>
+      </div>
+      <div class="card-b" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-p" id="run">Запустить каскад</button>
+        <button class="btn btn-s" id="resetRun">Сбросить</button>
+      </div></div>
+      <div class="tl" id="timeline"></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Что видит менеджер</h3></div>
+      <div class="card-b">
+        <div id="mgr" class="grid" style="gap:8px"></div>
+        <div class="note a" style="margin-top:12px">
+          <b>Смысл каскада:</b> менеджер подключается только на последнем шаге и только если система не справилась сама. Сейчас он подключается на первом. Разница в этом, а не в красоте интерфейса.
+        </div>
+      </div></div>
+  </div>
+</section>
+
+<!-- ПОДБОР -->
+<section class="view" data-view="pick" hidden>
+  <div class="phead"><h1>Подбор исполнителей и рейтинг надёжности</h1>
+    <p class="muted small">Ранжирование кандидатов на смену. Веса факторов можно менять — видно, как меняется очередь обзвона.</p></div>
+  <div class="grid g2" style="align-items:start;grid-template-columns:minmax(0,1fr) 280px">
+    <div class="tw"><table id="pickTable">
+      <thead><tr><th>Исполнитель</th><th>Категория</th><th class="n">Расст.</th><th class="n">Выходов</th><th class="n">Невыходов</th><th class="n">Занят</th><th class="n">Балл</th></tr></thead>
+      <tbody></tbody></table></div>
+    <div class="card"><div class="card-h"><h3>Веса факторов</h3></div>
+      <div class="card-b grid" style="gap:10px">
+        <label class="f">Рейтинг надёжности<input type="range" id="wRel" min="0" max="10" value="8"></label>
+        <label class="f">Близость к объекту<input type="range" id="wDist" min="0" max="10" value="6"></label>
+        <label class="f">История выходов<input type="range" id="wHist" min="0" max="10" value="5"></label>
+        <label class="f">Свободен в этот день<input type="range" id="wFree" min="0" max="10" value="9"></label>
+        <p class="small muted">Категории: новый, обычный, надёжный, риск, заблокирован. Заблокированные в подбор не попадают вовсе.</p>
+      </div></div>
+  </div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var rub=function(n){return Math.round(n).toLocaleString("ru-RU")+" ₽"};
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3000)}
+
+/* ================= данные модулей ================= */
+var W={ready:["готовое","g"],hybrid:["настройка","w"],dev:["разработка","a"]};
+var MODULES=[
+ {n:1,t:"Единая CRM-база исполнителей",lv:[
+  {d:6,k:"ready",x:"Готовая CRM с кастомными полями, импорт из Excel, дедупликация по телефону"},
+  {d:12,k:"hybrid",x:"Своя карточка: специальности, ставки, доступность, история смен и контактов"},
+  {d:20,k:"dev",x:"Юрстатусы, реквизиты, самозанятые через ФНС, нечёткий поиск дублей по ФИО"}]},
+ {n:2,t:"Объекты и смены",lv:[
+  {d:5,k:"hybrid",x:"Справочник объектов, календарь смен, ручное создание"},
+  {d:10,k:"dev",x:"Регулярные смены, шаблоны недели, копирование расписаний"},
+  {d:16,k:"dev",x:"Критичность объекта, политика резерва, автогенерация расписания на месяц"}]},
+ {n:3,t:"Подбор исполнителей",lv:[
+  {d:4,k:"hybrid",x:"Фильтры: специальность, район, доступность, ставка"},
+  {d:9,k:"dev",x:"Скоринг: рейтинг, расстояние по картам, история выходов, текущая занятость"},
+  {d:18,k:"dev",x:"Прогноз вероятности выхода на статистике прошлых смен"}]},
+ {n:4,t:"Рассылка свободных смен",lv:[
+  {d:5,k:"ready",x:"Telegram-бот, карточка смены, кнопки «Готов / Не могу / Уточнить»"},
+  {d:10,k:"hybrid",x:"Плюс MAX и SMS, единое окно переписки в карточке сотрудника"},
+  {d:16,k:"dev",x:"Плюс телефония и автодозвон, шаблоны сообщений, выбор канала по истории отклика"}]},
+ {n:5,t:"Подтверждения и резерв",lv:[
+  {d:4,k:"hybrid",x:"Напоминание за N часов, отметка подтверждения"},
+  {d:8,k:"dev",x:"Каскад каналов при молчании, назначение 1–2 резервных"},
+  {d:14,k:"dev",x:"Политики по критичности объекта, автоэскалация менеджеру по SLA"}]},
+ {n:6,t:"Невыходы и срочное закрытие",lv:[
+  {d:4,k:"hybrid",x:"Фиксация невыхода, ручной вызов резерва в один клик"},
+  {d:9,k:"dev",x:"Автокаскад: резерв → рассылка подходящим → расширение радиуса поиска"},
+  {d:15,k:"dev",x:"Повышенная ставка и компенсация такси по правилам, приоритет критичных объектов"}]},
+ {n:7,t:"Фактический выход и табель",lv:[
+  {d:4,k:"hybrid",x:"Ручное подтверждение выхода менеджером, часы вручную"},
+  {d:9,k:"dev",x:"Кнопка сотрудника в боте, отметка времени, геолокация при старте смены"},
+  {d:16,k:"dev",x:"QR-код на объекте, подтверждение администратора, фотофиксация, расчёт часов автоматом"}]},
+ {n:8,t:"Рейтинг надёжности",lv:[
+  {d:3,k:"hybrid",x:"Счётчики: предложено, принято, отработано, невыходы"},
+  {d:7,k:"dev",x:"Формула рейтинга, категории, история изменений, объяснение балла"},
+  {d:12,k:"dev",x:"Настраиваемые веса, автоблокировка при пороге, влияние на очередь рассылки"}]},
+ {n:9,t:"Начисления и выплаты",lv:[
+  {d:7,k:"dev",x:"Индивидуальные ставки, часы, реестр выплат, защита от двойной оплаты"},
+  {d:14,k:"dev",x:"Графики выплат, доплаты, такси, премии, задолженность по каждому"},
+  {d:24,k:"dev",x:"Банк API, реальные платежи, чеки самозанятых в ФНС, сверка реестров"}]},
+ {n:10,t:"Рефералы и привлечение",lv:[
+  {d:3,k:"hybrid",x:"Кто кого привёл, начисление бонуса вручную"},
+  {d:7,k:"dev",x:"Лендинг и формы, метки источников, кандидат сразу в базе"},
+  {d:12,k:"dev",x:"Импорт откликов Avito и hh.ru, воронка кандидата до первой смены"}]},
+ {n:11,t:"Рабочее место менеджера",lv:[
+  {d:4,k:"hybrid",x:"Список приоритетов: незакрытые смены, кто не подтвердился"},
+  {d:9,k:"dev",x:"Виджеты, быстрые действия, фильтры по объектам и датам"},
+  {d:14,k:"dev",x:"Реалтайм-обновление, таймеры SLA, уведомления о риске срыва"}]},
+ {n:12,t:"Аналитика руководителя",lv:[
+  {d:3,k:"ready",x:"Базовые выгрузки в таблицы, ручные сводки"},
+  {d:8,k:"ready",x:"Дашборд Metabase: закрытие смен, невыходы, скорость замены, активная база"},
+  {d:14,k:"dev",x:"Экономика смены и объекта, эффективность источников персонала, когорты"}]},
+ {n:13,t:"Интеграции",lv:[
+  {d:3,k:"ready",x:"Выгрузка в Google Sheets"},
+  {d:8,k:"hybrid",x:"Карты, действующая CRM, обмен с 1С файлами"},
+  {d:16,k:"dev",x:"Банк, телефония, двусторонний обмен с 1С, единая шина событий"}]}
+];
+var LVNAME=["MVP","Расширенный","Продвинутый"];
+var sel={};
+var PRESETS={
+ first:{1:0,2:0,3:0,4:0,5:0,6:0,11:0},
+ mvp:{1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0},
+ max:{1:2,2:2,3:2,4:2,5:2,6:2,7:2,8:2,9:2,10:2,11:2,12:2,13:2},
+ none:{}
+};
+
+function renderMods(){
+  $("#mods").innerHTML=MODULES.map(function(m){
+    var cur=sel[m.n];
+    return '<div class="mod"><div class="mod-h">'+
+      '<span class="t"><span class="n">'+(m.n<10?"0":"")+m.n+'</span>'+esc(m.t)+'</span>'+
+      (cur!=null?'<span class="pill a">'+LVNAME[cur]+'</span>':'<span class="pill">не в этапе</span>')+
+      '</div><div class="levels">'+
+      m.lv.map(function(l,i){
+        var w=W[l.k];
+        return '<button class="lv" data-m="'+m.n+'" data-l="'+i+'" aria-pressed="'+(cur===i)+'">'+
+          '<span class="lvname">'+LVNAME[i]+'<span class="pill '+w[1]+'">'+w[0]+'</span></span>'+
+          '<span class="lvdesc">'+esc(l.x)+'</span>'+
+          '<span class="lvfoot"><span class="muted">трудоёмкость</span><span class="days">'+l.d+' дн.</span></span>'+
+        '</button>';
+      }).join("")+
+      '<button class="lv" data-m="'+m.n+'" data-l="off" aria-pressed="'+(cur==null)+'">'+
+        '<span class="lvname">Не берём</span>'+
+        '<span class="lvdesc">Оставляем на следующий этап или закрываем текущим процессом.</span>'+
+        '<span class="lvfoot"><span class="muted">трудоёмкость</span><span class="days">0 дн.</span></span></button>'+
+      '</div></div>';
+  }).join("");
+}
+function recalc(){
+  var days=0,mods=0;
+  MODULES.forEach(function(m){
+    var c=sel[m.n];
+    if(c!=null){days+=m.lv[c].d;mods++;}
+  });
+  var rate=+$("#rate").value||0, team=+$("#team").value||1;
+  var money=days*rate;
+  var overhead=team>1?1.15:1;                 /* координация при параллельной работе */
+  var calDays=days>0?Math.ceil(days/team*overhead):0;
+  $("#sumMoney").textContent=days?rub(money):"—";
+  $("#sumDays").textContent=days?days+" чел.-дней":"—";
+  $("#sumWeeks").textContent=calDays?Math.ceil(calDays/5)+" недель ("+calDays+" раб. дней)":"—";
+  $("#sumMods").textContent=mods+" из "+MODULES.length;
+}
+$("#mods").addEventListener("click",function(e){
+  var b=e.target.closest("[data-m]");if(!b)return;
+  var m=+b.getAttribute("data-m"),l=b.getAttribute("data-l");
+  if(l==="off")delete sel[m];else sel[m]=+l;
+  renderMods();recalc();
+});
+$$(".presets [data-pre]").forEach(function(b){
+  b.addEventListener("click",function(){
+    var p=PRESETS[b.getAttribute("data-pre")];
+    sel={};Object.keys(p).forEach(function(k){sel[+k]=p[k]});
+    renderMods();recalc();
+    toast(b.textContent+": выбрано модулей — "+Object.keys(sel).length);
+  });
+});
+$("#rate").addEventListener("input",recalc);
+$("#team").addEventListener("change",recalc);
+sel=JSON.parse(JSON.stringify(PRESETS.first));
+renderMods();recalc();
+
+/* ================= сценарий закрытия смены ================= */
+var STEPS=[
+ {t:"00:00",n:"Зафиксирован невыход",d:"Администратор объекта отметил, что сотрудник не вышел. Смена помечена как под угрозой, запущен сценарий.",ch:[]},
+ {t:"00:00",n:"Вызов резерва",d:"У критичного объекта был назначен резерв — Ирина К. Сообщение ушло первым, до общей рассылки.",ch:[["Telegram","hit"]]},
+ {t:"00:04",n:"Резерв не ответил",d:"Четыре минуты тишины — не ждём дальше, параллельно уходит рассылка по подходящим исполнителям.",ch:[["Telegram","miss"]]},
+ {t:"00:05",n:"Рассылка подходящим, радиус 5 км",d:"Семь исполнителей с нужной специальностью, свободных сегодня, с рейтингом «надёжный» и «обычный».",ch:[["Telegram","hit"],["MAX","hit"]]},
+ {t:"00:11",n:"Двое отказались, ответов мало",d:"Расширяем географию до 12 км и подключаем SMS тем, кто не читает мессенджеры.",ch:[["Telegram","miss"],["SMS","hit"]]},
+ {t:"00:18",n:"Повышенная ставка +15% и такси",d:"Сработало правило для критичного объекта при менее чем 3 часах до старта. В рассылке видно новую ставку.",ch:[["Telegram","hit"],["SMS","hit"]]},
+ {t:"00:23",n:"Автодозвон трём с лучшим рейтингом",d:"Голосовое сообщение с предложением смены и подтверждением по кнопке в тоновом наборе.",ch:[["Телефония","hit"]]},
+ {t:"00:26",n:"Смена закрыта",d:"Согласился Андрей М., рейтинг «надёжный», 8 км до объекта. Ему ушли адрес, время и контакт администратора.",ch:[["Telegram","hit"]],ok:true}
+];
+var runIdx=-1,runTimer=null;
+function renderTL(){
+  $("#timeline").innerHTML=STEPS.map(function(s,i){
+    return '<div class="step'+(i<=runIdx?" on":"")+(i===runIdx?" fire":"")+'" data-i="'+i+'">'+
+      '<span class="tm">'+s.t+'</span>'+
+      '<span><span class="t">'+esc(s.n)+'</span><span class="d">'+esc(s.d)+'</span>'+
+      (s.ch.length?'<span class="ch">'+s.ch.map(function(c){return '<span class="'+c[1]+'">'+esc(c[0])+'</span>'}).join("")+'</span>':'')+
+      '</span>'+
+      '<span>'+(i<=runIdx?(s.ok?'<span class="pill g">закрыто</span>':'<span class="pill a">выполнено</span>'):'<span class="pill">ждёт</span>')+'</span>'+
+    '</div>';
+  }).join("");
+  var done=runIdx>=STEPS.length-1;
+  $("#shiftStatus").textContent=runIdx<0?"невыход":(done?"смена закрыта":"идёт замена");
+  $("#shiftStatus").className="pill "+(runIdx<0?"r":(done?"g":"w"));
+  $("#mgr").innerHTML=runIdx<0
+    ? '<p class="small muted">Сценарий не запущен. Сейчас на этом месте менеджер начинает обзванивать людей по списку в телефоне.</p>'
+    : (done
+      ? '<div class="note" style="border-color:var(--ok);background:var(--ok-s)"><b>Одно уведомление вместо часа работы.</b><br>«БЦ Северный, 07:00 — замена найдена: Андрей М. Ставка повышена на 15%, такси 450 ₽. Требуется ваше подтверждение доплаты.»</div>'
+      : '<div class="note"><b>Пока ничего не требуется.</b><br>Система работает сама. Менеджер получит уведомление, только если каскад дойдёт до конца без результата — тогда в сообщении будет список тех, кто уже отказался, чтобы не звонить им повторно.</div>');
+}
+function stopRun(){if(runTimer){clearInterval(runTimer);runTimer=null}}
+$("#run").addEventListener("click",function(){
+  stopRun();runIdx=-1;renderTL();
+  runTimer=setInterval(function(){
+    runIdx++;
+    if(runIdx>=STEPS.length){stopRun();toast("Смена закрыта за 26 минут без участия менеджера");renderTL();return}
+    renderTL();
+  },900);
+});
+$("#resetRun").addEventListener("click",function(){stopRun();runIdx=-1;renderTL()});
+renderTL();
+
+/* ================= подбор и рейтинг ================= */
+var PEOPLE=[
+ {n:"Андрей М.",cat:"надёжный",dist:8,out:64,miss:1,busy:false},
+ {n:"Ирина К.",cat:"надёжный",dist:3,out:51,miss:2,busy:false},
+ {n:"Сергей П.",cat:"обычный",dist:5,out:28,miss:4,busy:false},
+ {n:"Наталья В.",cat:"обычный",dist:14,out:33,miss:3,busy:true},
+ {n:"Дмитрий Л.",cat:"новый",dist:6,out:2,miss:0,busy:false},
+ {n:"Олег С.",cat:"риск",dist:4,out:19,miss:9,busy:false},
+ {n:"Марина Т.",cat:"надёжный",dist:19,out:77,miss:1,busy:false},
+ {n:"Виктор Ж.",cat:"заблокирован",dist:2,out:11,miss:14,busy:false}
+];
+var CATW={"надёжный":1,"обычный":0.72,"новый":0.5,"риск":0.28,"заблокирован":0};
+function renderPick(){
+  var wRel=+$("#wRel").value,wDist=+$("#wDist").value,wHist=+$("#wHist").value,wFree=+$("#wFree").value;
+  var rows=PEOPLE.filter(function(p){return p.cat!=="заблокирован"}).map(function(p){
+    var rel=CATW[p.cat];
+    var dist=Math.max(0,1-p.dist/25);
+    var total=p.out+p.miss;
+    var hist=total>0?p.out/total:0.4;
+    var free=p.busy?0:1;
+    var score=(rel*wRel+dist*wDist+hist*wHist+free*wFree)/((wRel+wDist+wHist+wFree)||1)*100;
+    return {p:p,s:score};
+  }).sort(function(a,b){return b.s-a.s});
+  $("#pickTable").querySelector("tbody").innerHTML=rows.map(function(r,i){
+    var cls=r.s>=70?"g":(r.s>=45?"":"w");
+    var catPill=r.p.cat==="надёжный"?"g":(r.p.cat==="риск"?"r":(r.p.cat==="новый"?"a":""));
+    return '<tr><td style="font-weight:600">'+(i+1)+'. '+esc(r.p.n)+'</td>'+
+      '<td><span class="pill '+catPill+'">'+esc(r.p.cat)+'</span></td>'+
+      '<td class="n">'+r.p.dist+' км</td><td class="n">'+r.p.out+'</td><td class="n">'+r.p.miss+'</td>'+
+      '<td class="n">'+(r.p.busy?'<span class="pill w">занят</span>':'<span class="pill g">свободен</span>')+'</td>'+
+      '<td class="n"><span class="score"><span class="bar"><i class="'+cls+'" style="width:'+Math.round(r.s)+'%"></i></span>'+Math.round(r.s)+'</span></td></tr>';
+  }).join("")+
+  '<tr style="opacity:.5"><td colspan="7" class="small muted" style="text-align:center">Виктор Ж. — категория «заблокирован», в подбор не попадает</td></tr>';
+}
+["wRel","wDist","wHist","wFree"].forEach(function(id){$("#"+id).addEventListener("input",renderPick)});
+renderPick();
+
+/* ================= навигация ================= */
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===v))});
+  window.scrollTo(0,0);
+}
+$("#tabs").addEventListener("click",function(e){var b=e.target.closest("[data-go]");if(b)go(b.getAttribute("data-go"))});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+})();
+</script>
