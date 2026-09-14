@@ -1,0 +1,386 @@
+<title>Аренда и выкуп авто — демо механики</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* ============================================================
+   MOBILE FIRST. Базовые правила — телефон.
+   Расширения — в min-width 720px и 1100px.
+   ============================================================ */
+:root{
+  --bg:#111114; --surface:#1A1A1F; --surface2:#232329; --surface3:#2E2E36;
+  --ink:#F3F2EF; --ink2:#AFADA6; --ink3:#7C7A74;
+  --line:#282830; --line2:#38383F;
+  --gold:#C79A3A; --gold-d:#A87F27; --gold-s:#2A2113;
+  --ok:#4FBF87; --ok-s:#122A1F; --bad:#E4695E;
+  --r:10px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Mulish",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;
+  padding-bottom:78px; /* место под sticky bottom bar */
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;font-weight:900;letter-spacing:-.02em;line-height:1.12;text-wrap:balance}
+h1{font-size:clamp(26px,7vw,38px)}
+h2{font-size:clamp(20px,5vw,26px)}
+h3{font-size:17px;font-weight:800}
+p{margin:0}
+button,a{font:inherit;color:inherit;cursor:pointer;text-decoration:none}
+button{background:none;border:0}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.wrap{width:100%;max-width:560px;margin:0 auto;padding:0 16px}
+.small{font-size:13.5px;line-height:1.45}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+
+/* ---- панель демо ---- */
+.devbar{background:var(--surface2);border-bottom:1px solid var(--line);padding:10px 0}
+.devbar .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.devbar button{border:1px solid var(--line2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--ink2)}
+.devbar button:hover{border-color:var(--gold);color:var(--gold)}
+.devbar button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#17130A;font-weight:700}
+.devbar .url{margin-top:8px;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink3);word-break:break-all}
+
+/* ---- hero ---- */
+.hero{padding:26px 0 30px;background:radial-gradient(120% 80% at 50% 0%,rgba(199,154,58,.14),transparent 60%)}
+.eyebrow{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);background:var(--gold-s);padding:5px 11px;border-radius:20px}
+.hero h1{margin-top:14px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero .sub{margin-top:14px;color:var(--ink2);font-size:16px}
+.hero .cta{display:grid;gap:10px;margin-top:22px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:var(--r);
+  font-weight:800;font-size:16px;padding:0 20px;transition:background-color .15s,border-color .15s}
+.btn-p{background:var(--gold);color:#17130A}
+.btn-p:active{background:var(--gold-d)}
+.btn-s{border:1px solid var(--line2);color:var(--ink)}
+.btn-s:active{border-color:var(--gold);color:var(--gold)}
+.trust{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:22px}
+.trust div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 10px;text-align:center}
+.trust .n{font-size:20px;font-weight:900;color:var(--gold)}
+.trust .t{font-size:11.5px;color:var(--ink2);margin-top:3px;line-height:1.3}
+
+/* ---- секции ---- */
+.sec{padding:28px 0;border-top:1px solid var(--line)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card+.card{margin-top:10px}
+
+/* ---- квиз ---- */
+.quiz{background:var(--surface);border:1px solid var(--line2);border-radius:14px;overflow:hidden}
+.quiz-h{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.quiz-h .step{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink3)}
+.bar{height:4px;background:var(--surface3)}
+.bar i{display:block;height:100%;background:var(--gold);transition:width .35s cubic-bezier(.2,.7,.3,1)}
+.quiz-b{padding:18px 16px}
+.quiz-b h3{margin-bottom:14px}
+.opts{display:grid;gap:9px}
+.opt{display:flex;align-items:center;gap:11px;min-height:54px;padding:0 15px;border:1px solid var(--line2);
+  border-radius:var(--r);background:var(--surface2);font-size:15px;font-weight:600;text-align:left;width:100%}
+.opt:active{border-color:var(--gold)}
+.opt[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-s);color:var(--gold)}
+.opt .ic{width:22px;text-align:center;font-size:17px}
+.quiz-f{padding:0 16px 18px;display:grid;gap:10px}
+input,select{font:inherit;font-size:16px;background:var(--surface2);color:var(--ink);
+  border:1px solid var(--line2);border-radius:var(--r);padding:14px 15px;width:100%;min-height:54px}
+input:focus,select:focus{outline:2px solid var(--gold);outline-offset:-1px;border-color:var(--gold)}
+label.f{display:grid;gap:6px;font-size:12.5px;color:var(--ink2);font-weight:700}
+.chans{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.chan{display:grid;place-items:center;gap:4px;min-height:66px;border:1px solid var(--line2);border-radius:var(--r);
+  background:var(--surface2);font-size:12.5px;font-weight:700}
+.chan[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-s);color:var(--gold)}
+.chan .ic{font-size:19px}
+.quiz-nav{display:flex;gap:8px}
+.quiz-nav .btn{flex:1}
+.consent{font-size:11.5px;color:var(--ink3);line-height:1.4}
+.done{text-align:center;padding:26px 16px}
+.done .mark{width:56px;height:56px;border-radius:50%;background:var(--ok-s);color:var(--ok);
+  display:grid;place-items:center;font-size:26px;margin:0 auto 14px}
+
+/* ---- payload ---- */
+pre{margin:0;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.55;
+  background:#0C0C0F;border:1px solid var(--line);border-radius:var(--r);padding:13px;overflow-x:auto;color:#D8D6D0}
+pre .k{color:var(--gold)}
+pre .s{color:#8FD3A8}
+pre .n{color:#7FB0E0}
+.route{display:grid;gap:8px;margin-top:12px}
+.rstep{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;font-size:13.5px}
+.rstep .n{width:22px;height:22px;border-radius:50%;background:var(--gold-s);color:var(--gold);
+  display:grid;place-items:center;font-size:11px;font-weight:800;font-family:"JetBrains Mono",monospace}
+.rstep b{display:block}
+.rstep span{color:var(--ink2);font-size:12.5px}
+
+/* ---- sticky bottom bar ---- */
+.sticky{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:rgba(26,26,31,.97);backdrop-filter:blur(10px);
+  border-top:1px solid var(--line2);
+  padding:9px 12px calc(9px + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;
+}
+.sticky a{display:grid;place-items:center;gap:3px;min-height:52px;border-radius:9px;
+  font-size:11.5px;font-weight:800;background:var(--surface2);border:1px solid var(--line2)}
+.sticky a.main{background:var(--gold);color:#17130A;border-color:var(--gold)}
+.sticky a .ic{font-size:18px}
+
+/* ---- десктоп: расширения ---- */
+@media (min-width:720px){
+  body{padding-bottom:0}
+  .wrap{max-width:880px;padding:0 24px}
+  .hero{padding:44px 0 46px}
+  .hero .cta{grid-auto-flow:column;justify-content:start}
+  .hero .cta .btn{padding:0 28px}
+  .trust{gap:12px}
+  .sticky{display:none}
+  .desk-note{display:block}
+}
+@media (min-width:1100px){
+  .wrap{max-width:1000px}
+}
+.desk-note{display:none;background:var(--gold-s);border:1px solid var(--gold);border-radius:var(--r);
+  padding:12px 14px;font-size:13px;color:var(--ink2);margin:16px auto 0;max-width:1000px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="devbar"><div class="wrap">
+  <div class="lbl" style="margin-bottom:7px">Демо-панель · подмена H1 по UTM</div>
+  <div class="row">
+    <button data-utm="" aria-pressed="true">без меток</button>
+    <button data-utm="arenda">utm_term=arenda</button>
+    <button data-utm="vykup">utm_term=vykup</button>
+    <button data-utm="taxi">utm_term=taxi</button>
+    <button data-utm="srochno">utm_term=srochno</button>
+  </div>
+  <div class="url" id="urlLine"></div>
+</div></div>
+
+<div class="desk-note wrap">Вы смотрите с десктопа. Основная работа здесь — мобильная: откройте эту же ссылку со смартфона, чтобы увидеть прилипающую нижнюю панель и реальные размеры тап-зон.</div>
+
+<div class="hero"><div class="wrap">
+  <span class="eyebrow" id="eyebrow">Аренда и выкуп авто</span>
+  <h1 id="h1">Машина под такси <em>за 1 день</em></h1>
+  <p class="sub" id="sub">Подберём авто под вашу задачу. Выкупим вашу — деньги в день обращения.</p>
+  <div class="cta">
+    <a class="btn btn-p" href="#quiz">Подобрать за 4 вопроса</a>
+    <a class="btn btn-s" href="#route">Как уходит заявка</a>
+  </div>
+  <div class="trust">
+    <div><div class="n">1 день</div><div class="t">от заявки до ключей</div></div>
+    <div><div class="n">340+</div><div class="t">авто в парке</div></div>
+    <div><div class="n">0 ₽</div><div class="t">залог по программе</div></div>
+  </div>
+</div></div>
+
+<div class="sec"><div class="wrap" id="quiz">
+  <div class="lbl">Генератор заявок</div>
+  <h2 style="margin:8px 0 14px">Квиз с передачей единым пакетом</h2>
+  <div class="quiz">
+    <div class="quiz-h"><b id="quizTitle">Шаг 1 из 4</b><span class="step" id="quizHint">≈ 40 секунд</span></div>
+    <div class="bar"><i id="quizBar" style="width:25%"></i></div>
+    <div id="quizBody"></div>
+  </div>
+</div></div>
+
+<div class="sec"><div class="wrap" id="route">
+  <div class="lbl">Маршрутизация лида</div>
+  <h2 style="margin:8px 0 6px">Что именно уходит в мессенджеры</h2>
+  <p class="small muted" style="margin-bottom:14px">Пакет собирается на лету — пройдите квиз выше и вернитесь сюда, поля заполнятся.</p>
+  <pre id="payload"></pre>
+  <div class="route">
+    <div class="rstep"><span class="n">1</span><span><b>Tilda → Webhook</b><span>Форма отдаёт POST со всеми полями квиза, tranid и UTM-метками из cookie.</span></span></div>
+    <div class="rstep"><span class="n">2</span><span><b>Обработчик</b><span>Валидация, проверка reCAPTCHA v3 по score, сборка единого пакета.</span></span></div>
+    <div class="rstep"><span class="n">3</span><span><b>Роутинг по каналу</b><span>Клиент выбрал Telegram — уходит в Telegram. Выбрал MAX — в MAX. Дубль всегда на почту.</span></span></div>
+    <div class="rstep"><span class="n">4</span><span><b>Ответ Tilda</b><span>200 OK, иначе Tilda считает отправку неудачной и показывает ошибку клиенту.</span></span></div>
+  </div>
+</div></div>
+
+<div class="sec"><div class="wrap">
+  <div class="lbl">Техническая изнанка</div>
+  <h2 style="margin:8px 0 14px">Три места, где такие проекты обычно ломаются</h2>
+  <div class="card">
+    <h3>UTM теряются на редиректе</h3>
+    <p class="small muted" style="margin-top:7px">Склейка доменов делается на уровне сервера с сохранением строки запроса. В nginx это <span class="mono">return 301 https://основной.ru$request_uri;</span> — без <span class="mono">$request_uri</span> метки отваливаются, и вся аналитика по старым доменам обнуляется.</p>
+  </div>
+  <div class="card">
+    <h3>Подмена H1 срабатывает после отрисовки</h3>
+    <p class="small muted" style="margin-top:7px">Если менять заголовок обычным скриптом в конце страницы, пользователь успевает увидеть исходный текст. Подмена вешается на самый ранний момент, а метка кладётся в cookie — чтобы она дожила до отправки формы, даже если человек вернулся через час.</p>
+  </div>
+  <div class="card">
+    <h3>Заявка ушла, но никуда не дошла</h3>
+    <p class="small muted" style="margin-top:7px">Если обработчик ответил не 200 или упал — Tilda покажет клиенту ошибку, а лид потеряется. Поэтому обработчик всегда отвечает быстро, а отправку в мессенджеры ставит в очередь с повторами.</p>
+  </div>
+</div></div>
+
+<div class="sticky">
+  <a href="tel:+70000000000"><span class="ic">☎</span>Позвонить</a>
+  <a class="main" href="#quiz"><span class="ic">✦</span>Подобрать</a>
+  <a href="#route"><span class="ic">✈</span>Написать</a>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+
+/* ---------- 1. МУЛЬТИЛЕНДИНГ: подмена по UTM ---------- */
+var VARIANTS={
+ "":{eyebrow:"Аренда и выкуп авто",h1:'Машина под такси <em>за 1 день</em>',
+     sub:"Подберём авто под вашу задачу. Выкупим вашу — деньги в день обращения."},
+ arenda:{eyebrow:"Аренда авто",h1:'Аренда авто <em>без залога</em>',
+     sub:"Свободные машины сегодня. Договор за 30 минут, страховка включена."},
+ vykup:{eyebrow:"Срочный выкуп",h1:'Выкупим ваш авто <em>за 2 часа</em>',
+     sub:"Оценка по фото, расчёт наличными или на карту в день обращения."},
+ taxi:{eyebrow:"Авто под такси",h1:'Авто под такси <em>с лицензией</em>',
+     sub:"Машины с разрешением и брендированием. Выход на линию в день подписания."},
+ srochno:{eyebrow:"Срочно",h1:'Нужна машина <em>сегодня?</em>',
+     sub:"Свободные авто в наличии прямо сейчас. Заберите в ближайшие 3 часа."}
+};
+function getUtm(){
+  var m=location.search.match(/[?&]utm_term=([^&]+)/);
+  var v=m?decodeURIComponent(m[1]):"";
+  return VARIANTS[v]?v:"";
+}
+function applyVariant(key){
+  var v=VARIANTS[key]||VARIANTS[""];
+  $("#eyebrow").textContent=v.eyebrow;
+  $("#h1").innerHTML=v.h1;
+  $("#sub").textContent=v.sub;
+  $$(".devbar [data-utm]").forEach(function(b){
+    b.setAttribute("aria-pressed",String(b.getAttribute("data-utm")===key));
+  });
+  $("#urlLine").textContent="example.ru/"+(key?"?utm_source=yandex&utm_medium=cpc&utm_campaign=avto&utm_term="+key:"");
+  UTM=key;
+  renderPayload();
+}
+var UTM=getUtm();
+$$(".devbar [data-utm]").forEach(function(b){
+  b.addEventListener("click",function(){
+    var k=b.getAttribute("data-utm");
+    history.replaceState(null,"",k?"?utm_source=yandex&utm_medium=cpc&utm_campaign=avto&utm_term="+k:location.pathname);
+    applyVariant(k);
+  });
+});
+
+/* ---------- 2. КВИЗ ---------- */
+var STEPS=[
+ {q:"Что вам нужно?",key:"goal",opts:[["Арендовать авто","🔑"],["Продать свою машину","💰"],["Авто под такси","🚕"],["Пока просто узнать условия","💬"]]},
+ {q:"На какой срок?",key:"term",opts:[["На сутки","1"],["На неделю","7"],["На месяц и дольше","30"],["Выкуп, срок не нужен","—"]]},
+ {q:"Какой класс машины?",key:"class",opts:[["Эконом","🚗"],["Комфорт","🚙"],["Бизнес","🏁"],["Не важно, главное быстро","⚡"]]},
+ {q:"Куда отправить предложение?",key:"contact",form:true}
+];
+var answers={},step=0,phone="",channel="Telegram";
+function renderQuiz(){
+  $("#quizBar").style.width=((step+1)/STEPS.length*100)+"%";
+  $("#quizTitle").textContent="Шаг "+(step+1)+" из "+STEPS.length;
+  $("#quizHint").textContent=step===STEPS.length-1?"последний шаг":"≈ 40 секунд";
+  var s=STEPS[step];
+  if(s.form){
+    $("#quizBody").innerHTML=
+      '<div class="quiz-b"><h3>'+esc(s.q)+'</h3>'+
+      '<div class="quiz-f" style="padding:0">'+
+      '<label class="f">Телефон<input type="tel" id="ph" inputmode="tel" placeholder="+7 900 000-00-00" value="'+esc(phone)+'"></label>'+
+      '<div><div class="lbl" style="margin-bottom:7px">Удобный канал связи</div><div class="chans">'+
+      [["Telegram","✈"],["MAX","М"],["Звонок","☎"]].map(function(c){
+        return '<button class="chan" data-chan="'+esc(c[0])+'" aria-pressed="'+(channel===c[0])+'">'+
+          '<span class="ic">'+c[1]+'</span>'+esc(c[0])+'</button>';
+      }).join("")+'</div></div>'+
+      '<p class="consent">Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных. Форма защищена reCAPTCHA v3 — без галочек и картинок.</p>'+
+      '<div class="quiz-nav"><button class="btn btn-s" data-back>Назад</button>'+
+      '<button class="btn btn-p" id="send">Отправить</button></div>'+
+      '</div></div>';
+  }else{
+    $("#quizBody").innerHTML=
+      '<div class="quiz-b"><h3>'+esc(s.q)+'</h3><div class="opts">'+
+      s.opts.map(function(o){
+        return '<button class="opt" data-opt="'+esc(o[0])+'" aria-pressed="'+(answers[s.key]===o[0])+'">'+
+          '<span class="ic">'+esc(o[1])+'</span>'+esc(o[0])+'</button>';
+      }).join("")+'</div>'+
+      (step>0?'<div class="quiz-nav" style="margin-top:14px"><button class="btn btn-s" data-back>Назад</button></div>':'')+
+      '</div>';
+  }
+}
+$("#quizBody").addEventListener("click",function(e){
+  var o=e.target.closest("[data-opt]"),b=e.target.closest("[data-back]"),c=e.target.closest("[data-chan]");
+  if(o){
+    answers[STEPS[step].key]=o.getAttribute("data-opt");
+    renderPayload();
+    if(step<STEPS.length-1){step++;renderQuiz()}
+    else renderQuiz();
+    return;
+  }
+  if(b){if(step>0){step--;renderQuiz()}return}
+  if(c){channel=c.getAttribute("data-chan");renderQuiz();renderPayload();return}
+  if(e.target.id==="send"){
+    phone=($("#ph")&&$("#ph").value||"").trim();
+    if(phone.replace(/\D/g,"").length<10){
+      $("#ph").style.borderColor="var(--bad)";
+      $("#ph").focus();
+      return;
+    }
+    renderPayload(true);
+    $("#quizBody").innerHTML=
+      '<div class="done"><div class="mark">✓</div>'+
+      '<h3>Заявка собрана</h3>'+
+      '<p class="small muted" style="margin-top:9px">В демо пакет не отправляется — он показан ниже, в разделе «Маршрутизация лида». В боевой версии он уходит в '+esc(channel)+' и дублируется на почту.</p>'+
+      '<button class="btn btn-s" id="again" style="margin-top:16px">Пройти заново</button></div>';
+    $("#quizBar").style.width="100%";
+    $("#quizTitle").textContent="Готово";
+    $("#quizHint").textContent="пакет собран";
+    document.getElementById("route").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+  if(e.target.id==="again"){answers={};step=0;phone="";renderQuiz();renderPayload()}
+});
+$("#quizBody").addEventListener("input",function(e){
+  if(e.target.id==="ph"){phone=e.target.value;e.target.style.borderColor="";renderPayload()}
+});
+
+/* ---------- 3. PAYLOAD ---------- */
+function renderPayload(sent){
+  var utmPart=UTM?{
+    utm_source:"yandex",utm_medium:"cpc",utm_campaign:"avto",utm_term:UTM
+  }:{utm_source:"(direct)",utm_medium:"(none)",utm_campaign:"",utm_term:""};
+  var obj={
+    tranid:"4821"+(Math.floor(Math.random()*900)+100),
+    formid:"form-quiz-main",
+    lead:{
+      phone:phone||"—",
+      channel:channel,
+      goal:answers.goal||"—",
+      term:answers.term||"—",
+      car_class:answers["class"]||"—"
+    },
+    utm:utmPart,
+    meta:{
+      landing:"example.ru",
+      referer:"yandex.ru",
+      recaptcha_score:sent?0.9:null,
+      device:"mobile",
+      sent_at:new Date().toISOString().slice(0,19).replace("T"," ")
+    },
+    routing:{
+      primary:channel==="MAX"?"max":(channel==="Telegram"?"telegram":"call_task"),
+      duplicate:["email:sales@example.ru"]
+    }
+  };
+  var json=JSON.stringify(obj,null,2);
+  json=esc(json)
+    .replace(/&quot;([^&]+?)&quot;:/g,'<span class="k">"$1"</span>:')
+    .replace(/: &quot;([^&]*?)&quot;/g,': <span class="s">"$1"</span>')
+    .replace(/: (\d+\.?\d*)/g,': <span class="n">$1</span>');
+  $("#payload").innerHTML=json;
+}
+
+/* ---------- старт ---------- */
+applyVariant(UTM);
+renderQuiz();
+renderPayload();
+})();
+</script>
