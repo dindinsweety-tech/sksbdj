@@ -1,0 +1,456 @@
+<title>Самонастраивающийся парсер оборудования</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Karla:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#F6F4F5; --surface:#FFFFFF; --surface2:#EDEAEC; --surface3:#E0DBDE;
+  --ink:#181318; --ink2:#514A50; --ink3:#7E767C;
+  --line:#DED8DB; --line2:#C5BCC1;
+  --acc:#A8256B; --acc-d:#821B52; --acc-s:#FAE6EF;
+  --ok:#17734E; --ok-s:#E0F0E9; --warn:#8E6100; --warn-s:#FAF0D9; --bad:#B0342B; --bad-s:#FAE5E2; --info:#25587F; --info-s:#E3EDF5;
+  --sh:0 1px 2px rgba(24,19,24,.06),0 12px 30px -18px rgba(24,19,24,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121014; --surface:#1A171C; --surface2:#232025; --surface3:#2E2A30;
+  --ink:#EFEBEF; --ink2:#B3ACB2; --ink3:#837C82;
+  --line:#272328; --line2:#373139;
+  --acc:#E883B0; --acc-d:#F0A6C7; --acc-s:#2F1322;
+  --ok:#54BE8F; --ok-s:#112A20; --warn:#DCAA50; --warn-s:#2B2211; --bad:#E4695E; --bad-s:#301715; --info:#68A5D4; --info-s:#122532;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#121014; --surface:#1A171C; --surface2:#232025; --surface3:#2E2A30;
+  --ink:#EFEBEF; --ink2:#B3ACB2; --ink3:#837C82;
+  --line:#272328; --line2:#373139;
+  --acc:#E883B0; --acc-d:#F0A6C7; --acc-s:#2F1322;
+  --ok:#54BE8F; --ok-s:#112A20; --warn:#DCAA50; --warn-s:#2B2211; --bad:#E4695E; --bad-s:#301715; --info:#68A5D4; --info-s:#122532;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Karla",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5}
+h1,h2,h3{margin:0;font-family:"JetBrains Mono",ui-monospace,monospace;font-weight:600;letter-spacing:-.02em;line-height:1.2;text-wrap:balance}
+h1{font-size:clamp(20px,2.4vw,26px)}h2{font-size:17px}h3{font-size:14px}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1340px;margin:0 auto;padding:0 16px}
+.small{font-size:13px;line-height:1.42}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:54px}
+.brand{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:15px}
+.brand i{font-style:normal;color:var(--acc)}
+.tabs{display:flex;gap:2px;margin-left:8px;overflow-x:auto}
+.tabs button{padding:7px 12px;border-radius:4px;font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.tabs button:hover{background:var(--surface2);color:var(--ink)}
+.tabs button[aria-current="true"]{background:var(--acc-s);color:var(--acc)}
+.hr{margin-left:auto}
+.ico{border:1px solid var(--line2);width:30px;height:30px;border-radius:4px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+.page{padding:18px 0 60px}
+.phead{margin-bottom:14px}
+.phead p{margin-top:6px;max-width:84ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.card-h{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:13px}
+.grid{display:grid;gap:14px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.split{grid-template-columns:1fr}}
+textarea,input,select{font:inherit;font-size:13px;background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:9px 11px;width:100%}
+textarea{font-family:"JetBrains Mono",monospace;font-size:12px;line-height:1.45;resize:vertical}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:4px;border:1px solid transparent;font-size:13px;font-weight:700}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:7px 11px;font-size:12px}
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--surface2);color:var(--ink2)}
+.pill.g{background:var(--ok-s);color:var(--ok)}
+.pill.w{background:var(--warn-s);color:var(--warn)}
+.pill.r{background:var(--bad-s);color:var(--bad)}
+.pill.b{background:var(--info-s);color:var(--info)}
+.pill.a{background:var(--acc-s);color:var(--acc)}
+/* поля результата */
+.field{border:1px solid var(--line);border-radius:5px;background:var(--surface);padding:10px 12px;margin-bottom:8px}
+.field-h{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+.field-h .k{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink3);letter-spacing:.04em}
+.field .v{font-size:14px;word-break:break-word}
+.field .v.empty{color:var(--bad);font-style:italic}
+.field .src{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink3);margin-top:5px}
+.conf{display:inline-flex;align-items:center;gap:5px;font-family:"JetBrains Mono",monospace;font-size:11px}
+.cbar{width:44px;height:5px;border-radius:3px;background:var(--surface3);overflow:hidden}
+.cbar i{display:block;height:100%;background:var(--ok)}
+.cbar i.w{background:var(--warn)}
+.cbar i.r{background:var(--bad)}
+.spec-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px}
+.spec-table td{padding:4px 6px;border-bottom:1px solid var(--line)}
+.spec-table td:first-child{color:var(--ink2);width:45%}
+.imgs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.imgs span{font-family:"JetBrains Mono",monospace;font-size:10.5px;background:var(--surface2);border:1px solid var(--line);border-radius:3px;padding:3px 6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.note{border-left:3px solid var(--warn);background:var(--warn-s);padding:11px 13px;border-radius:0 5px 5px 0;font-size:13px;color:var(--ink2)}
+.note.a{border-color:var(--acc);background:var(--acc-s)}
+.note b{color:var(--ink)}
+pre{margin:0;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.5;background:var(--surface2);border-radius:5px;padding:12px;overflow-x:auto}
+.pipe{display:grid;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.pstep{display:grid;grid-template-columns:32px 1fr auto;gap:11px;padding:10px 12px;border-bottom:1px solid var(--line);align-items:center}
+.pstep:last-child{border-bottom:0}
+.pstep .n{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--acc);font-weight:600}
+.pstep .t{font-size:13.5px;font-weight:600}
+.pstep .d{font-size:12px;color:var(--ink2);margin-top:2px}
+.view[hidden]{display:none}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:4px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Рабочий прототип извлечения карточки товара из произвольного HTML — без селекторов, настроенных под сайт. Разбор идёт прямо в браузере, никуда ничего не отправляется.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">PARSE<i>/</i>AUTO</span>
+  <nav class="tabs" id="tabs">
+    <button data-go="run" aria-current="true">Разбор страницы</button>
+    <button data-go="profile">Профиль источника</button>
+    <button data-go="arch">Как это работает</button>
+  </nav>
+  <div class="hr"><button class="ico" id="theme" aria-label="Тема">◐</button></div>
+</div></header>
+
+<div class="wrap page">
+
+<!-- РАЗБОР -->
+<section class="view" data-view="run">
+  <div class="phead"><h1>Разбор страницы без ручной настройки</h1>
+    <p class="muted small">Вставьте HTML любой карточки товара — движок сам найдёт название, цену, характеристики, описание, изображения и контакты. Ниже три примера разной «сложности»: с микроразметкой, без неё и с ценой внутри текста.</p></div>
+  <div class="card" style="margin-bottom:14px"><div class="card-b" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <span class="lbl">Примеры:</span>
+    <button class="btn btn-s btn-sm" data-sample="jsonld">Сайт с JSON-LD</button>
+    <button class="btn btn-s btn-sm" data-sample="micro">Микроразметка + таблица</button>
+    <button class="btn btn-s btn-sm" data-sample="raw">Голая вёрстка, без разметки</button>
+    <button class="btn btn-p btn-sm" id="parse" style="margin-left:auto">Разобрать</button>
+  </div></div>
+  <div class="split">
+    <div class="card"><div class="card-h"><h3>HTML источника</h3><span class="pill" id="htmlSize"></span></div>
+      <div class="card-b"><textarea id="html" rows="20"></textarea></div></div>
+    <div>
+      <div class="card" style="margin-bottom:12px"><div class="card-h"><h3>Извлечено</h3><span class="pill a" id="score">—</span></div>
+        <div class="card-b" id="out"><p class="small muted">Выберите пример и нажмите «Разобрать».</p></div></div>
+      <div id="warnBox"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ПРОФИЛЬ -->
+<section class="view" data-view="profile" hidden>
+  <div class="phead"><h1>Профиль источника</h1>
+    <p class="muted small">Результат разбора сохраняется как профиль: где движок нашёл каждое поле и с какой уверенностью. Новый сайт подключается импортом такого профиля, а не написанием парсера. Поля с низкой уверенностью — единственное, что требует человека.</p></div>
+  <div class="split">
+    <div class="card"><div class="card-h"><h3>Сгенерированный профиль</h3>
+      <button class="btn btn-s btn-sm" id="copyProfile">Скопировать</button></div>
+      <div class="card-b"><pre id="profileJson">Сначала разберите страницу на первой вкладке.</pre></div></div>
+    <div class="card"><div class="card-h"><h3>Что даёт профиль</h3></div>
+      <div class="card-b grid" style="gap:10px">
+        <div class="note a"><b>Подключение нового поставщика.</b> Прогнали одну карточку → получили профиль → проверили два-три поля вручную → источник в работе. Минуты вместо дня на написание парсера.</div>
+        <div class="note"><b>Самодиагностика.</b> Профиль хранит уверенность по каждому полю. Если завтра сайт поменяет вёрстку и уверенность просядет — источник сам поднимет флаг, а не будет молча тащить пустые карточки.</div>
+        <div class="note" style="border-color:var(--info);background:var(--info-s)"><b>Переопределения.</b> Там, где эвристика ошибается, в профиль дописывается точный селектор для одного поля. Остальные продолжают работать автоматически.</div>
+      </div></div>
+  </div>
+</section>
+
+<!-- АРХИТЕКТУРА -->
+<section class="view" data-view="arch" hidden>
+  <div class="phead"><h1>Как устроен разбор</h1>
+    <p class="muted small">Каскад от самого надёжного источника данных к самому рискованному. Как только поле найдено на верхнем уровне, ниже движок за ним не идёт.</p></div>
+  <div class="split">
+    <div class="pipe">
+      <div class="pstep"><span class="n">1</span><span><span class="t">JSON-LD (schema.org/Product)</span><span class="d">Готовая структура от самого сайта: название, цена, бренд, характеристики. Уверенность 95–100 %.</span></span><span class="pill g">надёжно</span></div>
+      <div class="pstep"><span class="n">2</span><span><span class="t">Микроразметка itemprop / RDFa</span><span class="d">Тот же смысл, размечен в атрибутах тегов. Уверенность 85–95 %.</span></span><span class="pill g">надёжно</span></div>
+      <div class="pstep"><span class="n">3</span><span><span class="t">OpenGraph и meta-теги</span><span class="d">og:title, og:image, og:description, product:price. Уверенность 75–90 %.</span></span><span class="pill b">хорошо</span></div>
+      <div class="pstep"><span class="n">4</span><span><span class="t">Структурные эвристики</span><span class="d">Первый h1 как название, таблицы и списки «ключ — значение» как характеристики, крупнейший блок текста как описание.</span></span><span class="pill w">проверять</span></div>
+      <div class="pstep"><span class="n">5</span><span><span class="t">Текстовые шаблоны</span><span class="d">Цена регулярками с учётом ₽, руб., пробелов-разделителей и «от». Телефоны, e-mail, ИНН.</span></span><span class="pill w">проверять</span></div>
+      <div class="pstep"><span class="n">6</span><span><span class="t">Ручное переопределение</span><span class="d">Один селектор в профиле источника для поля, где каскад ошибся.</span></span><span class="pill r">человек</span></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>Что ещё входит в «надёжность и скорость»</h3></div>
+      <div class="card-b small muted" style="display:grid;gap:9px">
+        <div><b style="color:var(--ink)">Асинхронность.</b> httpx + asyncio с пулом воркеров вместо последовательных запросов: 50–100 карточек параллельно вместо одной.</div>
+        <div><b style="color:var(--ink)">Кэш и хэши.</b> Хэш карточки в базе — не перезаписываем то, что не менялось, и видим реальную дельту по ценам.</div>
+        <div><b style="color:var(--ink)">Повторы с отступом.</b> Экспоненциальные ретраи, уважение к robots.txt и разумные паузы, чтобы источник не начал отдавать капчу.</div>
+        <div><b style="color:var(--ink)">Браузер только при необходимости.</b> Playwright включается лишь для сайтов, где данные рисует JS — на остальных это лишние секунды и память.</div>
+        <div><b style="color:var(--ink)">Изображения.</b> Скачивание в фоне, дедупликация по хэшу, ресайз под карточку.</div>
+        <div><b style="color:var(--ink)">Мониторинг.</b> Метрика «доля непустых полей» по каждому источнику: если сайт сменил вёрстку, это видно в тот же день.</div>
+      </div></div>
+  </div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3000)}
+
+/* ============ примеры страниц ============ */
+var SAMPLES={
+jsonld:'<!doctype html><html><head>\n<title>Компрессор винтовой ВК-15 — ПромСнаб</title>\n<meta property="og:image" content="https://example.ru/img/vk15-main.jpg">\n<script type="application/ld+json">\n{"@context":"https://schema.org","@type":"Product",\n "name":"Компрессор винтовой ВК-15/8",\n "brand":{"@type":"Brand","name":"Ремеза"},\n "sku":"VK15-8-500",\n "description":"Винтовой компрессор производительностью 1,7 м3/мин с ресивером 500 л. Прямой привод, класс защиты IP54.",\n "image":["https://example.ru/img/vk15-main.jpg","https://example.ru/img/vk15-side.jpg"],\n "offers":{"@type":"Offer","price":"427500","priceCurrency":"RUB","availability":"InStock"},\n "additionalProperty":[\n  {"@type":"PropertyValue","name":"Производительность","value":"1,7 м3/мин"},\n  {"@type":"PropertyValue","name":"Давление","value":"8 бар"},\n  {"@type":"PropertyValue","name":"Мощность","value":"15 кВт"},\n  {"@type":"PropertyValue","name":"Объём ресивера","value":"500 л"}]}\n<\/script>\n</head><body>\n<h1>Компрессор винтовой ВК-15/8</h1>\n<div class="contacts">Отдел продаж: +7 (495) 120-45-67, sales@promsnab-example.ru</div>\n</body></html>',
+
+micro:'<!doctype html><html><head><title>Станок токарный 16К20 — Металлоторг</title></head><body>\n<div itemscope itemtype="https://schema.org/Product">\n  <h1 itemprop="name">Станок токарно-винторезный 16К20</h1>\n  <img itemprop="image" src="/upload/16k20-1.jpg">\n  <img src="/upload/16k20-2.jpg">\n  <div itemprop="offers" itemscope itemtype="https://schema.org/Offer">\n    <span class="price" itemprop="price" content="1180000">1 180 000</span> <span itemprop="priceCurrency">RUB</span>\n  </div>\n  <div itemprop="description">Универсальный токарно-винторезный станок для обработки деталей из чёрных и цветных металлов. Состояние после капитального ремонта, есть комплект оснастки.</div>\n  <table class="specs">\n    <tr><td>Наибольший диаметр обработки</td><td>400 мм</td></tr>\n    <tr><td>Расстояние между центрами</td><td>1000 мм</td></tr>\n    <tr><td>Мощность главного привода</td><td>11 кВт</td></tr>\n    <tr><td>Масса</td><td>3010 кг</td></tr>\n  </table>\n</div>\n<footer>ООО «Металлоторг», ИНН 7701234567. Телефон: 8 800 555-35-35. Почта: info@metallotorg-example.ru</footer>\n</body></html>',
+
+raw:'<!doctype html><html><head><title>Пресс гидравлический П6328Б</title></head><body>\n<div class="wrapper">\n <h1 class="prod-title">Пресс гидравлический П6328Б, 63 тонны</h1>\n <div class="cost-block"><span class="label">Цена:</span> от 890 000 руб. с НДС</div>\n <div class="descr"><p>Гидравлический пресс усилием 63 тс предназначен для правки, гибки и штамповки деталей в условиях ремонтных и механосборочных цехов. Оборудование прошло предпродажную подготовку, проверено под нагрузкой, сохранена заводская табличка.</p></div>\n <ul class="params">\n  <li>Номинальное усилие: 63 тс</li>\n  <li>Ход ползуна: 400 мм</li>\n  <li>Мощность электродвигателя: 7,5 кВт</li>\n  <li>Габариты: 1600 x 1100 x 2600 мм</li>\n </ul>\n <div class="gallery"><img src="/files/p6328b-front.jpg" alt="Пресс"><img src="/files/p6328b-panel.jpg" alt="Панель"></div>\n <div class="callback">Звоните: +7 912 345-67-89 (Виктор), почта viktor@presstorg-example.ru</div>\n</div>\n</body></html>'
+};
+
+/* ============ движок разбора ============ */
+function num(s){
+  if(s==null)return null;
+  var m=String(s).replace(/ /g," ").match(/(\d[\d\s.,]*)/);
+  if(!m)return null;
+  var v=m[1].replace(/\s/g,"").replace(",",".");
+  v=parseFloat(v);
+  return isNaN(v)?null:v;
+}
+function textOf(el){return el?el.textContent.replace(/\s+/g," ").trim():""}
+function parseDoc(html){
+  var doc=new DOMParser().parseFromString(html,"text/html");
+  var R={fields:{},profile:{}};
+  function put(key,value,conf,src,selector){
+    if(value==null||value==="")return;
+    if(R.fields[key]&&R.fields[key].conf>=conf)return;
+    R.fields[key]={value:value,conf:conf,src:src};
+    R.profile[key]={source:src,confidence:conf,selector:selector||null};
+  }
+
+  /* 1. JSON-LD */
+  $$('script[type="application/ld+json"]',doc).forEach(function(s){
+    var data;try{data=JSON.parse(s.textContent)}catch(e){return}
+    var arr=Array.isArray(data)?data:[data];
+    arr.forEach(function(d){
+      if(!d||String(d["@type"]||"").toLowerCase().indexOf("product")<0)return;
+      put("name",d.name,0.98,"json-ld",'script[type="application/ld+json"] → name');
+      put("description",d.description,0.95,"json-ld",'json-ld → description');
+      put("sku",d.sku,0.95,"json-ld",'json-ld → sku');
+      if(d.brand)put("brand",typeof d.brand==="string"?d.brand:d.brand.name,0.95,"json-ld",'json-ld → brand.name');
+      if(d.offers){
+        var o=Array.isArray(d.offers)?d.offers[0]:d.offers;
+        if(o&&o.price!=null)put("price",num(o.price),0.98,"json-ld",'json-ld → offers.price');
+        if(o&&o.priceCurrency)put("currency",o.priceCurrency,0.98,"json-ld",'json-ld → offers.priceCurrency');
+        if(o&&o.availability)put("availability",String(o.availability).replace(/^.*\//,""),0.9,"json-ld",'json-ld → offers.availability');
+      }
+      if(d.image)put("images",[].concat(d.image),0.95,"json-ld",'json-ld → image');
+      if(d.additionalProperty){
+        var specs={};
+        [].concat(d.additionalProperty).forEach(function(p){if(p&&p.name)specs[p.name]=p.value});
+        if(Object.keys(specs).length)put("specs",specs,0.95,"json-ld",'json-ld → additionalProperty');
+      }
+    });
+  });
+
+  /* 2. Микроразметка */
+  var scope=doc.querySelector('[itemtype*="schema.org/Product"]');
+  if(scope){
+    var byProp=function(p){return scope.querySelector('[itemprop="'+p+'"]')};
+    var n=byProp("name");if(n)put("name",textOf(n),0.9,"microdata",'[itemprop="name"]');
+    var d2=byProp("description");if(d2)put("description",textOf(d2),0.88,"microdata",'[itemprop="description"]');
+    var pr=byProp("price");
+    if(pr)put("price",num(pr.getAttribute("content")||textOf(pr)),0.9,"microdata",'[itemprop="price"]');
+    var cur=byProp("priceCurrency");
+    if(cur)put("currency",(cur.getAttribute("content")||textOf(cur)),0.9,"microdata",'[itemprop="priceCurrency"]');
+    var imgs=$$('[itemprop="image"]',scope).map(function(i){return i.getAttribute("src")||i.getAttribute("content")}).filter(Boolean);
+    if(imgs.length)put("images",imgs,0.88,"microdata",'[itemprop="image"]');
+  }
+
+  /* 3. OpenGraph */
+  function meta(p,attr){
+    var el=doc.querySelector('meta['+(attr||"property")+'="'+p+'"]');
+    return el?el.getAttribute("content"):null;
+  }
+  put("name",meta("og:title"),0.8,"opengraph",'meta[property="og:title"]');
+  put("description",meta("og:description"),0.78,"opengraph",'meta[property="og:description"]');
+  var ogImg=meta("og:image");
+  if(ogImg)put("images",[ogImg],0.8,"opengraph",'meta[property="og:image"]');
+  put("price",num(meta("product:price:amount")),0.85,"opengraph",'meta[property="product:price:amount"]');
+
+  /* 4. Структурные эвристики */
+  var h1=doc.querySelector("h1");
+  if(h1)put("name",textOf(h1),0.7,"эвристика: h1","h1");
+  if(!R.fields.name){
+    var t=doc.querySelector("title");
+    if(t)put("name",textOf(t).split(/[—|–\-]/)[0].trim(),0.5,"эвристика: title","title");
+  }
+  /* характеристики: таблицы и списки «ключ: значение» */
+  if(!R.fields.specs){
+    var specs={},sel=null;
+    $$("table",doc).forEach(function(tb){
+      var rows=$$("tr",tb);
+      var ok=0;
+      rows.forEach(function(r){
+        var c=$$("td,th",r);
+        if(c.length===2&&textOf(c[0])&&textOf(c[1])){specs[textOf(c[0]).replace(/:$/,"")]=textOf(c[1]);ok++}
+      });
+      if(ok>=2&&!sel)sel="table";
+    });
+    if(!Object.keys(specs).length){
+      $$("ul,ol",doc).forEach(function(ul){
+        var ok=0;
+        $$("li",ul).forEach(function(li){
+          var txt=textOf(li);
+          var m=txt.match(/^(.{2,60}?)\s*[:—–]\s*(.+)$/);
+          if(m){specs[m[1].trim()]=m[2].trim();ok++}
+        });
+        if(ok>=2&&!sel)sel="ul li";
+      });
+    }
+    if(Object.keys(specs).length>=2)put("specs",specs,0.72,"эвристика: пары ключ-значение",sel);
+  }
+  /* описание: крупнейший параграф */
+  if(!R.fields.description){
+    var best=null,bestLen=0;
+    $$("p,div",doc).forEach(function(el){
+      if(el.querySelector("p,div,table,ul"))return;
+      var t=textOf(el);
+      if(t.length>bestLen&&t.length>80){bestLen=t.length;best=el}
+    });
+    if(best)put("description",textOf(best),0.62,"эвристика: крупнейший текстовый блок",best.className?"."+best.className.split(" ")[0]:"p");
+  }
+  /* изображения */
+  if(!R.fields.images){
+    var srcs=$$("img",doc).map(function(i){return i.getAttribute("src")}).filter(function(s){
+      return s&&!/logo|icon|sprite|placeholder/i.test(s);
+    });
+    if(srcs.length)put("images",srcs,0.68,"эвристика: теги img","img");
+  }
+
+  /* 5. Текстовые шаблоны */
+  var bodyText=textOf(doc.body);
+  if(!R.fields.price){
+    var pm=bodyText.replace(/ /g," ").match(/(?:от\s*)?(\d[\d\s]{2,})\s*(?:руб|₽|р\.)/i);
+    if(pm){
+      var v=num(pm[1]);
+      put("price",v,/от\s/i.test(pm[0])?0.55:0.66,"эвристика: цена по шаблону в тексте",null);
+      if(/от\s/i.test(pm[0]))R.priceFrom=true;
+    }
+  }
+  if(!R.fields.currency&&/руб|₽/i.test(bodyText))put("currency","RUB",0.7,"эвристика: символ валюты",null);
+  var phones=(bodyText.match(/(?:\+7|8)[\s\-(]*\d{3}[\s\-)]*\d{3}[\s\-]*\d{2}[\s\-]*\d{2}/g)||[]);
+  if(phones.length)put("phone",phones.map(function(p){return p.replace(/\s+/g," ").trim()}),0.8,"эвристика: телефон по шаблону",null);
+  var mails=(bodyText.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi)||[]);
+  if(mails.length)put("email",mails,0.85,"эвристика: e-mail по шаблону",null);
+  var inn=bodyText.match(/ИНН\s*(\d{10,12})/i);
+  if(inn)put("inn",inn[1],0.9,"эвристика: ИНН по шаблону",null);
+
+  return R;
+}
+
+/* ============ отрисовка ============ */
+var LABELS={name:"Название",price:"Цена",currency:"Валюта",brand:"Бренд",sku:"Артикул",
+ availability:"Наличие",description:"Описание",specs:"Характеристики",images:"Изображения",
+ phone:"Телефоны",email:"Почта",inn:"ИНН"};
+var ORDER=["name","price","currency","brand","sku","availability","specs","description","images","phone","email","inn"];
+var lastProfile=null;
+
+function confBar(c){
+  var cls=c>=0.85?"":(c>=0.65?"w":"r");
+  return '<span class="conf"><span class="cbar"><i class="'+cls+'" style="width:'+Math.round(c*100)+'%"></i></span>'+Math.round(c*100)+'%</span>';
+}
+function renderResult(R){
+  var html="",filled=0;
+  ORDER.forEach(function(k){
+    var f=R.fields[k];
+    if(!f){
+      if(k==="brand"||k==="sku"||k==="availability"||k==="inn")return;
+      html+='<div class="field"><div class="field-h"><span class="k">'+k+'</span><span class="pill r">не найдено</span></div>'+
+        '<div class="v empty">поле пустое — нужен ручной селектор в профиле</div></div>';
+      return;
+    }
+    filled++;
+    var v="";
+    if(k==="specs"){
+      var rows=Object.keys(f.value).map(function(n){
+        return '<tr><td>'+esc(n)+'</td><td>'+esc(f.value[n])+'</td></tr>'});
+      v='<table class="spec-table">'+rows.join("")+'</table>';
+    }else if(k==="images"){
+      v='<div class="imgs">'+f.value.map(function(s){return '<span>'+esc(s)+'</span>'}).join("")+'</div>';
+    }else if(k==="price"){
+      v='<b class="mono" style="font-size:16px">'+Number(f.value).toLocaleString("ru-RU")+'</b>'+
+        (R.priceFrom?' <span class="pill w">цена «от»</span>':'');
+    }else if(Array.isArray(f.value)){
+      v=f.value.map(esc).join(", ");
+    }else v=esc(f.value);
+    html+='<div class="field"><div class="field-h"><span class="k">'+k+' · '+esc(LABELS[k]||k)+'</span>'+confBar(f.conf)+'</div>'+
+      '<div class="v">'+v+'</div><div class="src">источник: '+esc(f.src)+'</div></div>';
+  });
+  $("#out").innerHTML=html;
+  var total=ORDER.filter(function(k){return ["brand","sku","availability","inn"].indexOf(k)<0}).length;
+  $("#score").textContent="заполнено "+filled+" полей";
+  var weak=Object.keys(R.fields).filter(function(k){return R.fields[k].conf<0.7});
+  $("#warnBox").innerHTML=weak.length
+    ? '<div class="note"><b>Требуют проверки человеком:</b> '+weak.map(function(k){return esc(LABELS[k]||k)+" ("+Math.round(R.fields[k].conf*100)+"%)"}).join(", ")+
+      '. Остальное движок взял из структурированных данных и в ручной настройке не нуждается.</div>'
+    : '<div class="note" style="border-color:var(--ok);background:var(--ok-s)"><b>Всё найдено надёжно.</b> Такой источник подключается без единого ручного селектора.</div>';
+  lastProfile={
+    source:"example.ru",
+    generated:new Date().toISOString().slice(0,10),
+    engine:"cascade v1",
+    fields:R.profile,
+    review_required:weak
+  };
+  $("#profileJson").textContent=JSON.stringify(lastProfile,null,2);
+}
+$("#parse").addEventListener("click",function(){
+  var h=$("#html").value.trim();
+  if(!h){toast("Вставьте HTML или выберите пример");return}
+  try{
+    var R=parseDoc(h);
+    renderResult(R);
+    toast("Разобрано. Полей найдено: "+Object.keys(R.fields).length);
+  }catch(e){
+    toast("Ошибка разбора: "+e.message);
+  }
+});
+$$("[data-sample]").forEach(function(b){
+  b.addEventListener("click",function(){
+    $("#html").value=SAMPLES[b.getAttribute("data-sample")];
+    updSize();
+    $("#parse").click();
+  });
+});
+function updSize(){
+  var n=$("#html").value.length;
+  $("#htmlSize").textContent=n?(n>1024?(n/1024).toFixed(1)+" КБ":n+" символов"):"пусто";
+}
+$("#html").addEventListener("input",updSize);
+$("#copyProfile").addEventListener("click",function(){
+  if(!lastProfile){toast("Сначала разберите страницу");return}
+  try{
+    navigator.clipboard.writeText(JSON.stringify(lastProfile,null,2));
+    toast("Профиль скопирован в буфер");
+  }catch(e){toast("Скопируйте вручную из окна")}
+});
+
+/* навигация */
+function go(v){
+  $$(".view").forEach(function(s){s.hidden=s.getAttribute("data-view")!==v});
+  $$("#tabs button").forEach(function(b){b.setAttribute("aria-current",String(b.getAttribute("data-go")===v))});
+  window.scrollTo(0,0);
+}
+$("#tabs").addEventListener("click",function(e){var b=e.target.closest("[data-go]");if(b)go(b.getAttribute("data-go"))});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+/* старт */
+$("#html").value=SAMPLES.jsonld;updSize();
+renderResult(parseDoc(SAMPLES.jsonld));
+})();
+</script>
