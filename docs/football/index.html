@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Конструктор критериев отбора футбольных матчей с предпросмотром сообщения в Telegram. Данные условные.">
+<title>Конструктор критериев отбора матчей</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --paper:#F4F5F0; --surface:#FFFFFF; --surface2:#EAECE3; --surface3:#DDE0D4;
+  --ink:#14170F; --ink2:#4A5040; --ink3:#797F6D;
+  --line:#D9DCCF; --line2:#C0C4B2;
+  --acc:#4D7C0F; --acc-d:#3B6009; --acc-s:#E9F1DA;
+  --amber:#8A6100; --amber-s:#FBF1D8; --red:#AE3327; --red-s:#FAE4E1; --blue:#25587F; --blue-s:#E3EDF5;
+  --sh:0 1px 2px rgba(20,23,15,.06),0 12px 30px -18px rgba(20,23,15,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#101209; --surface:#181B10; --surface2:#212517; --surface3:#2C3120;
+  --ink:#EDEFE4; --ink2:#AFB5A0; --ink3:#7F8672;
+  --line:#252A19; --line2:#353B26;
+  --acc:#8FBF3F; --acc-d:#A8D15C; --acc-s:#1D2810;
+  --amber:#D9A94C; --amber-s:#2B2210; --red:#E36A5D; --red-s:#301715; --blue:#68A4D2; --blue-s:#122533;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#101209; --surface:#181B10; --surface2:#212517; --surface3:#2C3120;
+  --ink:#EDEFE4; --ink2:#AFB5A0; --ink3:#7F8672;
+  --line:#252A19; --line2:#353B26;
+  --acc:#8FBF3F; --acc-d:#A8D15C; --acc-s:#1D2810;
+  --amber:#D9A94C; --amber-s:#2B2210; --red:#E36A5D; --red-s:#301715; --blue:#68A4D2; --blue-s:#122533;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Barlow",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.45}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.01em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(21px,2.6vw,28px)}h2{font-size:18px}h3{font-size:15px;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:3px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1340px;margin:0 auto;padding:0 16px}
+.small{font-size:13px;line-height:1.4}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:800}
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:14px;height:54px}
+.brand{font-weight:800;font-size:16px;letter-spacing:.01em}
+.brand i{font-style:normal;color:var(--acc)}
+.hr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ico{border:1px solid var(--line2);width:30px;height:30px;border-radius:5px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+.page{padding:18px 0 60px}
+.phead{margin-bottom:14px}
+.phead p{margin-top:6px;max-width:88ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:7px}
+.card-h{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:13px}
+.cols{display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.cols{grid-template-columns:1fr}}
+select,input{font:inherit;font-size:13.5px;background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:5px;padding:7px 9px;width:100%}
+select:focus,input:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+input[type=number]{font-family:"JetBrains Mono",monospace;text-align:right}
+label.f{display:grid;gap:4px;font-size:11.5px;color:var(--ink2);font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:5px;border:1px solid transparent;font-size:13px;font-weight:700}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-d)}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:6px 10px;font-size:12px}
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:var(--surface2);color:var(--ink2)}
+.pill.g{background:var(--acc-s);color:var(--acc)}
+.pill.w{background:var(--amber-s);color:var(--amber)}
+.pill.r{background:var(--red-s);color:var(--red)}
+.pill.b{background:var(--blue-s);color:var(--blue)}
+
+/* ---- фильтры ---- */
+.filt{display:grid;gap:9px}
+.frow{border:1px solid var(--line);border-radius:6px;background:var(--surface2);padding:9px 10px}
+.frow .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}
+.frow .nm{font-weight:700;font-size:13px}
+.frow .del{color:var(--red);font-size:15px;line-height:1}
+.frow .ctl{display:grid;grid-template-columns:70px 1fr;gap:7px;align-items:center}
+.frow .ctl.two{grid-template-columns:1fr 12px 1fr}
+.frow .sep{text-align:center;color:var(--ink3);font-size:12px}
+.chipbar{display:flex;gap:5px;flex-wrap:wrap}
+.chip{border:1px solid var(--line2);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--ink2);background:var(--surface)}
+.chip:hover{border-color:var(--acc);color:var(--acc)}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.addbar{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.addbar button{border:1px dashed var(--line2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--ink2)}
+.addbar button:hover{border-color:var(--acc);color:var(--acc)}
+.addbar button[disabled]{opacity:.35;cursor:not-allowed}
+
+/* ---- матчи ---- */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:7px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+th{text-align:left;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);font-weight:500;padding:8px 9px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap}
+th.n{text-align:right}
+td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n{text-align:right;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+tr.pass{background:var(--acc-s)}
+tr.fail{opacity:.55}
+.why{font-size:11.5px;color:var(--red);margin-top:2px}
+.teams{font-weight:700}
+.lg{font-size:11.5px;color:var(--ink3)}
+
+/* ---- телеграм ---- */
+.tg{background:var(--surface2);border:1px solid var(--line);border-radius:7px;padding:12px}
+.msg{background:var(--surface);border-radius:9px;border-top-left-radius:2px;padding:10px 12px;font-size:13px;line-height:1.5;white-space:pre-line;margin-bottom:8px;box-shadow:0 1px 1px rgba(0,0,0,.05)}
+.msg b{font-weight:700}
+.msg .tm{display:block;font-size:10px;color:var(--ink3);margin-top:6px;font-family:"JetBrains Mono",monospace}
+.note{border-left:3px solid var(--amber);background:var(--amber-s);padding:11px 13px;border-radius:0 5px 5px 0;font-size:13px;color:var(--ink2)}
+.note.a{border-color:var(--acc);background:var(--acc-s)}
+.note.b{border-color:var(--blue);background:var(--blue-s)}
+.note b{color:var(--ink)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:5px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Конструктор критериев отбора. Матчи и коэффициенты условные — механика настоящая. Соберите свой набор условий, и мы сразу поймём, какой бот вам нужен.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">ОТБОР<i>/</i>МАТЧЕЙ</span>
+  <div class="hr"><button class="ico" id="theme" aria-label="Тема">◐</button></div>
+</div></header>
+
+<div class="wrap page">
+  <div class="phead"><h1>Соберите свои критерии — увидите, что отберётся</h1>
+    <p class="muted small">В заказе критерии не названы, поэтому вместо описания словами — рабочий конструктор. Добавьте условия, подвигайте значения: слева ваш набор, справа сегодняшние матчи с пометкой, какое условие не прошло. Что соберёте — то и станет ТЗ на бота.</p></div>
+
+  <div class="cols">
+    <div>
+      <div class="card"><div class="card-h"><h3>Мои критерии</h3><span class="pill" id="cntCrit"></span></div>
+        <div class="card-b">
+          <div class="filt" id="filters"></div>
+          <div class="lbl" style="margin:12px 0 6px">Добавить условие</div>
+          <div class="addbar" id="addbar"></div>
+          <button class="btn btn-s btn-sm" id="reset" style="margin-top:12px">Сбросить всё</button>
+        </div></div>
+
+      <div class="card" style="margin-top:12px"><div class="card-h"><h3>Когда проверять</h3></div>
+        <div class="card-b" style="display:grid;gap:10px">
+          <label class="f">Частота проверки
+            <select id="freq">
+              <option>каждый час</option>
+              <option selected>каждые 15 минут</option>
+              <option>раз в день утром</option>
+            </select></label>
+          <label class="f">Присылать не позже чем за
+            <select id="lead">
+              <option>30 минут до матча</option>
+              <option selected>2 часа до матча</option>
+              <option>сутки до матча</option>
+            </select></label>
+          <p class="small muted">Один и тот же матч не присылается дважды: бот помнит, что уже отправил, и шлёт повтор только если коэффициент сдвинулся сильнее заданного порога.</p>
+        </div></div>
+    </div>
+
+    <div>
+      <div class="card"><div class="card-h"><h3>Матчи на сегодня</h3>
+        <span class="pill g" id="passCnt"></span></div>
+        <div class="tw" style="border:0;border-radius:0"><table id="matches">
+          <thead><tr><th>Матч</th><th class="n">Время</th><th class="n">П1</th><th class="n">Х</th><th class="n">П2</th><th class="n">Тотал</th><th class="n">Форма</th><th class="n">Голов</th><th>Отбор</th></tr></thead>
+          <tbody></tbody></table></div>
+      </div>
+
+      <div class="card" style="margin-top:12px"><div class="card-h"><h3>Что придёт в Telegram</h3>
+        <span class="pill b">предпросмотр</span></div>
+        <div class="card-b"><div class="tg" id="tgPreview"></div></div>
+      </div>
+
+      <div class="note b" style="margin-top:12px"><b>Откуда берутся данные.</b> Коэффициенты и статистика тянутся из спортивного API — например, API-Football или Sportmonks. У бесплатных тарифов лимит порядка 100 запросов в сутки, этого хватает на пару лиг; для широкого охвата нужен платный тариф от 10-30 $ в месяц. Это расходы владельца бота, и их лучше заложить сразу.</div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},3000)}
+
+/* ---------- демо-матчи ---------- */
+var LEAGUES=["АПЛ","Ла Лига","Серия А","Бундеслига","РПЛ","Лига 1"];
+var MATCHES=[
+ {h:"Арсенал",a:"Брайтон",lg:"АПЛ",t:"19:30",p1:1.62,x:4.10,p2:5.20,tot:2.5,form:4,gpg:2.9},
+ {h:"Челси",a:"Эвертон",lg:"АПЛ",t:"22:00",p1:1.48,x:4.60,p2:6.80,tot:2.5,form:3,gpg:2.4},
+ {h:"Жирона",a:"Реал Сосьедад",lg:"Ла Лига",t:"20:00",p1:2.35,x:3.30,p2:3.05,tot:2.5,form:2,gpg:2.1},
+ {h:"Барселона",a:"Хетафе",lg:"Ла Лига",t:"22:30",p1:1.25,x:6.20,p2:11.0,tot:3.5,form:5,gpg:3.4},
+ {h:"Аталанта",a:"Лацио",lg:"Серия А",t:"21:45",p1:2.10,x:3.45,p2:3.50,tot:2.5,form:3,gpg:2.8},
+ {h:"Интер",a:"Удинезе",lg:"Серия А",t:"19:00",p1:1.38,x:5.00,p2:8.50,tot:2.5,form:4,gpg:2.6},
+ {h:"Байер",a:"Штутгарт",lg:"Бундеслига",t:"21:30",p1:1.85,x:3.90,p2:3.95,tot:3.5,form:4,gpg:3.6},
+ {h:"Унион",a:"Майнц",lg:"Бундеслига",t:"17:30",p1:2.55,x:3.20,p2:2.85,tot:2.5,form:1,gpg:1.9},
+ {h:"Зенит",a:"Динамо",lg:"РПЛ",t:"18:00",p1:1.70,x:3.80,p2:4.60,tot:2.5,form:3,gpg:2.7},
+ {h:"Спартак",a:"Крылья",lg:"РПЛ",t:"20:15",p1:1.55,x:4.20,p2:5.60,tot:2.5,form:2,gpg:2.5},
+ {h:"ПСЖ",a:"Нант",lg:"Лига 1",t:"22:00",p1:1.20,x:7.00,p2:13.0,tot:3.5,form:5,gpg:3.2},
+ {h:"Лилль",a:"Ренн",lg:"Лига 1",t:"19:45",p1:2.05,x:3.40,p2:3.60,tot:2.5,form:3,gpg:2.3}
+];
+
+/* ---------- каталог условий ---------- */
+var CATALOG={
+ league:{name:"Лига",type:"multi",opts:LEAGUES,def:["АПЛ","Ла Лига"],
+   test:function(m,v){return v.length===0||v.indexOf(m.lg)>-1},
+   label:function(v){return "лига: "+(v.length?v.join(", "):"любая")}},
+ p1:{name:"Коэффициент П1",type:"range",min:1.0,max:15,step:.05,def:[1.4,2.2],
+   test:function(m,v){return m.p1>=v[0]&&m.p1<=v[1]},
+   label:function(v){return "П1 от "+v[0]+" до "+v[1]}},
+ tot:{name:"Тотал",type:"select",opts:["2.5","3.5"],def:"2.5",
+   test:function(m,v){return String(m.tot)===String(v)},
+   label:function(v){return "тотал "+v}},
+ form:{name:"Побед хозяев в 5 матчах",type:"range",min:0,max:5,step:1,def:[3,5],
+   test:function(m,v){return m.form>=v[0]&&m.form<=v[1]},
+   label:function(v){return "форма хозяев "+v[0]+"–"+v[1]+" побед"}},
+ gpg:{name:"Голов за матч в среднем",type:"range",min:1,max:5,step:.1,def:[2.5,5],
+   test:function(m,v){return m.gpg>=v[0]&&m.gpg<=v[1]},
+   label:function(v){return "голов в среднем от "+v[0]}},
+ time:{name:"Время начала",type:"range",min:12,max:23,step:1,def:[18,23],
+   test:function(m,v){var h=+m.t.split(":")[0];return h>=v[0]&&h<=v[1]},
+   label:function(v){return "начало с "+v[0]+":00 до "+v[1]+":00"}},
+ fav:{name:"Разрыв фаворита",type:"range",min:0,max:12,step:.5,def:[1,4],
+   test:function(m,v){var d=Math.abs(m.p2-m.p1);return d>=v[0]&&d<=v[1]},
+   label:function(v){return "разрыв коэффициентов "+v[0]+"–"+v[1]}}
+};
+var active={};
+(function initDefaults(){
+  ["league","p1","form"].forEach(function(k){
+    active[k]=JSON.parse(JSON.stringify(CATALOG[k].def));
+  });
+})();
+
+/* ---------- отрисовка фильтров ---------- */
+function renderFilters(){
+  var keys=Object.keys(active);
+  $("#cntCrit").textContent=keys.length+" условий";
+  $("#filters").innerHTML=keys.map(function(k){
+    var c=CATALOG[k],v=active[k],inner="";
+    if(c.type==="multi"){
+      inner='<div class="chipbar">'+c.opts.map(function(o){
+        return '<button class="chip" data-multi="'+k+'|'+esc(o)+'" aria-pressed="'+(v.indexOf(o)>-1)+'">'+esc(o)+'</button>';
+      }).join("")+'</div>';
+    }else if(c.type==="select"){
+      inner='<div class="ctl"><span class="small muted">значение</span>'+
+        '<select data-sel="'+k+'">'+c.opts.map(function(o){
+          return '<option'+(String(o)===String(v)?" selected":"")+'>'+esc(o)+'</option>'}).join("")+'</select></div>';
+    }else{
+      inner='<div class="ctl two">'+
+        '<input type="number" data-rng="'+k+'|0" value="'+v[0]+'" step="'+c.step+'" min="'+c.min+'" max="'+c.max+'">'+
+        '<span class="sep">—</span>'+
+        '<input type="number" data-rng="'+k+'|1" value="'+v[1]+'" step="'+c.step+'" min="'+c.min+'" max="'+c.max+'">'+
+        '</div>';
+    }
+    return '<div class="frow"><div class="top"><span class="nm">'+esc(c.name)+'</span>'+
+      '<button class="del" data-del="'+k+'" aria-label="Убрать условие">✕</button></div>'+inner+'</div>';
+  }).join("")||'<p class="small muted">Условий нет — отберутся все матчи. Добавьте хотя бы одно.</p>';
+
+  $("#addbar").innerHTML=Object.keys(CATALOG).map(function(k){
+    var on=active.hasOwnProperty(k);
+    return '<button data-add="'+k+'"'+(on?" disabled":"")+'>+ '+esc(CATALOG[k].name)+'</button>';
+  }).join("");
+}
+$("#filters").addEventListener("click",function(e){
+  var m=e.target.closest("[data-multi]"),d=e.target.closest("[data-del]");
+  if(d){delete active[d.getAttribute("data-del")];render();return}
+  if(m){
+    var p=m.getAttribute("data-multi").split("|"),k=p[0],val=p[1];
+    var arr=active[k],i=arr.indexOf(val);
+    if(i>-1)arr.splice(i,1);else arr.push(val);
+    render();
+  }
+});
+$("#filters").addEventListener("input",function(e){
+  var r=e.target.getAttribute("data-rng"),s=e.target.getAttribute("data-sel");
+  if(r){var p=r.split("|");active[p[0]][+p[1]]=parseFloat(e.target.value);render();return}
+  if(s){active[s]=e.target.value;render()}
+});
+$("#addbar").addEventListener("click",function(e){
+  var a=e.target.closest("[data-add]");if(!a||a.disabled)return;
+  var k=a.getAttribute("data-add");
+  active[k]=JSON.parse(JSON.stringify(CATALOG[k].def));
+  render();
+  toast("Условие добавлено: "+CATALOG[k].name);
+});
+$("#reset").addEventListener("click",function(){active={};render()});
+
+/* ---------- отбор ---------- */
+function evaluate(m){
+  var fails=[];
+  Object.keys(active).forEach(function(k){
+    if(!CATALOG[k].test(m,active[k]))fails.push(CATALOG[k].name);
+  });
+  return fails;
+}
+function render(){
+  renderFilters();
+  var passed=[];
+  $("#matches").querySelector("tbody").innerHTML=MATCHES.map(function(m){
+    var fails=evaluate(m),ok=!fails.length;
+    if(ok)passed.push(m);
+    return '<tr class="'+(ok?"pass":"fail")+'">'+
+      '<td><span class="teams">'+esc(m.h)+' — '+esc(m.a)+'</span><div class="lg">'+esc(m.lg)+'</div>'+
+      (ok?'':'<div class="why">не прошло: '+esc(fails.join(", "))+'</div>')+'</td>'+
+      '<td class="n">'+m.t+'</td><td class="n">'+m.p1.toFixed(2)+'</td><td class="n">'+m.x.toFixed(2)+'</td>'+
+      '<td class="n">'+m.p2.toFixed(2)+'</td><td class="n">'+m.tot+'</td>'+
+      '<td class="n">'+m.form+'/5</td><td class="n">'+m.gpg.toFixed(1)+'</td>'+
+      '<td>'+(ok?'<span class="pill g">подходит</span>':'<span class="pill">мимо</span>')+'</td></tr>';
+  }).join("");
+  $("#passCnt").textContent="отобрано "+passed.length+" из "+MATCHES.length;
+  renderTg(passed);
+}
+function renderTg(passed){
+  var crit=Object.keys(active).map(function(k){return CATALOG[k].label(active[k])});
+  if(!passed.length){
+    $("#tgPreview").innerHTML='<div class="msg">Сегодня матчей по вашим критериям нет.'+
+      (crit.length?'\n\nФильтр: '+esc(crit.join("; ")):'')+
+      '<span class="tm">'+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})+'</span></div>'+
+      '<p class="small muted">Пустая выдача — тоже результат: бот присылает её раз в день, чтобы вы знали, что он живой, а не завис.</p>';
+    return;
+  }
+  $("#tgPreview").innerHTML=passed.slice(0,3).map(function(m){
+    return '<div class="msg"><b>⚽ '+esc(m.h)+' — '+esc(m.a)+'</b>\n'+
+      esc(m.lg)+' · сегодня в '+m.t+'\n\n'+
+      'П1 '+m.p1.toFixed(2)+'   Х '+m.x.toFixed(2)+'   П2 '+m.p2.toFixed(2)+'\n'+
+      'Тотал '+m.tot+' · форма хозяев '+m.form+'/5 · '+m.gpg.toFixed(1)+' гола за матч\n\n'+
+      'Прошло условий: '+Object.keys(active).length+' из '+Object.keys(active).length+
+      '<span class="tm">'+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"})+'</span></div>';
+  }).join("")+
+  (passed.length>3?'<p class="small muted">…и ещё '+(passed.length-3)+' матча — в демо показаны первые три.</p>':'')+
+  '<p class="small muted" style="margin-top:8px">Формат сообщения настраивается: можно короче, можно со ссылкой на матч, можно кнопкой «скрыть этот матч».</p>';
+}
+
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+render();
+})();
+</script>
+
+</body>
+</html>
