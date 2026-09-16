@@ -1,0 +1,374 @@
+<title>Каталог авто из Китая</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#F4F5F7; --surface:#FFFFFF; --surface2:#EAECF0; --surface3:#DDE0E6;
+  --ink:#101319; --ink2:#48505E; --ink3:#78808E;
+  --line:#D9DCE3; --line2:#C0C5CF;
+  --acc:#1E3A5F; --acc-d:#152941; --acc-s:#E3E9F1;
+  --amber:#B45309; --amber-s:#FBEEDD; --ok:#15803D; --ok-s:#DFF1E5; --red:#B3261E; --red-s:#FAE4E2;
+  --sh:0 1px 2px rgba(16,19,25,.06),0 12px 30px -18px rgba(16,19,25,.4);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1014; --surface:#161A21; --surface2:#1E232C; --surface3:#282F3A;
+  --ink:#ECEFF4; --ink2:#AEB6C2; --ink3:#7E8693;
+  --line:#232933; --line2:#333A47;
+  --acc:#7FA9DC; --acc-d:#9CBFE8; --acc-s:#152232;
+  --amber:#DFA157; --amber-s:#2C2010; --ok:#54BE84; --ok-s:#12291D; --red:#E4695E; --red-s:#301715;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#0E1014; --surface:#161A21; --surface2:#1E232C; --surface3:#282F3A;
+  --ink:#ECEFF4; --ink2:#AEB6C2; --ink3:#7E8693;
+  --line:#232933; --line2:#333A47;
+  --acc:#7FA9DC; --acc-d:#9CBFE8; --acc-s:#152232;
+  --amber:#DFA157; --amber-s:#2C2010; --ok:#54BE84; --ok-s:#12291D; --red:#E4695E; --red-s:#301715;
+  --sh:0 1px 2px rgba(0,0,0,.5),0 14px 32px -20px rgba(0,0,0,.9);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Golos Text",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.015em;line-height:1.2;text-wrap:balance}
+h1{font-size:clamp(20px,2.5vw,27px)}h2{font-size:18px}h3{font-size:15px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:3px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1340px;margin:0 auto;padding:0 16px}
+.small{font-size:12.5px;line-height:1.4}
+.muted{color:var(--ink2)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.demo{background:var(--ink);color:var(--paper);font-size:12px;padding:6px 16px;text-align:center;line-height:1.4}
+.demo b{background:var(--acc);color:#fff;padding:1px 7px;border-radius:2px;font-size:11px;font-weight:700}
+:root[data-theme="dark"] .demo b{color:#0E1014}
+header.s{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.hin{display:flex;align-items:center;gap:12px;height:56px}
+.brand{font-weight:700;font-size:16px;white-space:nowrap}
+.brand i{font-style:normal;color:var(--amber)}
+.srch{flex:1;max-width:420px}
+.hr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.ico{border:1px solid var(--line2);width:30px;height:30px;border-radius:5px;display:grid;place-items:center;color:var(--ink2);font-size:13px}
+.ico:hover{border-color:var(--acc);color:var(--acc)}
+.page{padding:18px 0 60px}
+select,input{font:inherit;font-size:13.5px;background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:6px;padding:8px 10px;width:100%}
+select:focus,input:focus{outline:2px solid var(--acc);outline-offset:-1px;border-color:var(--acc)}
+input[type=number]{font-family:"JetBrains Mono",monospace;text-align:right}
+label.f{display:grid;gap:4px;font-size:11.5px;color:var(--ink2);font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:6px;border:1px solid transparent;font-size:13px;font-weight:600}
+.btn-p{background:var(--acc);color:#fff}.btn-p:hover{background:var(--acc-d)}
+:root[data-theme="dark"] .btn-p{color:#0E1014}
+.btn-s{border-color:var(--line2);color:var(--ink)}
+.btn-s:hover{border-color:var(--acc);color:var(--acc)}
+.btn-sm{padding:7px 11px;font-size:12px}
+.pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:var(--surface2);color:var(--ink2)}
+.pill.g{background:var(--ok-s);color:var(--ok)}
+.pill.a{background:var(--amber-s);color:var(--amber)}
+.pill.b{background:var(--acc-s);color:var(--acc)}
+.cols{display:grid;grid-template-columns:262px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:1fr}.side{position:static!important}}
+.side{position:sticky;top:72px;display:grid;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.card-h{padding:11px 13px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card-b{padding:13px;display:grid;gap:11px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{border:1px solid var(--line2);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--ink2);background:var(--surface)}
+.chip:hover{border-color:var(--acc);color:var(--acc)}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#0E1014}
+.toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar select{width:auto;min-width:190px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+@media (max-width:1150px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.grid{grid-template-columns:1fr}}
+.car{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:border-color .15s,transform .15s}
+.car:hover{border-color:var(--acc);transform:translateY(-2px)}
+.car .im{aspect-ratio:16/10;background:linear-gradient(150deg,var(--surface3),var(--surface2));display:grid;place-items:center;color:var(--acc);position:relative}
+.car .im svg{width:56%;height:auto;opacity:.7}
+.car .tag{position:absolute;top:9px;left:9px}
+.car .bd{padding:12px 13px;display:flex;flex-direction:column;gap:6px;flex:1}
+.car .nm{font-weight:600;font-size:15px;line-height:1.25}
+.car .sp{font-size:12px;color:var(--ink3)}
+.car .pr{margin-top:auto;padding-top:6px}
+.car .rub{font-family:"JetBrains Mono",monospace;font-size:19px;font-weight:500;letter-spacing:-.02em}
+.car .cny{font-size:11.5px;color:var(--ink3);font-family:"JetBrains Mono",monospace}
+.empty{padding:44px;text-align:center;color:var(--ink3);border:1px dashed var(--line2);border-radius:8px}
+.dim{position:fixed;inset:0;background:rgba(8,11,15,.6);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;overflow:auto}
+.dim[hidden]{display:none}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:10px;max-width:640px;width:100%;box-shadow:var(--sh)}
+.mrow{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:13.5px;border-bottom:1px dashed var(--line)}
+.mrow:last-of-type{border-bottom:0}
+.mrow b{font-family:"JetBrains Mono",monospace;font-weight:500}
+.mtot{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-top:10px;padding-top:10px;border-top:2px solid var(--ink)}
+.mtot b{font-family:"JetBrains Mono",monospace;font-size:22px;font-weight:600}
+.note{border-left:3px solid var(--amber);background:var(--amber-s);padding:11px 13px;border-radius:0 6px 6px 0;font-size:12.5px;color:var(--ink2)}
+.note.b{border-color:var(--acc);background:var(--acc-s)}
+.note b{color:var(--ink)}
+.urlline{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--ink3);word-break:break-all;margin-top:8px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:90;background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:6px;font-size:13px;max-width:92vw;text-align:center;box-shadow:var(--sh)}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="demo"><b>ДЕМО</b>&nbsp; Прототип каталога: фильтры, поиск, расчёт цены под ключ с растаможкой. Машины и курсы условные.</div>
+
+<header class="s"><div class="wrap hin">
+  <span class="brand">АВТО<i>ИЗ</i>КИТАЯ</span>
+  <div class="srch"><input type="search" id="q" placeholder="Марка, модель или кузов"></div>
+  <div class="hr"><button class="ico" id="theme" aria-label="Тема">◐</button></div>
+</div></header>
+
+<div class="wrap page">
+  <div style="margin-bottom:14px">
+    <h1>Каталог автомобилей</h1>
+    <p class="muted small" style="margin-top:5px">Цена сразу «под ключ в РФ»: стоимость в Китае, доставка, пошлина, утильсбор и оформление в одной цифре. Фильтры пишутся в адрес страницы — ссылку с подбором можно отправить клиенту.</p>
+    <div class="urlline" id="urlLine"></div>
+  </div>
+
+  <div class="cols">
+    <aside class="side">
+      <div class="card"><div class="card-h"><h3>Фильтры</h3><button class="btn btn-s btn-sm" id="reset">Сброс</button></div>
+        <div class="card-b">
+          <div><div class="lbl" style="margin-bottom:6px">Марка</div><div class="chips" id="fBrand"></div></div>
+          <div><div class="lbl" style="margin-bottom:6px">Двигатель</div><div class="chips" id="fFuel"></div></div>
+          <label class="f">Цена под ключ, ₽
+            <div class="two"><input type="number" id="pMin" placeholder="от" step="100000"><input type="number" id="pMax" placeholder="до" step="100000"></div></label>
+          <label class="f">Год выпуска
+            <div class="two"><input type="number" id="yMin" placeholder="от" min="2015" max="2026"><input type="number" id="yMax" placeholder="до" min="2015" max="2026"></div></label>
+          <label class="f">Пробег не более, км<input type="number" id="mMax" placeholder="любой" step="10000"></label>
+          <label class="f">Привод<select id="fDrive">
+            <option value="">любой</option><option>передний</option><option>задний</option><option>полный</option></select></label>
+          <label class="f" style="flex-direction:row;align-items:center;gap:8px">
+            <input type="checkbox" id="fStock" style="width:auto"> Только в наличии</label>
+        </div></div>
+      <div class="card"><div class="card-h"><h3>Параметры расчёта</h3></div>
+        <div class="card-b">
+          <label class="f">Курс ¥ → ₽<input type="number" id="rate" value="12.8" step="0.1"></label>
+          <label class="f">Город получения<select id="city">
+            <option value="0">Владивосток</option>
+            <option value="120000" selected>Москва</option>
+            <option value="95000">Новосибирск</option></select></label>
+          <p class="small muted">Пошлина и утильсбор считаются по возрасту и объёму двигателя — цифры в карточке пересчитываются сразу.</p>
+        </div></div>
+    </aside>
+
+    <div>
+      <div class="toolbar">
+        <span class="small muted mono" id="found"></span>
+        <select id="sort">
+          <option value="pop">Сначала популярные</option>
+          <option value="asc">Сначала дешёвые</option>
+          <option value="desc">Сначала дорогие</option>
+          <option value="new">Сначала новые</option>
+          <option value="mil">Меньше пробег</option>
+        </select>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="noRes" hidden>Под эти условия машин нет. Попробуйте расширить диапазон цены или сбросить фильтры.</div>
+    </div>
+  </div>
+</div>
+
+<div class="dim" id="dim" hidden><div id="dimIn"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+var esc=function(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")};
+var rub=function(n){return Math.round(n).toLocaleString("ru-RU")+" ₽"};
+var toastEl=$("#toast"),tt;
+function toast(m){toastEl.textContent=m;toastEl.hidden=false;clearTimeout(tt);tt=setTimeout(function(){toastEl.hidden=true},2800)}
+
+var CAR_SVG='<svg viewBox="0 0 200 90" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M18 62V50c0-5 4-8 9-9l22-4 16-13c4-3 8-4 13-4h34c6 0 11 2 15 6l14 15 22 5c5 1 8 4 8 9v7"/><path d="M18 62h164"/><circle cx="56" cy="64" r="11"/><circle cx="146" cy="64" r="11"/><path d="M62 28l8 16M104 24v20"/></svg>';
+
+var CARS=[
+ {id:1,brand:"Li Auto",model:"L7 Pro",year:2024,mil:12000,fuel:"гибрид",vol:1.5,drive:"полный",body:"кроссовер",cny:268000,stock:true,pop:9},
+ {id:2,brand:"Zeekr",model:"001 WE",year:2024,mil:8000,fuel:"электро",vol:0,drive:"задний",body:"лифтбек",cny:239000,stock:true,pop:10},
+ {id:3,brand:"Li Auto",model:"L9 Max",year:2023,mil:31000,fuel:"гибрид",vol:1.5,drive:"полный",body:"кроссовер",cny:318000,stock:false,pop:8},
+ {id:4,brand:"Geely",model:"Monjaro 2.0T",year:2024,mil:5000,fuel:"бензин",vol:2.0,drive:"полный",body:"кроссовер",cny:172000,stock:true,pop:9},
+ {id:5,brand:"Geely",model:"Coolray",year:2023,mil:28000,fuel:"бензин",vol:1.5,drive:"передний",body:"кроссовер",cny:98000,stock:true,pop:7},
+ {id:6,brand:"Chery",model:"Tiggo 8 Pro",year:2023,mil:42000,fuel:"бензин",vol:2.0,drive:"передний",body:"кроссовер",cny:112000,stock:true,pop:6},
+ {id:7,brand:"BYD",model:"Song Plus DM-i",year:2024,mil:15000,fuel:"гибрид",vol:1.5,drive:"передний",body:"кроссовер",cny:145000,stock:true,pop:8},
+ {id:8,brand:"BYD",model:"Han EV",year:2023,mil:36000,fuel:"электро",vol:0,drive:"полный",body:"седан",cny:168000,stock:false,pop:7},
+ {id:9,brand:"Zeekr",model:"007",year:2025,mil:3000,fuel:"электро",vol:0,drive:"задний",body:"седан",cny:225000,stock:true,pop:9},
+ {id:10,brand:"Haval",model:"H5",year:2024,mil:19000,fuel:"дизель",vol:2.0,drive:"полный",body:"рамный",cny:136000,stock:true,pop:6},
+ {id:11,brand:"Chery",model:"Exeed TXL",year:2022,mil:58000,fuel:"бензин",vol:2.0,drive:"полный",body:"кроссовер",cny:121000,stock:true,pop:5},
+ {id:12,brand:"Haval",model:"Jolion",year:2023,mil:33000,fuel:"бензин",vol:1.5,drive:"передний",body:"кроссовер",cny:89000,stock:true,pop:6}
+];
+var BRANDS=["Li Auto","Zeekr","Geely","Chery","BYD","Haval"];
+var FUELS=["бензин","дизель","гибрид","электро"];
+
+/* ---------- расчёт цены под ключ ---------- */
+function calc(c){
+  var rate=+$("#rate").value||12.8;
+  var cityFee=+$("#city").value||0;
+  var base=c.cny*rate;                 /* цена авто в рублях */
+  var logistics=c.fuel==="электро"?420000:380000;
+  var age=2026-c.year;
+  /* пошлина: электро и гибриды по льготной ставке, бензин/дизель по объёму и возрасту */
+  var duty;
+  if(c.fuel==="электро")duty=base*0.15;
+  else if(c.fuel==="гибрид")duty=base*0.20;
+  else duty=Math.max(base*0.20, c.vol*1000*(age>=3?3.5:2.7)*95);
+  /* утильсбор: физлицо, машина до 3 лет — льготный, старше — полный */
+  var util=age<3?5200:(c.vol>=2?32600:20000);
+  var broker=45000;
+  var sbktс=38000;
+  var total=base+logistics+duty+util+broker+sbktс+cityFee;
+  return {base:base,logistics:logistics,duty:duty,util:util,broker:broker,sbkts:sbktс,city:cityFee,total:total,age:age};
+}
+
+/* ---------- фильтры ---------- */
+var F={brand:[],fuel:[],pMin:null,pMax:null,yMin:null,yMax:null,mMax:null,drive:"",stock:false,q:"",sort:"pop"};
+
+function readUrl(){
+  var p=new URLSearchParams(location.search);
+  if(p.get("brand"))F.brand=p.get("brand").split(",");
+  if(p.get("fuel"))F.fuel=p.get("fuel").split(",");
+  ["pMin","pMax","yMin","yMax","mMax"].forEach(function(k){
+    if(p.get(k))F[k]=+p.get(k);
+  });
+  if(p.get("drive"))F.drive=p.get("drive");
+  if(p.get("stock"))F.stock=true;
+  if(p.get("q"))F.q=p.get("q");
+  if(p.get("sort"))F.sort=p.get("sort");
+}
+function writeUrl(){
+  var p=new URLSearchParams();
+  if(F.brand.length)p.set("brand",F.brand.join(","));
+  if(F.fuel.length)p.set("fuel",F.fuel.join(","));
+  ["pMin","pMax","yMin","yMax","mMax"].forEach(function(k){if(F[k])p.set(k,F[k])});
+  if(F.drive)p.set("drive",F.drive);
+  if(F.stock)p.set("stock","1");
+  if(F.q)p.set("q",F.q);
+  if(F.sort!=="pop")p.set("sort",F.sort);
+  var qs=p.toString();
+  history.replaceState(null,"",qs?"?"+qs:location.pathname);
+  $("#urlLine").textContent="example.ru/catalog/"+(qs?"?"+qs:"");
+}
+function syncInputs(){
+  $("#q").value=F.q;
+  $("#pMin").value=F.pMin||"";$("#pMax").value=F.pMax||"";
+  $("#yMin").value=F.yMin||"";$("#yMax").value=F.yMax||"";
+  $("#mMax").value=F.mMax||"";
+  $("#fDrive").value=F.drive;$("#fStock").checked=F.stock;$("#sort").value=F.sort;
+  $("#fBrand").innerHTML=BRANDS.map(function(b){
+    return '<button class="chip" data-brand="'+esc(b)+'" aria-pressed="'+(F.brand.indexOf(b)>-1)+'">'+esc(b)+'</button>'}).join("");
+  $("#fFuel").innerHTML=FUELS.map(function(f){
+    return '<button class="chip" data-fuel="'+esc(f)+'" aria-pressed="'+(F.fuel.indexOf(f)>-1)+'">'+esc(f)+'</button>'}).join("");
+}
+function apply(){
+  var list=CARS.filter(function(c){
+    var t=calc(c).total;
+    if(F.brand.length&&F.brand.indexOf(c.brand)<0)return false;
+    if(F.fuel.length&&F.fuel.indexOf(c.fuel)<0)return false;
+    if(F.pMin&&t<F.pMin)return false;
+    if(F.pMax&&t>F.pMax)return false;
+    if(F.yMin&&c.year<F.yMin)return false;
+    if(F.yMax&&c.year>F.yMax)return false;
+    if(F.mMax&&c.mil>F.mMax)return false;
+    if(F.drive&&c.drive!==F.drive)return false;
+    if(F.stock&&!c.stock)return false;
+    var q=F.q.toLowerCase().trim();
+    if(q&&(c.brand+" "+c.model+" "+c.body+" "+c.fuel).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  if(F.sort==="asc")list.sort(function(a,b){return calc(a).total-calc(b).total});
+  else if(F.sort==="desc")list.sort(function(a,b){return calc(b).total-calc(a).total});
+  else if(F.sort==="new")list.sort(function(a,b){return b.year-a.year});
+  else if(F.sort==="mil")list.sort(function(a,b){return a.mil-b.mil});
+  else list.sort(function(a,b){return b.pop-a.pop});
+  return list;
+}
+function render(){
+  syncInputs();writeUrl();
+  var list=apply();
+  $("#grid").innerHTML=list.map(function(c){
+    var r=calc(c);
+    return '<article class="car" data-car="'+c.id+'">'+
+      '<div class="im">'+CAR_SVG+
+      '<span class="tag pill '+(c.stock?"g":"a")+'">'+(c.stock?"в наличии":"под заказ")+'</span></div>'+
+      '<div class="bd"><span class="nm">'+esc(c.brand)+' '+esc(c.model)+'</span>'+
+      '<span class="sp">'+c.year+' · '+(c.mil/1000).toFixed(0)+' тыс. км · '+esc(c.fuel)+
+      (c.vol?' '+c.vol.toFixed(1)+' л':'')+' · '+esc(c.drive)+'</span>'+
+      '<div class="pr"><div class="rub">'+rub(r.total)+'</div>'+
+      '<div class="cny">в Китае '+c.cny.toLocaleString("ru-RU")+' ¥ · под ключ с растаможкой</div></div>'+
+      '</div></article>';
+  }).join("");
+  $("#noRes").hidden=list.length>0;
+  $("#found").textContent="Найдено: "+list.length+" из "+CARS.length;
+}
+
+/* события фильтров */
+$("#fBrand").addEventListener("click",function(e){
+  var b=e.target.closest("[data-brand]");if(!b)return;
+  var v=b.getAttribute("data-brand"),i=F.brand.indexOf(v);
+  if(i>-1)F.brand.splice(i,1);else F.brand.push(v);
+  render();
+});
+$("#fFuel").addEventListener("click",function(e){
+  var b=e.target.closest("[data-fuel]");if(!b)return;
+  var v=b.getAttribute("data-fuel"),i=F.fuel.indexOf(v);
+  if(i>-1)F.fuel.splice(i,1);else F.fuel.push(v);
+  render();
+});
+[["pMin","pMin"],["pMax","pMax"],["yMin","yMin"],["yMax","yMax"],["mMax","mMax"]].forEach(function(p){
+  $("#"+p[0]).addEventListener("input",function(){F[p[1]]=this.value?+this.value:null;render()});
+});
+$("#fDrive").addEventListener("change",function(){F.drive=this.value;render()});
+$("#fStock").addEventListener("change",function(){F.stock=this.checked;render()});
+$("#sort").addEventListener("change",function(){F.sort=this.value;render()});
+$("#q").addEventListener("input",function(){F.q=this.value;render()});
+["rate","city"].forEach(function(id){$("#"+id).addEventListener("input",render);$("#"+id).addEventListener("change",render)});
+$("#reset").addEventListener("click",function(){
+  F={brand:[],fuel:[],pMin:null,pMax:null,yMin:null,yMax:null,mMax:null,drive:"",stock:false,q:"",sort:"pop"};
+  render();toast("Фильтры сброшены");
+});
+
+/* карточка авто */
+$("#grid").addEventListener("click",function(e){
+  var el=e.target.closest("[data-car]");if(!el)return;
+  var c=CARS.filter(function(x){return x.id===+el.getAttribute("data-car")})[0];
+  var r=calc(c);
+  $("#dimIn").innerHTML='<div class="modal">'+
+    '<div class="card-h" style="padding:16px 18px"><div><h2>'+esc(c.brand)+' '+esc(c.model)+'</h2>'+
+    '<p class="small muted" style="margin-top:3px">'+c.year+' · '+(c.mil/1000).toFixed(0)+' тыс. км · '+esc(c.body)+' · '+esc(c.drive)+' привод</p></div>'+
+    '<button class="ico" data-x="1">✕</button></div>'+
+    '<div style="padding:18px">'+
+    '<div class="im" style="aspect-ratio:16/8;background:var(--surface2);border-radius:8px;display:grid;place-items:center;color:var(--acc);margin-bottom:16px">'+CAR_SVG+'</div>'+
+    '<div class="lbl" style="margin-bottom:8px">Из чего складывается цена</div>'+
+    '<div class="mrow"><span>Автомобиль в Китае ('+c.cny.toLocaleString("ru-RU")+' ¥)</span><b>'+rub(r.base)+'</b></div>'+
+    '<div class="mrow"><span>Доставка до границы и по РФ</span><b>'+rub(r.logistics)+'</b></div>'+
+    '<div class="mrow"><span>Таможенная пошлина ('+esc(c.fuel)+', '+r.age+' г.)</span><b>'+rub(r.duty)+'</b></div>'+
+    '<div class="mrow"><span>Утилизационный сбор</span><b>'+rub(r.util)+'</b></div>'+
+    '<div class="mrow"><span>СБКТС и ЭПТС</span><b>'+rub(r.sbkts)+'</b></div>'+
+    '<div class="mrow"><span>Услуги брокера и наша комиссия</span><b>'+rub(r.broker)+'</b></div>'+
+    (r.city?'<div class="mrow"><span>Доставка до города</span><b>'+rub(r.city)+'</b></div>':'')+
+    '<div class="mtot"><span>Под ключ</span><b>'+rub(r.total)+'</b></div>'+
+    '<div class="note" style="margin-top:14px"><b>Расчёт ориентировочный.</b> Пошлина и утильсбор зависят от возраста, объёма двигателя и статуса покупателя — физлицо или компания. Итог фиксируется после подбора конкретного лота.</div>'+
+    '<div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">'+
+    '<button class="btn btn-p" data-x="1">Оставить заявку</button>'+
+    '<button class="btn btn-s" data-x="1">Закрыть</button></div>'+
+    '</div></div>';
+  $("#dim").hidden=false;
+});
+$("#dim").addEventListener("click",function(e){
+  if(e.target===$("#dim")||e.target.closest("[data-x]"))$("#dim").hidden=true;
+});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")$("#dim").hidden=true});
+$("#theme").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":window.matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+readUrl();render();
+})();
+</script>
