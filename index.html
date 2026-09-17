@@ -43,13 +43,12 @@
 
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <div class="road-line" aria-hidden="true"></div>
       <div class="shell hero-grid">
         <div class="hero-copy reveal">
           <div class="eyebrow"><span></span> Новомосковск · 5 областей</div>
           <div class="hero-labels" aria-label="Ключевые условия"><span>Авто в наличии</span><span>Решение за 30 минут</span></div>
-          <h1 id="hero-title">Автомобили под такси и личные цели <mark>с правом выкупа</mark> от 1 800 ₽/сутки</h1>
-          <script>try{const p=new URLSearchParams(location.search),m=`${p.get('utm_campaign')||''} ${p.get('utm_term')||''} ${p.get('utm_content')||''}`.toLowerCase(),h=document.getElementById('hero-title');if(m.includes('arenda'))h.innerHTML='Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 1 800 ₽/сутки';if(m.includes('vikup')||m.includes('vykup'))h.innerHTML='Автомобили под выкуп <mark>от 1 800 ₽/сутки.</mark> Одобрение с любой КИ'}catch(e){}</script>
+          <h1 id="hero-title">Автомобили под такси и личные цели <mark>с правом выкупа</mark> <span class="price-nowrap">от 1 800 ₽/сутки</span></h1>
+          <script>try{const p=new URLSearchParams(location.search),m=`${p.get('utm_campaign')||''} ${p.get('utm_term')||''} ${p.get('utm_content')||''}`.toLowerCase(),h=document.getElementById('hero-title');if(m.includes('arenda'))h.innerHTML='Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и <span class="price-nowrap">1 800 ₽/сутки</span>';if(m.includes('vikup')||m.includes('vykup'))h.innerHTML='Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span>.</mark> Одобрение с любой КИ'}catch(e){}</script>
           <p class="hero-subtitle">Одобрение за 30 минут по двум документам. Только для граждан РФ.</p>
           <div class="hero-actions">
             <a class="button button-large" href="#fleet">Подобрать автомобиль <span aria-hidden="true">↗</span></a>
@@ -286,7 +285,7 @@
     <div class="shell footer-bottom"><p>© 2026 Автокар71</p><a href="privacy.html">Политика обработки ПДн</a><p>Информация на сайте не является публичной офертой.</p></div>
   </footer>
 
-  <div class="mobile-bar" aria-label="Быстрые действия"><a href="tel:+79539708877"><span>☎</span>Звонок</a><button class="js-open-quiz" type="button"><span>↗</span>Подобрать авто</button></div>
+  <div class="mobile-bar" aria-label="Быстрые действия"><a href="tel:+79539708877">Позвонить</a><button class="js-open-quiz" type="button">Подобрать авто</button></div>
 
   <dialog class="car-modal" id="car-modal" aria-labelledby="modal-title">
     <button class="modal-close" type="button" aria-label="Закрыть">×</button>

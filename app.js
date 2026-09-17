@@ -5,8 +5,8 @@
   const params = new URLSearchParams(location.search);
   const campaign = `${params.get('utm_campaign') || ''} ${params.get('utm_term') || ''} ${params.get('utm_content') || ''}`.toLowerCase();
   const hero = $('#hero-title');
-  if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 1 800 ₽/сутки';
-  if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark>от 1 800 ₽/сутки.</mark> Одобрение с любой КИ';
+  if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и <span class="price-nowrap">1 800 ₽/сутки</span>';
+  if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span>.</mark> Одобрение с любой КИ';
 
   const menuButton = $('.menu-button');
   const menu = $('#mobile-menu');
