@@ -5,8 +5,8 @@
   const params = new URLSearchParams(location.search);
   const campaign = `${params.get('utm_campaign') || ''} ${params.get('utm_term') || ''} ${params.get('utm_content') || ''}`.toLowerCase();
   const hero = $('#hero-title');
-  if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 2 000 ₽/сутки';
-  if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark>от 2 000 ₽/сутки.</mark> Одобрение с любой КИ';
+  if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 1 800 ₽/сутки';
+  if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark>от 1 800 ₽/сутки.</mark> Одобрение с любой КИ';
 
   const menuButton = $('.menu-button');
   const menu = $('#mobile-menu');
@@ -34,7 +34,7 @@
 
   const modal = $('#car-modal');
   const carData = {
-    'Lada Granta 2024': { image: 'assets/granta-2024.webp', specs: ['2024 год', '1.6 л', 'МКПП', 'бензин + газ'], deposit: '25 000 ₽' },
+    'Lada Granta 2023': { image: 'assets/granta-2024.webp', specs: ['2023 год', '1.6 л', 'МКПП', 'бензин + газ'], deposit: '25 000 ₽' },
     'Hyundai Solaris 2020': { image: 'assets/solaris-2020.webp', specs: ['2020 год', '1.6 л', 'АКПП', 'ГБО'], deposit: '25 000 ₽' },
     'Kia Rio 2013': { image: 'assets/kia-rio-2013.webp', specs: ['2013 год', '1.6 л', 'МКПП', 'бензин'], deposit: '25 000 ₽' },
     'Solaris HC 2024': { image: 'assets/solaris-hc-2024.webp', specs: ['2024 год', '1.6 л', 'МКПП', 'бензин'], deposit: '100 000 ₽' }
