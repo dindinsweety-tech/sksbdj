@@ -27,24 +27,16 @@
     $$('.tabs button').forEach(x => x.setAttribute('aria-selected', 'false'));
     tab.setAttribute('aria-selected', 'true');
     const filter = tab.dataset.filter;
-    $$('.car-card').forEach(card => card.hidden = !(filter === 'all' || (filter === 'order' ? $('.car-status.order', card) : card.dataset.class === filter)));
+    $$('.car-card').forEach(card => card.hidden = !(filter === 'all' || card.dataset.class === filter));
   }));
-  $('.cars-prev').addEventListener('click', () => cars.scrollBy({ left: -430, behavior: 'smooth' }));
-  $('.cars-next').addEventListener('click', () => cars.scrollBy({ left: 430, behavior: 'smooth' }));
-
   const modal = $('#car-modal');
-  const carData = {
-    'Lada Granta 2023': { image: 'assets/granta-2024.webp', specs: ['2023 год', '1.6 л', 'МКПП', 'бензин + газ'], deposit: '25 000 ₽' },
-    'Hyundai Solaris 2020': { image: 'assets/solaris-2020.webp', specs: ['2020 год', '1.6 л', 'АКПП', 'ГБО'], deposit: '25 000 ₽' },
-    'Kia Rio 2013': { image: 'assets/kia-rio-2013.webp', specs: ['2013 год', '1.6 л', 'МКПП', 'бензин'], deposit: '25 000 ₽' },
-    'Solaris HC 2024': { image: 'assets/solaris-hc-2024.webp', specs: ['2024 год', '1.6 л', 'МКПП', 'бензин'], deposit: '100 000 ₽' }
-  };
   const openCar = card => {
-    const name = $('h3', card).textContent.trim(); const data = carData[name];
-    $('#modal-title').textContent = name; $('#modal-image').src = data.image; $('#modal-image').alt = name;
-    $('#modal-specs').innerHTML = data.specs.map(x => `<span>${x}</span>`).join('');
-    $('.deposit-box strong').textContent = data.deposit;
-    $('.deposit-box small').textContent = name === 'Solaris HC 2024' ? 'для нового авто под заказ' : 'для авто из наличия';
+    const name = $('h3', card).textContent.trim();
+    const specs = (card.dataset.specs || '').split('|').filter(Boolean);
+    $('#modal-title').textContent = name; $('#modal-image').src = card.dataset.image; $('#modal-image').alt = name;
+    $('#modal-specs').innerHTML = specs.map(x => `<span>${x}</span>`).join('');
+    $('.deposit-box strong').textContent = '25 000 ₽';
+    $('.deposit-box small').textContent = 'для автомобиля из наличия';
     modal.showModal(); document.body.style.overflow = 'hidden';
   };
   $$('.car-card').forEach(card => {
