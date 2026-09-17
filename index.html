@@ -19,6 +19,7 @@
         <img src="assets/logo.webp" width="54" height="54" alt="Логотип Автокар71">
         <span>Автокар<span>71</span></span>
       </a>
+      <span class="mobile-header-label">Аренда · выкуп</span>
       <p class="header-descriptor">Аренда и выкуп авто<br>в четырёх областях</p>
       <nav class="desktop-nav" aria-label="Основная навигация">
         <a href="#fleet">Автомобили</a>
@@ -27,7 +28,7 @@
         <a href="#contacts">Контакты</a>
       </nav>
       <div class="header-actions">
-        <a class="phone-link" href="tel:+79539708877" aria-label="Телефон и MAX: плюс семь 953 970-88-77"><span class="online-dot" aria-hidden="true"></span>+7 953 970-88-77</a>
+        <a class="phone-link" href="tel:+79539708877" aria-label="Позвонить: плюс семь 953 970-88-77"><span class="online-dot" aria-hidden="true"></span><span class="phone-full">+7 953 970-88-77</span><span class="phone-mobile">Позвонить</span></a>
         <button class="button button-small js-open-quiz" type="button">Заказать звонок</button>
       </div>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Открыть меню">
@@ -45,9 +46,10 @@
       <div class="road-line" aria-hidden="true"></div>
       <div class="shell hero-grid">
         <div class="hero-copy reveal">
-          <div class="eyebrow"><span></span> Новомосковск · работаем по 4 областям</div>
-          <h1 id="hero-title">Автомобили под такси и личные цели <mark>с правом выкупа</mark> от 1800 ₽/сутки</h1>
-          <script>try{const p=new URLSearchParams(location.search),m=`${p.get('utm_campaign')||''} ${p.get('utm_term')||''} ${p.get('utm_content')||''}`.toLowerCase(),h=document.getElementById('hero-title');if(m.includes('arenda'))h.innerHTML='Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 1800 ₽/сутки';if(m.includes('vikup')||m.includes('vykup'))h.innerHTML='Автомобили под выкуп <mark>от 1800 ₽/сутки.</mark> Одобрение с любой КИ'}catch(e){}</script>
+          <div class="eyebrow"><span></span> Новомосковск · 4 области</div>
+          <div class="hero-labels" aria-label="Ключевые условия"><span>Авто в наличии</span><span>Решение за 30 минут</span></div>
+          <h1 id="hero-title">Автомобили под такси и личные цели <mark>с правом выкупа</mark> от 2 000 ₽/сутки</h1>
+          <script>try{const p=new URLSearchParams(location.search),m=`${p.get('utm_campaign')||''} ${p.get('utm_term')||''} ${p.get('utm_content')||''}`.toLowerCase(),h=document.getElementById('hero-title');if(m.includes('arenda'))h.innerHTML='Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 2 000 ₽/сутки';if(m.includes('vikup')||m.includes('vykup'))h.innerHTML='Автомобили под выкуп <mark>от 2 000 ₽/сутки.</mark> Одобрение с любой КИ'}catch(e){}</script>
           <p class="hero-subtitle">Одобрение за 30 минут по двум документам. Только для граждан РФ.</p>
           <div class="hero-actions">
             <a class="button button-large" href="#fleet">Подобрать автомобиль <span aria-hidden="true">↗</span></a>
@@ -61,9 +63,9 @@
         </div>
         <div class="hero-visual reveal delay-1">
           <div class="hero-photo-wrap">
-            <img src="assets/hero-park.webp" width="900" height="823" alt="Автомобиль из парка Автокар71" fetchpriority="high">
+            <img src="assets/hero-park.webp" width="1312" height="1199" alt="Автомобиль из парка Автокар71" fetchpriority="high">
             <div class="hero-photo-shade"></div>
-            <div class="price-stamp"><span>от</span><strong>1800</strong><span>₽ / сутки</span></div>
+            <div class="price-stamp"><span>от</span><strong>2000</strong><span>₽ / сутки</span></div>
             <div class="availability"><span></span> Есть авто в наличии</div>
           </div>
           <p class="photo-caption">Реальный автомобиль из парка · Новомосковск</p>
@@ -86,28 +88,28 @@
         </div>
         <div class="fleet-toolbar reveal delay-1">
           <div class="tabs" role="tablist" aria-label="Классы автомобилей">
-            <button role="tab" aria-selected="true" data-filter="all">Все авто <b>12</b></button>
-            <button role="tab" aria-selected="false" data-filter="economy">Эконом <b>9</b></button>
-            <button role="tab" aria-selected="false" data-filter="comfort">Комфорт <b>3</b></button>
-            <button role="tab" aria-selected="false" data-filter="order">Под заказ</button>
+            <button role="tab" aria-selected="true" data-filter="all">Все авто <b>4</b></button>
+            <button role="tab" aria-selected="false" data-filter="economy">Эконом <b>2</b></button>
+            <button role="tab" aria-selected="false" data-filter="comfort">Комфорт <b>2</b></button>
+            <button role="tab" aria-selected="false" data-filter="order">Под заказ <b>1</b></button>
           </div>
           <div class="fleet-nav" aria-hidden="true"><button class="cars-prev" type="button">←</button><button class="cars-next" type="button">→</button></div>
         </div>
         <div class="cars" id="cars-list">
           <article class="car-card reveal" data-class="economy" tabindex="0" role="button" aria-label="Подробнее: Lada Granta 2024">
-            <div class="car-media"><img loading="lazy" src="assets/granta-2024.webp" width="900" height="600" alt="Lada Granta 2024 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">01</span></div>
+            <div class="car-media"><img loading="lazy" src="assets/granta-2024.webp" width="1871" height="841" alt="Lada Granta 2024 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">01</span></div>
             <div class="car-body"><div class="car-title-row"><div><p class="car-class">Эконом</p><h3>Lada Granta 2024</h3></div><span class="round-arrow">↗</span></div><ul><li>2024 год</li><li>1.6 л</li><li>МКПП</li><li>бензин + газ</li></ul><div class="car-price"><strong>от 2 000 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
           </article>
           <article class="car-card reveal delay-1" data-class="comfort" tabindex="0" role="button" aria-label="Подробнее: Hyundai Solaris 2020">
-            <div class="car-media"><img loading="lazy" src="assets/solaris-2020.webp" width="728" height="1600" alt="Hyundai Solaris 2020 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">02</span></div>
+            <div class="car-media"><img loading="lazy" src="assets/solaris-2020.webp" width="846" height="1859" alt="Hyundai Solaris 2020 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">02</span></div>
             <div class="car-body"><div class="car-title-row"><div><p class="car-class">Комфорт</p><h3>Hyundai Solaris 2020</h3></div><span class="round-arrow">↗</span></div><ul><li>2020 год</li><li>1.6 л</li><li>АКПП</li><li>ГБО</li></ul><div class="car-price"><strong>от 2 500 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
           </article>
           <article class="car-card reveal" data-class="economy" tabindex="0" role="button" aria-label="Подробнее: Kia Rio 2013">
-            <div class="car-media"><img loading="lazy" src="assets/kia-rio-2013.webp" width="1200" height="540" alt="Kia Rio 2013 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">03</span></div>
+            <div class="car-media"><img loading="lazy" src="assets/kia-rio-2013.webp" width="1870" height="841" alt="Kia Rio 2013 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">03</span></div>
             <div class="car-body"><div class="car-title-row"><div><p class="car-class">Эконом</p><h3>Kia Rio 2013</h3></div><span class="round-arrow">↗</span></div><ul><li>2013 год</li><li>1.6 л</li><li>МКПП</li><li>бензин</li></ul><div class="car-price"><strong>от 2 050 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
           </article>
           <article class="car-card reveal delay-1" data-class="comfort" tabindex="0" role="button" aria-label="Подробнее: Solaris HC 2024">
-            <div class="car-media"><img loading="lazy" src="assets/solaris-hc-2024.webp" width="1200" height="800" alt="Solaris HC 2024 из парка Автокар71"><span class="car-status order">Под заказ</span><span class="car-index">04</span></div>
+            <div class="car-media"><img loading="lazy" src="assets/solaris-hc-2024.webp" width="1870" height="841" alt="Solaris HC 2024 из парка Автокар71"><span class="car-status order">Под заказ</span><span class="car-index">04</span></div>
             <div class="car-body"><div class="car-title-row"><div><p class="car-class">Комфорт</p><h3>Solaris HC 2024</h3></div><span class="round-arrow">↗</span></div><ul><li>2024 год</li><li>1.6 л</li><li>МКПП</li><li>бензин</li></ul><div class="car-price"><strong>от 3 600 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
           </article>
         </div>
@@ -147,7 +149,7 @@
         <div class="quiz-intro reveal">
           <p class="section-kicker">Персональный подбор</p>
           <h2 id="quiz-title">Узнайте, какие автомобили <em>свободны сегодня</em></h2>
-          <p>Ответьте на 4 вопроса — менеджер подготовит варианты и расчёт платежа.</p>
+          <p>Ответьте на 4 вопроса — следующие шаги подстроятся под вашу задачу.</p>
           <div class="quiz-benefit"><strong>≈ 1 минута</strong><span>Без справок и визита в офис</span></div>
         </div>
         <div class="quiz-card reveal delay-1" data-step="0">
@@ -160,17 +162,41 @@
               <button type="button" class="answer" data-value="Личные поездки"><span>02</span>Личные поездки<i>→</i></button>
               <button type="button" class="answer" data-value="Хочу выкупить авто"><span>03</span>Хочу выкупить авто<i>→</i></button>
             </fieldset>
-            <fieldset class="quiz-step" data-question="class">
+            <fieldset class="quiz-step" data-question="taxi_class" data-branch="taxi">
               <legend>Какой класс авто рассматриваете?</legend>
-              <button type="button" class="answer" data-value="Эконом из наличия"><span>01</span>Эконом из наличия от 1800 ₽/сутки<i>→</i></button>
+              <button type="button" class="answer" data-value="Эконом из наличия"><span>01</span>Эконом из наличия от 2 000 ₽/сутки<i>→</i></button>
               <button type="button" class="answer" data-value="Комфорт из наличия"><span>02</span>Комфорт из наличия<i>→</i></button>
               <button type="button" class="answer" data-value="Под заказ"><span>03</span>Под заказ с авансом 20%<i>→</i></button>
             </fieldset>
-            <fieldset class="quiz-step" data-question="fuel">
-              <legend>Предпочтения по топливу и КПП?</legend>
-              <button type="button" class="answer" data-value="Газ (ГБО)"><span>01</span>Только газ (ГБО)<i>→</i></button>
+            <fieldset class="quiz-step" data-question="taxi_setup" data-branch="taxi">
+              <legend>Какая комплектация удобнее для работы?</legend>
+              <button type="button" class="answer" data-value="Газ / бензин, МКПП"><span>01</span>Газ / бензин, МКПП<i>→</i></button>
               <button type="button" class="answer" data-value="Бензин, МКПП"><span>02</span>Бензин, МКПП<i>→</i></button>
               <button type="button" class="answer" data-value="АКПП"><span>03</span>АКПП<i>→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step" data-question="personal_term" data-branch="personal">
+              <legend>На какой срок нужен автомобиль?</legend>
+              <button type="button" class="answer" data-value="10–30 дней"><span>01</span>10–30 дней<i>→</i></button>
+              <button type="button" class="answer" data-value="1–6 месяцев"><span>02</span>1–6 месяцев<i>→</i></button>
+              <button type="button" class="answer" data-value="Более 6 месяцев"><span>03</span>Более 6 месяцев<i>→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step" data-question="personal_setup" data-branch="personal">
+              <legend>Что важнее в автомобиле?</legend>
+              <button type="button" class="answer" data-value="Минимальная цена"><span>01</span>Минимальная цена<i>→</i></button>
+              <button type="button" class="answer" data-value="АКПП и комфорт"><span>02</span>АКПП и комфорт<i>→</i></button>
+              <button type="button" class="answer" data-value="Подберёт менеджер"><span>03</span>Доверюсь подбору менеджера<i>→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step" data-question="buyout_payment" data-branch="buyout">
+              <legend>Какой первоначальный взнос рассматриваете?</legend>
+              <button type="button" class="answer" data-value="Без взноса"><span>01</span>Без первоначального взноса<i>→</i></button>
+              <button type="button" class="answer" data-value="До 20%"><span>02</span>До 20% стоимости<i>→</i></button>
+              <button type="button" class="answer" data-value="От 20%"><span>03</span>От 20% стоимости<i>→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step" data-question="buyout_car" data-branch="buyout">
+              <legend>Какой автомобиль нужен?</legend>
+              <button type="button" class="answer" data-value="Из наличия"><span>01</span>Из наличия — быстрее<i>→</i></button>
+              <button type="button" class="answer" data-value="Новый под заказ"><span>02</span>Новый под заказ<i>→</i></button>
+              <button type="button" class="answer" data-value="Нужна консультация"><span>03</span>Нужна консультация<i>→</i></button>
             </fieldset>
             <fieldset class="quiz-step" data-question="qualifies">
               <legend>Подходите ли вы под наши требования?</legend>
@@ -178,15 +204,20 @@
               <button type="button" class="answer" data-value="Нет"><span>02</span>Нет, по какому-то пункту не прохожу<i>→</i></button>
             </fieldset>
             <fieldset class="quiz-step contact-step" data-question="contact">
-              <legend>Куда отправить варианты?</legend>
-              <div class="channels" role="group" aria-label="Предпочтительный канал связи"><button type="button" data-channel="MAX">MAX</button><button type="button" data-channel="Telegram">Telegram</button><button type="button" data-channel="WhatsApp">WhatsApp</button><button type="button" data-channel="Звонок">Звонок</button></div>
+              <legend>Как с вами связаться?</legend>
+              <p class="contact-note">Все заявки поступают менеджеру в MAX. Выберите удобный способ ответа.</p>
+              <div class="channels" role="group" aria-label="Предпочтительный канал связи"><button type="button" data-channel="MAX">MAX</button><button type="button" data-channel="Telegram">Telegram</button><button type="button" data-channel="Звонок">Звонок</button></div>
               <label for="lead-phone">Ваш номер телефона</label>
               <input id="lead-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" aria-describedby="phone-error">
               <p class="field-error" id="phone-error" role="alert"></p>
+              <div class="telegram-field" hidden>
+                <label for="telegram-username">Никнейм в Telegram</label>
+                <input id="telegram-username" name="telegram" type="text" inputmode="text" autocomplete="off" placeholder="@username" aria-describedby="telegram-error">
+                <p class="field-error" id="telegram-error" role="alert"></p>
+              </div>
               <label class="consent"><input type="checkbox" id="consent" checked><span>Согласен на обработку персональных данных</span></label>
               <button class="button quiz-submit" type="submit" disabled>Получить предложение <span>→</span></button>
             </fieldset>
-            <div class="quiz-thanks" hidden><div class="thanks-mark">✓</div><h3>Заявка подготовлена</h3><p>В рабочей версии она уйдёт менеджеру вместе с ответами и рекламными метками. Для макета отправка отключена.</p><button type="button" class="text-link quiz-restart">Пройти ещё раз</button></div>
           </form>
           <div class="quiz-bottom"><button type="button" id="quiz-back" disabled>← Назад</button><span>Данные защищены</span></div>
         </div>

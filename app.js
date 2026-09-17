@@ -5,8 +5,8 @@
   const params = new URLSearchParams(location.search);
   const campaign = `${params.get('utm_campaign') || ''} ${params.get('utm_term') || ''} ${params.get('utm_content') || ''}`.toLowerCase();
   const hero = $('#hero-title');
-  if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 1800 ₽/сутки';
-  if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark>от 1800 ₽/сутки.</mark> Одобрение с любой КИ';
+  if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 2 000 ₽/сутки';
+  if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark>от 2 000 ₽/сутки.</mark> Одобрение с любой КИ';
 
   const menuButton = $('.menu-button');
   const menu = $('#mobile-menu');
@@ -55,41 +55,65 @@
   $('.modal-close').addEventListener('click', closeModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
-  const steps = $$('.quiz-step');
+  const allSteps = $$('.quiz-step');
   const answers = {};
   let current = 0;
+  let path = [];
+  const branchFromPurpose = value => value === 'Личные поездки' ? 'personal' : value === 'Хочу выкупить авто' ? 'buyout' : 'taxi';
+  const buildPath = () => {
+    const branch = branchFromPurpose(answers.purpose);
+    path = [
+      $('[data-question="purpose"]'),
+      ...$$(`[data-branch="${branch}"]`),
+      $('[data-question="qualifies"]'),
+      $('[data-question="contact"]')
+    ];
+  };
   const renderStep = () => {
-    steps.forEach((s, i) => s.classList.toggle('active', i === current));
-    const pct = (current + 1) * 20;
+    if (!path.length) buildPath();
+    allSteps.forEach(s => s.classList.remove('active'));
+    path[current].classList.add('active');
+    const pct = Math.round(((current + 1) / path.length) * 100);
     $('#quiz-progress').style.width = `${pct}%`; $('#quiz-percent').textContent = `${pct}%`;
-    $('#quiz-step-label').textContent = current < 4 ? `Вопрос ${current + 1} из 4` : 'Контактные данные';
+    $('#quiz-step-label').textContent = current < path.length - 1 ? `Вопрос ${current + 1} из ${path.length - 1}` : 'Контактные данные';
     $('#quiz-back').disabled = current === 0;
   };
-  steps.slice(0, 4).forEach((step, idx) => $$('.answer', step).forEach(btn => btn.addEventListener('click', () => {
+  allSteps.filter(step => step.dataset.question !== 'contact').forEach(step => $$('.answer', step).forEach(btn => btn.addEventListener('click', () => {
     $$('.answer', step).forEach(x => x.classList.remove('selected')); btn.classList.add('selected');
     answers[step.dataset.question] = btn.dataset.value;
-    setTimeout(() => { current = Math.min(4, idx + 1); renderStep(); }, 170);
+    if (step.dataset.question === 'purpose') {
+      Object.keys(answers).filter(k => k !== 'purpose').forEach(k => delete answers[k]);
+      buildPath();
+    }
+    setTimeout(() => { current = Math.min(path.length - 1, current + 1); renderStep(); }, 170);
   })));
   $('#quiz-back').addEventListener('click', () => { if (current > 0) { current--; renderStep(); } });
+  const telegramField = $('.telegram-field');
+  const telegram = $('#telegram-username');
   $$('.channels button').forEach(btn => btn.addEventListener('click', () => {
-    $$('.channels button').forEach(x => x.classList.remove('selected')); btn.classList.add('selected'); answers.channel = btn.dataset.channel; validateContact();
+    $$('.channels button').forEach(x => x.classList.remove('selected')); btn.classList.add('selected'); answers.channel = btn.dataset.channel;
+    telegramField.hidden = answers.channel !== 'Telegram';
+    if (telegramField.hidden) { telegram.value = ''; $('#telegram-error').textContent = ''; telegram.classList.remove('error'); }
+    validateContact();
   }));
   const phone = $('#lead-phone'); const consent = $('#consent'); const submit = $('.quiz-submit');
   const phoneDigits = () => phone.value.replace(/\D/g, '').replace(/^8/, '7');
-  const validateContact = () => { submit.disabled = !(phoneDigits().length === 11 && answers.channel && consent.checked); };
+  const telegramValid = () => answers.channel !== 'Telegram' || /^@[A-Za-z0-9_]{5,32}$/.test(telegram.value.trim());
+  const validateContact = () => { submit.disabled = !(phoneDigits().length === 11 && answers.channel && telegramValid() && consent.checked); };
   phone.addEventListener('input', e => {
     let d = e.target.value.replace(/\D/g, '').replace(/^8/, '7').slice(0, 11); if (!d.startsWith('7')) d = `7${d}`;
     const p = d.slice(1); let v = '+7'; if (p.length) v += ` (${p.slice(0,3)}`; if (p.length >= 3) v += ') '; if (p.length > 3) v += p.slice(3,6); if (p.length > 6) v += `-${p.slice(6,8)}`; if (p.length > 8) v += `-${p.slice(8,10)}`;
     e.target.value = v; e.target.classList.remove('error'); $('#phone-error').textContent = ''; validateContact();
   });
+  telegram.addEventListener('input', () => { telegram.classList.remove('error'); $('#telegram-error').textContent = ''; validateContact(); });
   consent.addEventListener('change', validateContact);
   $('#lead-quiz').addEventListener('submit', e => {
     e.preventDefault();
     if (phoneDigits().length !== 11) { phone.classList.add('error'); $('#phone-error').textContent = 'Введите номер полностью'; return; }
-    steps[current].classList.remove('active'); $('.quiz-thanks').hidden = false; $('.quiz-bottom').style.display = 'none';
-  });
-  $('.quiz-restart').addEventListener('click', () => {
-    current = 0; Object.keys(answers).forEach(k => delete answers[k]); phone.value = ''; $$('.selected').forEach(x => x.classList.remove('selected')); $('.quiz-thanks').hidden = true; $('.quiz-bottom').style.display = ''; renderStep();
+    if (!telegramValid()) { telegram.classList.add('error'); $('#telegram-error').textContent = 'Укажите никнейм в формате @username'; return; }
+    const payload = { ...answers, phone: phone.value, telegram: telegram.value || '', utm: Object.fromEntries(params.entries()) };
+    sessionStorage.setItem('autocar71_lead', JSON.stringify(payload));
+    location.href = 'thanks.html';
   });
 
   const openQuiz = () => { if (modal.open) closeModal(); $('#quiz').scrollIntoView({ behavior: 'smooth' }); };
