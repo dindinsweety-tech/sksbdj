@@ -1,4 +1,5 @@
 (() => {
+  // Stage-one presentation build; production lead delivery is connected during Tilda transfer.
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
