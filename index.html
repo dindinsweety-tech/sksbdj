@@ -8,7 +8,7 @@
   <title>Автокар71 — авто под заказ с авансом 20% и выкуп из наличия</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231a1a1a'/%3E%3Cpath d='M9 41h46l-5-15-9-7H23l-9 7z' fill='%23ffc800'/%3E%3Ccircle cx='20' cy='43' r='6' fill='%23fff' stroke='%231a1a1a' stroke-width='4'/%3E%3Ccircle cx='45' cy='43' r='6' fill='%23fff' stroke='%231a1a1a' stroke-width='4'/%3E%3C/svg%3E">
   <link rel="preload" href="assets/hero-park.webp" as="image" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="styles.css?v=20260921"><link rel="stylesheet" href="refinement.css?v=20260921-faces">
+  <link rel="stylesheet" href="styles.css?v=20260921"><link rel="stylesheet" href="refinement.css?v=20260921-calculator">
 </head>
 <body>
   <a class="skip-link" href="#main">Перейти к содержанию</a>
@@ -22,6 +22,7 @@
       <span class="mobile-header-label">Аренда · выкуп</span>
       <p class="header-descriptor">Аренда и выкуп авто<br>в пяти областях</p>
       <nav class="desktop-nav" aria-label="Основная навигация">
+        <a href="#calculator">Калькулятор</a>
         <a href="#fleet">Автомобили</a>
         <a href="#terms">Условия</a>
         <a href="#stories">Отзывы</a>
@@ -36,7 +37,7 @@
       </button>
     </div>
     <div class="mobile-menu" id="mobile-menu" hidden>
-      <a href="#fleet">Автомобили</a><a href="#terms">Условия</a><a href="#stories">Отзывы</a><a href="#contacts">Контакты</a>
+      <a href="#calculator">Калькулятор</a><a href="#fleet">Автомобили</a><a href="#terms">Условия</a><a href="#stories">Отзывы</a><a href="#contacts">Контакты</a>
       <a class="mobile-menu-phone" href="tel:+79539708877">+7 953 970-88-77</a>
     </div>
   </header>
@@ -83,6 +84,39 @@
 <div class="section-head"><div><p class="section-kicker">Ваш выбор. Понятные условия.</p><h2 id="order-title">Автомобиль, который<br><em>нужен именно вам</em></h2></div><p>Для работы, бизнеса и семейных поездок. Рассмотрим выбранный вами автомобиль с пробегом и подготовим индивидуальные условия выкупа.</p></div>
 <div class="order-grid"><article><span>01 / ВЫБОР</span><h3>Пришлите объявление</h3><p>Выберите автомобиль на Авито или Auto.ru. Если ещё не определились — обсудим задачи и бюджет.</p></article><article><span>02 / УСЛОВИЯ</span><h3>Изучите договор</h3><p>До внесения аванса уточните полную стоимость, график платежей, обслуживание и условия досрочного выкупа.</p></article><article><span>03 / ВЫКУП</span><h3>Начните с аванса 20%</h3><p>После согласования автомобиля и договора компания покупает его для вас. Платежи и переход права собственности — по договору.</p></article></div>
 <div class="order-trust"><p><strong>Банк отказал? Обсудим вашу ситуацию.</strong><br>Не требуем справку 2-НДФЛ. Решение принимается индивидуально после проверки документов и выбранного автомобиля.</p><button class="button js-open-quiz" data-purpose="Авто под заказ" type="button">Обсудить мой автомобиль</button></div></div></section>
+    <section class="section calculator-section" id="calculator" aria-labelledby="calculator-title">
+      <div class="shell calculator-shell">
+        <div class="calculator-heading reveal">
+          <p class="section-kicker">Предварительный расчёт</p>
+          <h2 id="calculator-title">Оцените платеж<br><em>за одну минуту</em></h2>
+          <p>Укажите стоимость выбранного автомобиля, размер аванса и желаемый срок. Расчёт обновится сразу.</p>
+          <div class="calculator-note"><strong>Как считается</strong><span>Стоимость после аванса распределяется на выбранный срок. Итоговые условия зависят от автомобиля и договора.</span></div>
+        </div>
+        <div class="calculator-card reveal delay-1" data-calculator>
+          <div class="calculator-field">
+            <div class="calculator-label"><label for="calc-price">Стоимость автомобиля</label><output id="calc-price-output" for="calc-price">1 900 000 ₽</output></div>
+            <input id="calc-price" type="range" min="500000" max="3500000" step="50000" value="1900000" aria-describedby="calc-price-range">
+            <div class="calculator-range" id="calc-price-range"><span>500 000 ₽</span><span>3 500 000 ₽</span></div>
+          </div>
+          <div class="calculator-field">
+            <div class="calculator-label"><label for="calc-advance">Первоначальный аванс</label><output id="calc-advance-output" for="calc-advance">20% · 380 000 ₽</output></div>
+            <input id="calc-advance" type="range" min="20" max="50" step="5" value="20">
+            <div class="calculator-range"><span>20%</span><span>50%</span></div>
+          </div>
+          <div class="calculator-field">
+            <div class="calculator-label"><label for="calc-term">Срок выкупа</label><output id="calc-term-output" for="calc-term">24 месяца</output></div>
+            <input id="calc-term" type="range" min="12" max="36" step="6" value="24">
+            <div class="calculator-range"><span>12 месяцев</span><span>36 месяцев</span></div>
+          </div>
+          <div class="calculator-result" aria-live="polite">
+            <div class="calculator-main-result"><span>Ориентир в неделю</span><strong id="calc-weekly">14 615 ₽</strong><small>при графике 7 / 0</small></div>
+            <div class="calculator-details"><div><span>В месяц</span><strong id="calc-monthly">63 333 ₽</strong></div><div><span>После аванса</span><strong id="calc-balance">1 520 000 ₽</strong></div></div>
+          </div>
+          <button class="button button-large js-open-quiz calculator-cta" data-purpose="Авто под заказ" type="button">Получить точный расчёт <span aria-hidden="true">↗</span></button>
+          <p class="calculator-disclaimer">Предварительный ориентир, не публичная оферта. Комиссии, обслуживание, страхование и другие условия здесь не учитываются — точный график подготовит менеджер после проверки автомобиля.</p>
+        </div>
+      </div>
+    </section>
     <section class="section fleet" id="fleet" aria-labelledby="fleet-title">
       <div class="shell">
         <div class="section-head reveal">
@@ -186,6 +220,9 @@
           <div class="quiz-top"><span id="quiz-step-label">Вопрос 1 из 4</span><span id="quiz-percent">20%</span></div>
           <div class="progress"><i id="quiz-progress"></i></div>
           <form id="lead-quiz" novalidate>
+            <input type="hidden" name="calc_price" id="lead-calc-price">
+            <input type="hidden" name="calc_advance" id="lead-calc-advance">
+            <input type="hidden" name="calc_term" id="lead-calc-term">
             <fieldset class="quiz-step active" data-question="purpose">
               <legend>Для каких целей нужен автомобиль?</legend>
               <button type="button" class="answer" data-value="Авто под заказ"><span>01</span>Авто под заказ — аванс 20%<i>→</i></button>
@@ -300,6 +337,6 @@
   </dialog>
 
   <section class="cookie-panel" aria-label="Настройки cookies" hidden><div><strong>Ваши настройки приватности</strong><p>Сохраняем ваш выбор в браузере. Карту и отзывы Яндекса включаем только с вашего разрешения. Аналитика в демо отключена. <a href="privacy.html#cookies">Подробнее</a></p></div><div class="cookie-actions"><button type="button" class="button" id="cookies-allow">Разрешить сервисы Яндекса</button><button type="button" class="cookie-decline" id="cookies-decline">Только необходимые</button></div></section>
-<script src="app.js?v=20260921" defer></script><script src="privacy-controls.js?v=20260921" defer></script>
+  <script src="app.js?v=20260921-calculator" defer></script><script src="privacy-controls.js?v=20260921" defer></script>
 </body>
 </html>

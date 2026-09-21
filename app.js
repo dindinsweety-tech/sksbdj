@@ -135,5 +135,38 @@
   };
   $$('.js-open-quiz').forEach(btn => btn.addEventListener('click', openQuiz));
   $('.modal-quiz').addEventListener('click', openQuiz);
+
+  const calculator = $('[data-calculator]');
+  if (calculator) {
+    const price = $('#calc-price');
+    const advance = $('#calc-advance');
+    const term = $('#calc-term');
+    const money = value => `${Math.round(value).toLocaleString('ru-RU')} ₽`;
+    const monthWord = value => value % 10 === 1 && value % 100 !== 11 ? 'месяц' : value % 10 >= 2 && value % 10 <= 4 && (value % 100 < 10 || value % 100 >= 20) ? 'месяца' : 'месяцев';
+    const paintRange = input => {
+      const progress = ((input.value - input.min) / (input.max - input.min)) * 100;
+      input.style.setProperty('--range-progress', `${progress}%`);
+    };
+    const updateCalculator = () => {
+      const carPrice = Number(price.value);
+      const advancePercent = Number(advance.value);
+      const months = Number(term.value);
+      const advanceAmount = carPrice * advancePercent / 100;
+      const balance = carPrice - advanceAmount;
+      const weeks = months * 52 / 12;
+      $('#calc-price-output').textContent = money(carPrice);
+      $('#calc-advance-output').textContent = `${advancePercent}% · ${money(advanceAmount)}`;
+      $('#calc-term-output').textContent = `${months} ${monthWord(months)}`;
+      $('#calc-weekly').textContent = money(balance / weeks);
+      $('#calc-monthly').textContent = money(balance / months);
+      $('#calc-balance').textContent = money(balance);
+      $('#lead-calc-price').value = String(carPrice);
+      $('#lead-calc-advance').value = String(advancePercent);
+      $('#lead-calc-term').value = String(months);
+      [price, advance, term].forEach(paintRange);
+    };
+    [price, advance, term].forEach(input => input.addEventListener('input', updateCalculator));
+    updateCalculator();
+  }
   renderStep();
 })();
