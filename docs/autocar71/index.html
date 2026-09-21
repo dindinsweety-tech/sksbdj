@@ -1,22 +1,311 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<title>Автокар71 — страница переехала</title>
-<meta name="robots" content="noindex, nofollow">
-<link rel="canonical" href="https://autocar71.pages.dev/">
-<meta http-equiv="refresh" content="0; url=https://autocar71.pages.dev/">
-<style>
-  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-       background:#111;color:#fff;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center}
-  a{color:#ffc400}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1a1a1a">
+  <title>Автокар71 — аренда и выкуп автомобилей в Новомосковске от 1800 ₽/сутки</title>
+  <meta name="description" content="Аренда автомобилей под такси и личные цели с правом выкупа в Тульской, Рязанской, Калужской и Орловской областях. Одобрение за 30 минут по двум документам, график 7/0, собственное СТО.">
+  <link rel="canonical" href="https://autocar71.ru/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Автокар71">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Автокар71 — аренда и выкуп автомобилей от 1800 ₽/сутки">
+  <meta property="og:description" content="Авто под такси и личные цели с правом выкупа. Одобрение за 30 минут по двум документам. Новомосковск, работаем по четырём областям.">
+  <meta property="og:image" content="assets/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231a1a1a'/%3E%3Cpath d='M9 41h46l-5-15-9-7H23l-9 7z' fill='%23ffc800'/%3E%3Ccircle cx='20' cy='43' r='6' fill='%23fff' stroke='%231a1a1a' stroke-width='4'/%3E%3Ccircle cx='45' cy='43' r='6' fill='%23fff' stroke='%231a1a1a' stroke-width='4'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="assets/logo-180.png">
+  <link rel="preload" href="assets/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="assets/hero-park-sm.webp" imagesrcset="assets/hero-park-sm.webp 760w, assets/hero-park.webp 900w" imagesizes="(max-width:720px) 92vw, 42vw" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    /* Мультилендинг: подмена H1 до первой отрисовки (без мигания дефолтного текста) */
+    window.__AC71_H1 = (function () {
+      try {
+        var p = new URLSearchParams(location.search);
+        var m = ((p.get('utm_campaign') || '') + ' ' + (p.get('utm_term') || '') + ' ' + (p.get('utm_content') || '')).toLowerCase();
+        if (m.indexOf('arenda') > -1) return 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и 1800 ₽/сутки';
+        if (m.indexOf('vikup') > -1 || m.indexOf('vykup') > -1) return 'Автомобили под выкуп <mark>от 1800 ₽/сутки.</mark> Одобрение с любой КИ';
+      } catch (e) {}
+      return null;
+    })();
+  </script>
 </head>
 <body>
-<div>
-  <p>Страница переехала на новый адрес.</p>
-  <p><a href="https://autocar71.pages.dev/">autocar71.pages.dev</a></p>
-</div>
-<script>location.replace("https://autocar71.pages.dev/" + location.hash);</script>
+  <a class="skip-link" href="#main">Перейти к содержанию</a>
+
+  <header class="site-header" id="top">
+    <div class="shell header-inner">
+      <a class="brand" href="#top" aria-label="Автокар71 — на главную">
+        <img src="assets/logo.webp" width="49" height="49" alt="Логотип Автокар71">
+        <span>Автокар<span>71</span></span>
+      </a>
+      <p class="header-descriptor">Аренда и выкуп авто<br>в четырёх областях</p>
+      <nav class="desktop-nav" aria-label="Основная навигация">
+        <a href="#fleet">Автомобили</a>
+        <a href="#terms">Условия</a>
+        <a href="#stories">Отзывы</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+      <div class="header-actions">
+        <a class="phone-link js-phone" href="tel:+79539708877" aria-label="Телефон и MAX: плюс семь 953 970-88-77"><span class="online-dot" aria-hidden="true"></span>+7 953 970-88-77</a>
+        <button class="button button-small js-open-quiz" type="button">Заказать звонок</button>
+      </div>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Открыть меню">
+        <span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu" hidden>
+      <a href="#fleet">Автомобили</a><a href="#terms">Условия</a><a href="#stories">Отзывы</a><a href="#contacts">Контакты</a>
+      <a class="mobile-menu-phone js-phone" href="tel:+79539708877">+7 953 970-88-77</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="road-line" aria-hidden="true"></div>
+      <div class="shell hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow"><span></span> Новомосковск · работаем по 4 областям</div>
+          <h1 id="hero-title">Автомобили под такси и личные цели <mark>с правом выкупа</mark> от 1800 ₽/сутки</h1>
+          <script>if(window.__AC71_H1){document.getElementById('hero-title').innerHTML=window.__AC71_H1}</script>
+          <p class="hero-subtitle">Одобрение за 30 минут по двум документам. Только для граждан РФ.</p>
+          <div class="hero-actions">
+            <a class="button button-large" href="#fleet">Подобрать автомобиль <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="#terms">Смотреть условия <span aria-hidden="true">↓</span></a>
+          </div>
+          <div class="hero-proof" aria-label="Основные преимущества">
+            <div><strong>30 мин</strong><span>на решение</span></div>
+            <div><strong>2 документа</strong><span>без справок о доходах</span></div>
+            <div><strong>7 / 0</strong><span>график платежей</span></div>
+          </div>
+        </div>
+        <div class="hero-visual reveal delay-1">
+          <div class="hero-photo-wrap">
+            <img src="assets/hero-park.webp" srcset="assets/hero-park-sm.webp 760w, assets/hero-park.webp 900w" sizes="(max-width:720px) 92vw, 42vw" width="900" height="1125" alt="Автомобиль из парка Автокар71 в Новомосковске" fetchpriority="high" decoding="async">
+            <div class="hero-photo-shade"></div>
+            <div class="price-stamp"><span>от</span><strong>1800</strong><span>₽ / сутки</span></div>
+            <div class="availability"><span></span> Есть авто в наличии</div>
+          </div>
+          <p class="photo-caption">Реальный автомобиль из парка · Новомосковск</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ticker" aria-label="География работы">
+      <div class="ticker-track">
+        <span>Тульская область</span><i></i><span>Рязанская область</span><i></i><span>Калужская область</span><i></i><span>Орловская область</span><i></i>
+        <span aria-hidden="true">Тульская область</span><i aria-hidden="true"></i><span aria-hidden="true">Рязанская область</span><i aria-hidden="true"></i>
+      </div>
+    </section>
+
+    <section class="section fleet" id="fleet" aria-labelledby="fleet-title">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><p class="section-kicker">Автопарк</p><h2 id="fleet-title">Выберите автомобиль<br> <em>под свою задачу</em></h2></div>
+          <p>Реальные автомобили парка и актуальные цены. Нажмите на карточку, чтобы увидеть условия и депозит.</p>
+        </div>
+        <div class="fleet-toolbar reveal delay-1">
+          <div class="tabs" role="tablist" aria-label="Классы автомобилей">
+            <button role="tab" aria-selected="true" data-filter="all">Все авто <b>5</b></button>
+            <button role="tab" aria-selected="false" data-filter="economy">Эконом <b>3</b></button>
+            <button role="tab" aria-selected="false" data-filter="comfort">Комфорт <b>2</b></button>
+            <button role="tab" aria-selected="false" data-filter="order">Под заказ <b>1</b></button>
+          </div>
+          <div class="fleet-nav" aria-hidden="true"><button class="cars-prev" type="button" aria-label="Предыдущие">←</button><button class="cars-next" type="button" aria-label="Следующие">→</button></div>
+        </div>
+        <div class="cars" id="cars-list">
+
+          <article class="car-card reveal" data-class="economy" data-name="Lada Granta 2024" data-image="assets/granta-2024.webp" data-specs="2024 год|1.6 л|МКПП|бензин + газ (ГБО)" data-deposit="25 000 ₽" data-deposit-note="для авто из наличия" data-price="от 2 000 ₽" tabindex="0" role="button" aria-label="Подробнее: Lada Granta 2024">
+            <div class="car-media"><img loading="lazy" decoding="async" src="assets/granta-2024.webp" srcset="assets/granta-2024-sm.webp 760w, assets/granta-2024.webp 1080w" sizes="(max-width:720px) 88vw, 46vw" width="1080" height="720" alt="Lada Granta 2024 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">01</span></div>
+            <div class="car-body"><div class="car-title-row"><div><p class="car-class">Эконом</p><h3>Lada Granta 2024</h3></div><span class="round-arrow" aria-hidden="true">↗</span></div><ul><li>2024 год</li><li>1.6 л</li><li>МКПП</li><li>бензин + газ</li></ul><div class="car-price"><strong>от 2 000 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
+          </article>
+
+          <article class="car-card reveal delay-1" data-class="economy" data-name="Kia Rio 2021" data-image="assets/kia-rio-2021.webp" data-specs="2021 год|1.6 л|МКПП|бензин" data-deposit="25 000 ₽" data-deposit-note="для авто из наличия" data-price="от 2 300 ₽" tabindex="0" role="button" aria-label="Подробнее: Kia Rio 2021">
+            <div class="car-media"><img loading="lazy" decoding="async" src="assets/kia-rio-2021.webp" srcset="assets/kia-rio-2021-sm.webp 760w, assets/kia-rio-2021.webp 1080w" sizes="(max-width:720px) 88vw, 46vw" width="1080" height="720" alt="Kia Rio 2021 в таксомоторной окраске из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">02</span></div>
+            <div class="car-body"><div class="car-title-row"><div><p class="car-class">Эконом</p><h3>Kia Rio 2021</h3></div><span class="round-arrow" aria-hidden="true">↗</span></div><ul><li>2021 год</li><li>1.6 л</li><li>МКПП</li><li>бензин</li></ul><div class="car-price"><strong>от 2 300 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
+          </article>
+
+          <article class="car-card reveal" data-class="economy" data-name="Kia Rio 2013" data-image="assets/kia-rio-2013.webp" data-specs="2013 год|1.6 л|МКПП|бензин" data-deposit="25 000 ₽" data-deposit-note="для авто из наличия" data-price="от 2 050 ₽" tabindex="0" role="button" aria-label="Подробнее: Kia Rio 2013">
+            <div class="car-media"><img loading="lazy" decoding="async" src="assets/kia-rio-2013.webp" srcset="assets/kia-rio-2013-sm.webp 760w, assets/kia-rio-2013.webp 1080w" sizes="(max-width:720px) 88vw, 46vw" width="1080" height="720" alt="Kia Rio 2013 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">03</span></div>
+            <div class="car-body"><div class="car-title-row"><div><p class="car-class">Эконом</p><h3>Kia Rio 2013</h3></div><span class="round-arrow" aria-hidden="true">↗</span></div><ul><li>2013 год</li><li>1.6 л</li><li>МКПП</li><li>бензин</li></ul><div class="car-price"><strong>от 2 050 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
+          </article>
+
+          <article class="car-card reveal delay-1" data-class="comfort" data-name="Hyundai Solaris 2020" data-image="assets/solaris-2020.webp" data-specs="2020 год|1.6 л|АКПП|газ (ГБО)" data-deposit="25 000 ₽" data-deposit-note="для авто из наличия" data-price="от 2 500 ₽" tabindex="0" role="button" aria-label="Подробнее: Hyundai Solaris 2020">
+            <div class="car-media"><img loading="lazy" decoding="async" src="assets/solaris-2020.webp" srcset="assets/solaris-2020-sm.webp 760w, assets/solaris-2020.webp 1080w" sizes="(max-width:720px) 88vw, 46vw" width="1080" height="720" alt="Hyundai Solaris 2020 с ГБО из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">04</span></div>
+            <div class="car-body"><div class="car-title-row"><div><p class="car-class">Комфорт</p><h3>Hyundai Solaris 2020</h3></div><span class="round-arrow" aria-hidden="true">↗</span></div><ul><li>2020 год</li><li>1.6 л</li><li>АКПП</li><li>ГБО</li></ul><div class="car-price"><strong>от 2 500 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
+          </article>
+
+          <article class="car-card reveal" data-class="comfort" data-name="Hyundai Solaris HC 2024" data-image="assets/solaris-hc-2024.webp" data-specs="2024 год|1.6 л|МКПП|бензин" data-deposit="100 000 ₽" data-deposit-note="для нового авто под заказ" data-price="от 3 600 ₽" tabindex="0" role="button" aria-label="Подробнее: Hyundai Solaris HC 2024">
+            <div class="car-media"><img loading="lazy" decoding="async" src="assets/solaris-hc-2024.webp" srcset="assets/solaris-hc-2024-sm.webp 760w, assets/solaris-hc-2024.webp 1080w" sizes="(max-width:720px) 88vw, 46vw" width="1080" height="720" alt="Hyundai Solaris HC 2024 под заказ в Автокар71"><span class="car-status order">Под заказ</span><span class="car-index">05</span></div>
+            <div class="car-body"><div class="car-title-row"><div><p class="car-class">Комфорт</p><h3>Hyundai Solaris HC 2024</h3></div><span class="round-arrow" aria-hidden="true">↗</span></div><ul><li>2024 год</li><li>1.6 л</li><li>МКПП</li><li>бензин</li></ul><div class="car-price"><strong>от 3 600 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
+          </article>
+
+        </div>
+        <p class="fleet-empty" id="fleet-empty" hidden>В этом классе сейчас нет свободных автомобилей — оставьте заявку, подберём под вас.</p>
+        <div class="fleet-note reveal"><p><strong>Не нашли подходящую?</strong> Купим автомобиль специально под вас с первоначальным взносом от 20%.</p><button class="button js-open-quiz" type="button">Рассчитать вариант</button></div>
+      </div>
+    </section>
+
+    <section class="section terms" id="terms" aria-labelledby="terms-title">
+      <div class="shell">
+        <div class="section-head light reveal"><div><p class="section-kicker">Условия выдачи</p><h2 id="terms-title">Три требования.<br> <em>Никаких сюрпризов.</em></h2></div><p>Проверяем только базовые условия. Кредитная история на решение не влияет.</p></div>
+        <div class="requirements">
+          <article class="requirement reveal"><span>01</span><svg aria-hidden="true" viewBox="0 0 48 48"><path d="M15 13h18v25H15zM19 8h10v5H19zM19 20h10M19 26h10M19 32h7"/></svg><h3>Гражданство РФ</h3><p>Паспорт гражданина Российской Федерации</p></article>
+          <article class="requirement reveal delay-1"><span>02</span><svg aria-hidden="true" viewBox="0 0 48 48"><circle cx="24" cy="18" r="8"/><path d="M10 40c1-9 6-14 14-14s13 5 14 14M35 12l6-4v9"/></svg><h3>Возраст от 23 лет</h3><p>На дату подписания договора аренды</p></article>
+          <article class="requirement reveal delay-2"><span>03</span><svg aria-hidden="true" viewBox="0 0 48 48"><path d="M9 35h30l-3-12-7-5H19l-7 5zM15 35v5M33 35v5"/><circle cx="16" cy="34" r="4"/><circle cx="32" cy="34" r="4"/></svg><h3>Стаж от 3 лет</h3><p>Действующее водительское удостоверение</p></article>
+        </div>
+        <div class="payment-panel reveal">
+          <div class="payment-copy"><p class="section-kicker">График платежей</p><h3>Работаете 7 дней — платите за 7. Без скрытых выходных в договоре.</h3><p>Депозит на автомобиль из наличия — 25 000 ₽. Для нового автомобиля под заказ — 100 000 ₽.</p></div>
+          <div class="week" aria-label="Платёжный график семь дней из семи"><div><span>Пн</span><b>✓</b></div><div><span>Вт</span><b>✓</b></div><div><span>Ср</span><b>✓</b></div><div><span>Чт</span><b>✓</b></div><div><span>Пт</span><b>✓</b></div><div><span>Сб</span><b>✓</b></div><div><span>Вс</span><b>✓</b></div><small>7 / 0</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section benefits" aria-labelledby="benefits-title">
+      <div class="shell">
+        <div class="section-head reveal"><div><p class="section-kicker">Всё включено</p><h2 id="benefits-title">Машина должна<br> <em>работать на вас</em></h2></div><p>Берём на себя обслуживание и документы, чтобы вы не теряли время и доход.</p></div>
+        <div class="benefit-grid">
+          <article class="benefit-card benefit-large reveal"><div class="benefit-icon">01</div><h3>Собственное СТО</h3><p>Техническое обслуживание и плановый ремонт — за счёт компании.</p><span>Без очередей в сторонних сервисах</span></article>
+          <article class="benefit-card reveal delay-1"><div class="benefit-icon">02</div><h3>Путевые листы</h3><p>Поможем с оформлением документов для работы в такси.</p></article>
+          <article class="benefit-card dark reveal"><div class="benefit-icon">03</div><h3>Честный договор</h3><p>Фиксируем платежи и полную стоимость. Никаких скрытых комиссий.</p></article>
+          <article class="benefit-card yellow reveal delay-1"><div class="benefit-icon">04</div><h3>Гаражное хранение</h3><p>Автомобили проходят подготовку и хранятся на собственной базе.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section quiz-section" id="quiz" aria-labelledby="quiz-title">
+      <div class="shell quiz-shell">
+        <div class="quiz-intro reveal">
+          <p class="section-kicker">Персональный подбор</p>
+          <h2 id="quiz-title">Узнайте, какие автомобили <em>свободны сегодня</em></h2>
+          <p>Ответьте на 4 вопроса — менеджер подготовит варианты и расчёт платежа.</p>
+          <div class="quiz-benefit"><strong>≈ 1 минута</strong><span>Без справок и визита в офис</span></div>
+        </div>
+        <div class="quiz-card reveal delay-1" data-step="0">
+          <div class="quiz-top"><span id="quiz-step-label">Вопрос 1 из 4</span><span id="quiz-percent">20%</span></div>
+          <div class="progress"><i id="quiz-progress"></i></div>
+          <form id="lead-quiz" novalidate>
+            <input type="hidden" name="utm_source"><input type="hidden" name="utm_medium"><input type="hidden" name="utm_campaign">
+            <input type="hidden" name="utm_term"><input type="hidden" name="utm_content"><input type="hidden" name="yclid">
+            <input type="hidden" name="referrer"><input type="hidden" name="landing_url">
+            <fieldset class="quiz-step active" data-question="purpose">
+              <legend>Для каких целей нужен автомобиль?</legend>
+              <button type="button" class="answer" data-value="Работа в такси"><span>01</span>Работа в такси<i aria-hidden="true">→</i></button>
+              <button type="button" class="answer" data-value="Личные поездки"><span>02</span>Личные поездки<i aria-hidden="true">→</i></button>
+              <button type="button" class="answer" data-value="Хочу выкупить авто"><span>03</span>Хочу выкупить авто<i aria-hidden="true">→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step" data-question="class">
+              <legend>Какой класс авто рассматриваете?</legend>
+              <button type="button" class="answer" data-value="Эконом из наличия от 1800 ₽/сутки"><span>01</span>Эконом из наличия от 1800 ₽/сутки<i aria-hidden="true">→</i></button>
+              <button type="button" class="answer" data-value="Комфорт из наличия"><span>02</span>Комфорт из наличия<i aria-hidden="true">→</i></button>
+              <button type="button" class="answer" data-value="Под заказ с авансом 20%"><span>03</span>Под заказ с авансом 20%<i aria-hidden="true">→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step" data-question="fuel_gearbox">
+              <legend>Предпочтения по топливу и КПП?</legend>
+              <button type="button" class="answer" data-value="Только газ (ГБО)"><span>01</span>Только газ (ГБО)<i aria-hidden="true">→</i></button>
+              <button type="button" class="answer" data-value="Бензин, МКПП"><span>02</span>Бензин, МКПП<i aria-hidden="true">→</i></button>
+              <button type="button" class="answer" data-value="АКПП"><span>03</span>АКПП<i aria-hidden="true">→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step" data-question="qualifies">
+              <legend>Подходите ли вы под наши требования?</legend>
+              <button type="button" class="answer" data-value="Да, РФ, от 23 лет, стаж от 3-х лет" data-qualifies="1"><span>01</span>Да: РФ, от 23 лет, стаж от 3 лет<i aria-hidden="true">→</i></button>
+              <button type="button" class="answer" data-value="Нет, по какому-то пункту не прохожу" data-qualifies="0"><span>02</span>Нет, по какому-то пункту не прохожу<i aria-hidden="true">→</i></button>
+            </fieldset>
+            <fieldset class="quiz-step contact-step" data-question="contact">
+              <legend>Куда отправить варианты?</legend>
+              <div class="channels" role="group" aria-label="Предпочтительный канал связи"><button type="button" data-channel="MAX">MAX</button><button type="button" data-channel="Telegram">Telegram</button><button type="button" data-channel="WhatsApp">WhatsApp</button><button type="button" data-channel="Звонок">Жду звонка</button></div>
+              <label for="lead-phone">Ваш номер телефона</label>
+              <input id="lead-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" aria-describedby="phone-error">
+              <p class="field-error" id="phone-error" role="alert"></p>
+              <label class="consent"><input type="checkbox" id="consent" checked><span>Согласен на <a href="privacy.html" target="_blank" rel="noopener">обработку персональных данных</a></span></label>
+              <button class="button quiz-submit" type="submit" disabled>Получить предложение <span aria-hidden="true">→</span></button>
+            </fieldset>
+            <div class="quiz-thanks" hidden>
+              <div class="thanks-mark" aria-hidden="true">✓</div>
+              <h3>Заявка сформирована</h3>
+              <p id="thanks-text">Менеджер свяжется в выбранном мессенджере в течение 15 минут в рабочее время.</p>
+              <details class="lead-debug"><summary>Показать технический пакет заявки</summary><pre id="lead-json"></pre><p class="lead-debug-note">Так выглядит JSON, который уходит на <code>POST /lead</code> и дальше в корпоративный MAX. В демо-версии отправка отключена.</p></details>
+              <button type="button" class="text-link quiz-restart">Пройти ещё раз</button>
+            </div>
+          </form>
+          <div class="quiz-bottom"><button type="button" id="quiz-back" disabled>← Назад</button><span>Данные защищены</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section stories" id="stories" aria-labelledby="stories-title">
+      <div class="shell">
+        <div class="section-head reveal"><div><p class="section-kicker">Реальные выдачи</p><h2 id="stories-title">Люди уезжают<br> <em>на своих условиях</em></h2></div><div class="rating"><strong>4,9</strong><span>★★★★★<small>на Яндекс Картах</small></span></div></div>
+        <div class="story-grid">
+          <article class="story-card reveal"><img loading="lazy" decoding="async" src="assets/handover-1.webp" width="960" height="720" alt="Выдача автомобиля клиентам Автокар71"><div><span>Выдача автомобиля</span><strong>Авто из наличия</strong><a href="https://yandex.ru/maps/org/avtokar71/7720672617/gallery/" target="_blank" rel="noopener">Смотреть галерею ↗</a></div></article>
+          <article class="story-card reveal delay-1"><img loading="lazy" decoding="async" src="assets/handover-2.webp" width="960" height="720" alt="Клиент с автомобилем Автокар71"><div><span>Реальный клиент</span><strong>Оформление по 2 документам</strong><a href="https://yandex.ru/maps/org/avtokar71/7720672617/gallery/" target="_blank" rel="noopener">Смотреть галерею ↗</a></div></article>
+          <article class="story-card reveal delay-2"><img loading="lazy" decoding="async" src="assets/handover-3.webp" width="960" height="720" alt="Автомобиль после выдачи в Автокар71"><div><span>Автомобиль выдан</span><strong>Парк в Новомосковске</strong><a href="https://yandex.ru/maps/org/avtokar71/7720672617/gallery/" target="_blank" rel="noopener">Смотреть галерею ↗</a></div></article>
+        </div>
+        <div class="review-strip reveal"><div class="review-mark" aria-hidden="true">“</div><blockquote>Все менеджеры 24/7 на связи, доброжелательные, вежливые. Прозрачные условия по оплате. Никаких подводных камней с договором.</blockquote><div><strong>Анастасия Орлова</strong><a href="https://yandex.ru/maps/org/avtokar71/7720672617/reviews/" target="_blank" rel="noopener">Все отзывы на Яндекс Картах ↗</a></div></div>
+      </div>
+    </section>
+
+    <section class="section map-section" id="office" aria-labelledby="map-title">
+      <div class="shell">
+        <div class="section-head reveal"><div><p class="section-kicker">Где забрать авто</p><h2 id="map-title">Парк и офис<br> <em>в Новомосковске</em></h2></div><p>Приезжайте на осмотр — покажем автомобиль, договор и условия до подписания.</p></div>
+        <div class="map-grid reveal">
+          <div class="map-facade" id="map-facade">
+            <div class="map-pin" aria-hidden="true"></div>
+            <div class="map-facade-copy">
+              <strong>г. Новомосковск, ул. Первомайская, 73</strong>
+              <span>Пн–Пт 09:00–18:00 · выдача по договорённости</span>
+              <button type="button" class="button button-small" id="map-load">Показать карту</button>
+            </div>
+          </div>
+          <div class="office-facts">
+            <div><strong>Осмотр авто</strong><span>Без записи в рабочее время</span></div>
+            <div><strong>Оформление</strong><span>Паспорт + водительское удостоверение</span></div>
+            <div><strong>Выдача</strong><span>В день подписания договора</span></div>
+            <a class="button button-large js-open-quiz" href="#quiz">Записаться на осмотр <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="https://yandex.ru/maps/org/avtokar71/7720672617/" target="_blank" rel="noopener">Открыть в Яндекс Картах <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta" aria-labelledby="final-title">
+      <div class="shell final-grid">
+        <div><p class="section-kicker">Можно начать сегодня</p><h2 id="final-title">Подберём автомобиль, который <em>подходит вам</em></h2></div>
+        <div><p>Ответим на вопросы, проверим документы и покажем свободные варианты.</p><button class="button button-large js-open-quiz" type="button">Подобрать автомобиль <span aria-hidden="true">↗</span></button></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contacts">
+    <div class="shell footer-top">
+      <div><a class="brand footer-brand" href="#top"><img src="assets/logo.webp" width="70" height="70" alt="" loading="lazy"><span>Автокар<span>71</span></span></a><p>Аренда и выкуп автомобилей<br>для личных целей и такси.</p></div>
+      <div><p class="footer-label">Телефон и MAX</p><a class="footer-phone js-phone" href="tel:+79539708877">+7 953 970-88-77</a><p>Пн–Пт, 09:00–18:00</p><a href="mailto:autocar71@yandex.ru">autocar71@yandex.ru</a></div>
+      <div><p class="footer-label">Наш парк</p><p>г. Новомосковск,<br>ул. Первомайская, 73</p><a href="https://yandex.ru/maps/org/avtokar71/7720672617/" target="_blank" rel="noopener">Открыть на карте ↗</a></div>
+      <div><p class="footer-label">Навигация</p><a href="#fleet">Автомобили</a><a href="#terms">Условия выдачи</a><a href="#quiz">Подбор авто</a><a href="#stories">Отзывы</a></div>
+    </div>
+    <div class="shell footer-legal" aria-label="Юридическая информация">
+      <p class="footer-label">Юридическая информация</p>
+      <div class="legal-grid"><strong>ООО «Солларс»</strong><span>ИНН 7116147894</span><span>ОГРН 1157154009033</span><span>Юридический адрес: 301650, Тульская область, г. о. город Новомосковск, г. Новомосковск, ул. Трудовые Резервы, д. 55, помещ. 4</span></div>
+    </div>
+    <div class="shell footer-bottom"><p>© 2026 Автокар71</p><a href="privacy.html">Политика обработки ПДн</a><p>Данный сайт носит исключительно информационный характер и ни при каких условиях не является публичной офертой, определяемой положениями статьи 437 ГК РФ.</p></div>
+  </footer>
+
+  <div class="mobile-bar" aria-label="Быстрые действия"><a class="js-phone" href="tel:+79539708877"><span aria-hidden="true">☎</span>Звонок</a><button class="js-open-quiz" type="button"><span aria-hidden="true">↗</span>Подобрать авто</button></div>
+
+  <dialog class="car-modal" id="car-modal" aria-labelledby="modal-title">
+    <button class="modal-close" type="button" aria-label="Закрыть">×</button>
+    <div class="modal-media"><img id="modal-image" src="assets/granta-2024.webp" alt="" loading="lazy"><span id="modal-badge">Авто в наличии</span></div>
+    <div class="modal-content"><p class="section-kicker">Условия автомобиля</p><h2 id="modal-title">Lada Granta 2024</h2><div class="modal-specs" id="modal-specs"></div><div class="modal-price" id="modal-price"></div><div class="deposit-box"><span>Депозит</span><strong>25 000 ₽</strong><small>для авто из наличия</small></div><p>Окончательные условия и доступность подтверждает менеджер после заявки.</p><button class="button button-large modal-quiz" type="button">Проверить доступность <span aria-hidden="true">→</span></button></div>
+  </dialog>
+
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"AutoRental","name":"Автокар71","url":"https://autocar71.ru/","image":"https://autocar71.ru/assets/og-cover.jpg","telephone":"+7-953-970-88-77","email":"autocar71@yandex.ru","priceRange":"от 1800 ₽/сутки","address":{"@type":"PostalAddress","streetAddress":"ул. Первомайская, 73","addressLocality":"Новомосковск","addressRegion":"Тульская область","postalCode":"301650","addressCountry":"RU"},"areaServed":["Тульская область","Рязанская область","Калужская область","Орловская область"],"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"09:00","closes":"18:00"},"sameAs":["https://yandex.ru/maps/org/avtokar71/7720672617/"]}
+  </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
