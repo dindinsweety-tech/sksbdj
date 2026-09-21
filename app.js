@@ -23,12 +23,25 @@
   $$('.reveal').forEach(el => observer.observe(el));
 
   const cars = $('#cars-list');
+  let fleetFilter = 'all', fleetExpanded = false;
+  const fleetToggle = $('#fleet-toggle');
+  function renderFleet() {
+    const matching = $$('.car-card').filter(card => fleetFilter === 'all' || card.dataset.class === fleetFilter);
+    const limit = matchMedia('(max-width:720px)').matches ? 3 : 6;
+    $$('.car-card').forEach(card => card.hidden = !matching.includes(card) || (!fleetExpanded && matching.indexOf(card) >= limit));
+    fleetToggle.hidden = matching.length <= limit;
+    fleetToggle.setAttribute('aria-expanded', String(fleetExpanded));
+    fleetToggle.textContent = fleetExpanded ? 'Свернуть автопарк' : `Показать все ${matching.length} авто`;
+    $('#fleet-summary').textContent = `Показано ${fleetExpanded ? matching.length : Math.min(limit, matching.length)} из ${matching.length} автомобилей`;
+  }
+  fleetToggle.addEventListener('click', () => { fleetExpanded = !fleetExpanded; if (!fleetExpanded) $('#fleet').scrollIntoView({behavior:'instant'}); renderFleet(); });
+  matchMedia('(max-width:720px)').addEventListener('change', renderFleet);
   $$('.tabs button').forEach(tab => tab.addEventListener('click', () => {
     $$('.tabs button').forEach(x => x.setAttribute('aria-selected', 'false'));
     tab.setAttribute('aria-selected', 'true');
-    const filter = tab.dataset.filter;
-    $$('.car-card').forEach(card => card.hidden = !(filter === 'all' || card.dataset.class === filter));
+    fleetFilter = tab.dataset.filter; fleetExpanded = false; renderFleet();
   }));
+  renderFleet();
   const modal = $('#car-modal');
   const openCar = card => {
     const name = $('h3', card).textContent.trim();
@@ -45,13 +58,14 @@
   });
   const closeModal = () => { modal.close(); document.body.style.overflow = ''; };
   $('.modal-close').addEventListener('click', closeModal);
+  modal.addEventListener('close', () => { document.body.style.overflow = ''; });
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
   const allSteps = $$('.quiz-step');
   const answers = {};
   let current = 0;
   let path = [];
-  const branchFromPurpose = value => value === 'Личные поездки' ? 'personal' : value === 'Хочу выкупить авто' ? 'buyout' : 'taxi';
+  const branchFromPurpose = value => value === 'Авто под заказ' ? 'order' : value === 'Личные поездки' ? 'personal' : value === 'Хочу выкупить авто' ? 'buyout' : 'taxi';
   const buildPath = () => {
     const branch = branchFromPurpose(answers.purpose);
     path = [
@@ -70,16 +84,19 @@
     $('#quiz-step-label').textContent = current < path.length - 1 ? `Вопрос ${current + 1} из ${path.length - 1}` : 'Контактные данные';
     $('#quiz-back').disabled = current === 0;
   };
+  let stepping = false;
   allSteps.filter(step => step.dataset.question !== 'contact').forEach(step => $$('.answer', step).forEach(btn => btn.addEventListener('click', () => {
+    if (stepping || !step.classList.contains('active')) return;
+    stepping = true;
     $$('.answer', step).forEach(x => x.classList.remove('selected')); btn.classList.add('selected');
     answers[step.dataset.question] = btn.dataset.value;
     if (step.dataset.question === 'purpose') {
       Object.keys(answers).filter(k => k !== 'purpose').forEach(k => delete answers[k]);
       buildPath();
     }
-    setTimeout(() => { current = Math.min(path.length - 1, current + 1); renderStep(); }, 170);
+    setTimeout(() => { current = Math.min(path.length - 1, current + 1); renderStep(); stepping = false; }, 170);
   })));
-  $('#quiz-back').addEventListener('click', () => { if (current > 0) { current--; renderStep(); } });
+  $('#quiz-back').addEventListener('click', () => { if (!stepping && current > 0) { current--; renderStep(); } });
   const telegramField = $('.telegram-field');
   const telegram = $('#telegram-username');
   $$('.channels button').forEach(btn => btn.addEventListener('click', () => {
@@ -101,14 +118,21 @@
   consent.addEventListener('change', validateContact);
   $('#lead-quiz').addEventListener('submit', e => {
     e.preventDefault();
+    if (!consent.checked || !answers.channel || current !== path.length - 1) { validateContact(); return; }
     if (phoneDigits().length !== 11) { phone.classList.add('error'); $('#phone-error').textContent = 'Введите номер полностью'; return; }
     if (!telegramValid()) { telegram.classList.add('error'); $('#telegram-error').textContent = 'Укажите никнейм в формате @username'; return; }
-    const payload = { ...answers, phone: phone.value, telegram: telegram.value || '', utm: Object.fromEntries(params.entries()) };
-    sessionStorage.setItem('autocar71_lead', JSON.stringify(payload));
+    // Demo only. No personal data persistence or delivery-success analytics.
+    // Production payload must include consent version, timestamp and qualification.
+    try { sessionStorage.removeItem('autocar71_lead'); } catch (_) {}
     location.href = 'thanks.html';
   });
 
-  const openQuiz = () => { if (modal.open) closeModal(); $('#quiz').scrollIntoView({ behavior: 'smooth' }); };
+  const openQuiz = event => {
+    if (modal.open) closeModal();
+    const purpose = event?.currentTarget?.dataset.purpose;
+    if (purpose && !stepping) { Object.keys(answers).forEach(k => { if (k !== 'channel') delete answers[k]; }); answers.purpose = purpose; buildPath(); current = 1; renderStep(); }
+    $('#quiz').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'instant' : 'smooth' });
+  };
   $$('.js-open-quiz').forEach(btn => btn.addEventListener('click', openQuiz));
   $('.modal-quiz').addEventListener('click', openQuiz);
   renderStep();
