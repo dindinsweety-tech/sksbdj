@@ -8,6 +8,15 @@
   if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и <span class="price-nowrap">1 800 ₽/сутки</span>';
   if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span>.</mark> Одобрение с любой КИ';
 
+  const vestaCard = $('.car-card[data-image="assets/catalog-05.webp"]');
+  if (vestaCard) {
+    vestaCard.dataset.specs = 'Характеристики по запросу';
+    vestaCard.setAttribute('aria-label', 'Подробнее: Lada Vesta');
+    $('h3', vestaCard).textContent = 'Lada Vesta';
+    $('img', vestaCard).alt = 'Lada Vesta из парка Автокар71';
+    $('ul', vestaCard).innerHTML = '<li>характеристики по запросу</li>';
+  }
+
   const menuButton = $('.menu-button');
   const menu = $('#mobile-menu');
   menuButton.addEventListener('click', () => {
