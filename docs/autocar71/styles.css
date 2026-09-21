@@ -132,7 +132,8 @@ h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:Montserrat,Arial,sans-serif;letter-
 .car-index{width:42px;height:42px}
 .week span{font-weight:700}
 .lead-debug pre{font-size:.9375rem;line-height:1.5}
-.legal-grid{grid-template-columns:.85fr .6fr .8fr 2.2fr;font-size:.9375rem}
+@media(min-width:721px){.legal-grid{grid-template-columns:.85fr .6fr .8fr 2.2fr}}
+.legal-grid{font-size:.9375rem}
 .footer-bottom{font-size:.9375rem}
 .footer-top p,.review-strip>div:last-child,.rating small{font-size:.9375rem}
 @media(max-width:720px){
