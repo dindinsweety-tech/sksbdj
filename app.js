@@ -169,4 +169,5 @@
     updateCalculator();
   }
   renderStep();
+  clearTimeout(window.__revealFallback);
 })();
