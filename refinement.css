@@ -67,3 +67,7 @@ html{overflow-x:clip}body{overflow-x:clip}
 .cookie-panel{max-height:min(76vh,580px);overflow:auto}
 :focus-visible{outline:3px solid #ffc800;outline-offset:3px}
 @media(max-width:720px){.hero-background img,.hero-photo-wrap>img{content:url("assets/hero-park-720.webp?v=client-3");object-position:58% center}.car-media{aspect-ratio:8/5}}
+
+/* Keep the full-bleed cover anchored to the viewport after reveal animations finish. */
+.hero .hero-visual{left:calc(50% - 50vw);right:auto;width:100vw;transform:none!important}
+@media(max-width:720px){.hero .hero-visual{left:calc(50% - 50vw);width:100vw;transform:none!important}}
