@@ -71,3 +71,10 @@ html{overflow-x:clip}body{overflow-x:clip}
 /* Keep the full-bleed cover anchored to the viewport after reveal animations finish. */
 .hero .hero-visual{left:calc(50% - 50vw);right:auto;width:100vw;transform:none!important}
 @media(max-width:720px){.hero .hero-visual{left:calc(50% - 50vw);width:100vw;transform:none!important}}
+
+/* Requested final adjustments: move the cover car right and restore the moving region strip. */
+@media(min-width:721px){.hero-photo-wrap>img{transform:translateX(5%) scale(1.1);transform-origin:center center}}
+.ticker{background:var(--yellow);color:var(--ink)}
+.ticker-track{animation:ticker 24s linear infinite;flex-wrap:nowrap;justify-content:flex-start;white-space:nowrap;padding:15px 0}
+.ticker-track span[aria-hidden=true]{display:inline}
+.ticker-track i[aria-hidden=true]{display:block}
