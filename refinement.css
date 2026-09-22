@@ -45,25 +45,25 @@ html{overflow-x:clip}body{overflow-x:clip}
 @media(max-width:720px){.story-grid{gap:16px}.story-card{flex:0 0 92%;height:auto}.story-card>div{padding:20px}.story-card img{aspect-ratio:1/1}}
 
 /* Client-preview compatibility with the portable stage-one markup. */
-.hero-background img{content:url("assets/hero-park.webp");object-position:62% 56%}
+.hero-background img,.hero-photo-wrap>img{content:url("assets/hero-park.webp?v=client-3");object-position:62% 56%}
 .car-media{aspect-ratio:8/5;background:#f4f4f1}
 .car-media img{width:100%;height:100%;object-fit:contain;object-position:center}
-.car-card:nth-child(1) .car-media img{content:url("assets/catalog-06.webp")}
-.car-card:nth-child(2) .car-media img{content:url("assets/catalog-01.webp")}
-.car-card:nth-child(3) .car-media img{content:url("assets/catalog-02.webp")}
-.car-card:nth-child(4) .car-media img{content:url("assets/catalog-03.webp")}
-.car-card:nth-child(5) .car-media img{content:url("assets/catalog-04.webp")}
-.car-card:nth-child(6) .car-media img{content:url("assets/catalog-05.webp")}
-.car-card:nth-child(7) .car-media img{content:url("assets/catalog-07.webp")}
-.car-card:nth-child(8) .car-media img{content:url("assets/catalog-08.webp")}
-.car-card:nth-child(9) .car-media img{content:url("assets/catalog-09.webp")}
-.car-card:nth-child(10) .car-media img{content:url("assets/catalog-10.webp")}
-.car-card:nth-child(11) .car-media img{content:url("assets/catalog-11.webp")}
-.car-card:nth-child(12) .car-media img{content:url("assets/catalog-12.webp")}
-.car-card:nth-child(13) .car-media img{content:url("assets/catalog-13.webp")}
-.car-card:nth-child(14) .car-media img{content:url("assets/catalog-14.webp")}
-.car-card:nth-child(15) .car-media img{content:url("assets/catalog-15.webp")}
+.car-card:nth-child(1) .car-media img{content:url("assets/catalog-06.webp?v=client-3")}
+.car-card:nth-child(2) .car-media img{content:url("assets/catalog-01.webp?v=client-3")}
+.car-card:nth-child(3) .car-media img{content:url("assets/catalog-02.webp?v=client-3")}
+.car-card:nth-child(4) .car-media img{content:url("assets/catalog-03.webp?v=client-3")}
+.car-card:nth-child(5) .car-media img{content:url("assets/catalog-04.webp?v=client-3")}
+.car-card:nth-child(6) .car-media img{content:url("assets/catalog-05.webp?v=client-3")}
+.car-card:nth-child(7) .car-media img{content:url("assets/catalog-07.webp?v=client-3")}
+.car-card:nth-child(8) .car-media img{content:url("assets/catalog-08.webp?v=client-3")}
+.car-card:nth-child(9) .car-media img{content:url("assets/catalog-09.webp?v=client-3")}
+.car-card:nth-child(10) .car-media img{content:url("assets/catalog-10.webp?v=client-3")}
+.car-card:nth-child(11) .car-media img{content:url("assets/catalog-11.webp?v=client-3")}
+.car-card:nth-child(12) .car-media img{content:url("assets/catalog-12.webp?v=client-3")}
+.car-card:nth-child(13) .car-media img{content:url("assets/catalog-13.webp?v=client-3")}
+.car-card:nth-child(14) .car-media img{content:url("assets/catalog-14.webp?v=client-3")}
+.car-card:nth-child(15) .car-media img{content:url("assets/catalog-15.webp?v=client-3")}
 .car-modal{max-height:min(90vh,820px);overflow:auto}
 .cookie-panel{max-height:min(76vh,580px);overflow:auto}
 :focus-visible{outline:3px solid #ffc800;outline-offset:3px}
-@media(max-width:720px){.hero-background img{content:url("assets/hero-park-720.webp");object-position:58% center}.car-media{aspect-ratio:8/5}}
+@media(max-width:720px){.hero-background img,.hero-photo-wrap>img{content:url("assets/hero-park-720.webp?v=client-3");object-position:58% center}.car-media{aspect-ratio:8/5}}
