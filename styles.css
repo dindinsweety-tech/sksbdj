@@ -55,3 +55,7 @@ h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:Montserrat,Arial,sans-serif;letter-
 }
 @media(max-width:390px){.mobile-header-label{display:none}.brand>span{font-size:.82rem}.phone-link{padding:0 9px}.header-inner{gap:7px}}
 @media(prefers-reduced-motion:reduce){.price-stamp{animation:none}}
+
+/* Keep the card arrow deterministic on mobile emoji-rendering engines. */
+.round-arrow{line-height:0;text-indent:-9999px;overflow:hidden;position:relative}
+.round-arrow::before{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
