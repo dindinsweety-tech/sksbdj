@@ -48,17 +48,17 @@ html{overflow-x:clip}body{overflow-x:clip}
 .hero-background img,.hero-photo-wrap>img{content:url("assets/hero-park.webp?v=client-3");object-position:62% 56%}
 .car-media{aspect-ratio:8/5;background:#f4f4f1}
 .car-media img{width:100%;height:100%;object-fit:contain;object-position:center}
-.car-card:nth-child(1) .car-media img{content:url("assets/catalog-06.webp?v=client-3")}
-.car-card:nth-child(2) .car-media img{content:url("assets/catalog-01.webp?v=client-3")}
-.car-card:nth-child(3) .car-media img{content:url("assets/catalog-02.webp?v=client-3")}
+.car-card:nth-child(1) .car-media img{content:url("assets/catalog-06.webp?v=client-5")}
+.car-card:nth-child(2) .car-media img{content:url("assets/catalog-01.webp?v=client-5")}
+.car-card:nth-child(3) .car-media img{content:url("assets/catalog-02.webp?v=client-5")}
 .car-card:nth-child(4) .car-media img{content:url("assets/catalog-03.webp?v=client-3")}
 .car-card:nth-child(5) .car-media img{content:url("assets/catalog-04.webp?v=client-3")}
 .car-card:nth-child(6) .car-media img{content:url("assets/catalog-05.webp?v=client-3")}
 .car-card:nth-child(7) .car-media img{content:url("assets/catalog-07.webp?v=client-3")}
-.car-card:nth-child(8) .car-media img{content:url("assets/catalog-08.webp?v=client-3")}
-.car-card:nth-child(9) .car-media img{content:url("assets/catalog-09.webp?v=client-3")}
-.car-card:nth-child(10) .car-media img{content:url("assets/catalog-10.webp?v=client-3")}
-.car-card:nth-child(11) .car-media img{content:url("assets/catalog-11.webp?v=client-3")}
+.car-card:nth-child(8) .car-media img{content:url("assets/catalog-08.webp?v=client-5")}
+.car-card:nth-child(9) .car-media img{content:url("assets/catalog-09.webp?v=client-5")}
+.car-card:nth-child(10) .car-media img{content:url("assets/catalog-10.webp?v=client-5")}
+.car-card:nth-child(11) .car-media img{content:url("assets/catalog-11.webp?v=client-5")}
 .car-card:nth-child(12) .car-media img{content:url("assets/catalog-12.webp?v=client-3")}
 .car-card:nth-child(13) .car-media img{content:url("assets/catalog-13.webp?v=client-3")}
 .car-card:nth-child(14) .car-media img{content:url("assets/catalog-14.webp?v=client-3")}
