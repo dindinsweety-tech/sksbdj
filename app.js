@@ -9,7 +9,7 @@
   if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и <span class="price-nowrap">1 800 ₽/сутки</span>';
   if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span>.</mark> Одобрение с любой КИ';
 
-  const vestaCard = $('.car-card[data-image="assets/catalog-05.webp"]');
+  const vestaCard = $('.car-card[data-image^="assets/catalog-05.webp"]');
   if (vestaCard) {
     vestaCard.dataset.specs = 'Характеристики по запросу';
     vestaCard.setAttribute('aria-label', 'Подробнее: Lada Vesta');
@@ -60,6 +60,8 @@
     $('#modal-specs').innerHTML = specs.map(x => `<span>${x}</span>`).join('');
     $('.deposit-box strong').textContent = '25 000 ₽';
     $('.deposit-box small').textContent = 'для автомобиля из наличия';
+    $('.modal-quiz').dataset.purpose = 'Хочу выкупить авто';
+    $('.modal-quiz').dataset.car = name;
     modal.showModal(); document.body.style.overflow = 'hidden';
   };
   $$('.car-card').forEach(card => {
@@ -102,6 +104,10 @@
     answers[step.dataset.question] = btn.dataset.value;
     if (step.dataset.question === 'purpose') {
       Object.keys(answers).filter(k => k !== 'purpose').forEach(k => delete answers[k]);
+      $$('.channels button').forEach(x => x.classList.remove('selected'));
+      allSteps.filter(s => s !== step).forEach(s => $$('.answer', s).forEach(x => x.classList.remove('selected')));
+      telegramField.hidden = true;
+      validateContact();
       buildPath();
     }
     setTimeout(() => { current = Math.min(path.length - 1, current + 1); renderStep(); stepping = false; }, 170);
@@ -120,7 +126,12 @@
   const telegramValid = () => answers.channel !== 'Telegram' || /^@[A-Za-z0-9_]{5,32}$/.test(telegram.value.trim());
   const validateContact = () => { submit.disabled = !(phoneDigits().length === 11 && answers.channel && telegramValid() && consent.checked); };
   phone.addEventListener('input', e => {
-    let d = e.target.value.replace(/\D/g, '').replace(/^8/, '7').slice(0, 11); if (!d.startsWith('7')) d = `7${d}`;
+    let d = e.target.value.replace(/\D/g, '');
+    if (!d) { e.target.value = ''; validateContact(); return; }
+    if (d.length === 10 && !d.startsWith('7') && !d.startsWith('8')) d = `7${d}`;
+    else if (d.startsWith('8')) d = `7${d.slice(1)}`;
+    else if (!d.startsWith('7')) d = `7${d}`;
+    d = d.slice(0, 11);
     const p = d.slice(1); let v = '+7'; if (p.length) v += ` (${p.slice(0,3)}`; if (p.length >= 3) v += ') '; if (p.length > 3) v += p.slice(3,6); if (p.length > 6) v += `-${p.slice(6,8)}`; if (p.length > 8) v += `-${p.slice(8,10)}`;
     e.target.value = v; e.target.classList.remove('error'); $('#phone-error').textContent = ''; validateContact();
   });
@@ -141,6 +152,8 @@
     if (modal.open) closeModal();
     const purpose = event?.currentTarget?.dataset.purpose;
     if (purpose && !stepping) { Object.keys(answers).forEach(k => { if (k !== 'channel') delete answers[k]; }); answers.purpose = purpose; buildPath(); current = 1; renderStep(); }
+    if (event?.currentTarget?.dataset.car) answers.selected_car = event.currentTarget.dataset.car;
+    validateContact();
     $('#quiz').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'instant' : 'smooth' });
   };
   $$('.js-open-quiz').forEach(btn => btn.addEventListener('click', openQuiz));

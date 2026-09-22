@@ -22,6 +22,17 @@ html{overflow-x:clip}body{overflow-x:clip}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}.reveal{transform:none;opacity:1}}
 
+/* Full-bleed premium cover: copy stays in a protected dark zone while the car and sign remain visible. */
+.hero{min-height:calc(100svh - 78px);isolation:isolate;background:#0d0d0d}
+.hero-grid{display:block;min-height:calc(100svh - 78px);padding-top:clamp(54px,8vh,94px);padding-bottom:clamp(46px,7vh,78px)}
+.hero-copy{position:relative;z-index:3;width:min(690px,58%);text-shadow:0 2px 24px #000}.hero h1{max-width:690px;font-size:clamp(3rem,5.05vw,5.2rem);line-height:1.025;letter-spacing:-.055em;margin:0 0 26px}.hero h1 mark{display:inline;color:var(--yellow)}
+.hero-subtitle{max-width:610px;color:#e4e4e4;font-size:clamp(1rem,1.2vw,1.18rem)}.hero-labels span{background:#111b;backdrop-filter:blur(8px);border-color:#ffffff3d}.eyebrow{color:#f0f0f0}
+.hero-actions{margin-bottom:clamp(30px,5vh,50px)}.hero-proof{max-width:680px}.hero-proof div{border-color:#ffffff52}.hero-proof span{color:#d0d0d0}
+.hero-visual{position:absolute;z-index:0;inset:0;width:100vw;left:50%;transform:translateX(-50%);pointer-events:none}.hero-photo-wrap{position:absolute;inset:0;height:100%;aspect-ratio:auto;border-radius:0;box-shadow:none;background:#111}.hero-photo-wrap>img{width:100%;height:100%;object-fit:cover;object-position:center 56%}.hero-photo-wrap:before{content:"";position:absolute;z-index:1;inset:0;background:linear-gradient(90deg,#090909f5 0%,#090909df 27%,#090909a8 48%,#09090942 70%,#0909092b 100%),linear-gradient(0deg,#080808b8 0%,transparent 42%,#09090935 100%)}.hero-photo-wrap:after{border:0;border-radius:0}.hero-photo-shade{display:none}.photo-caption{position:absolute;right:30px;bottom:20px;z-index:2;margin:0;color:#fff9;text-align:right;text-shadow:0 1px 8px #000}.hero .price-stamp,.hero .availability{display:none}
+@media(max-width:980px){.hero-copy{width:min(690px,72%)}.hero h1{font-size:clamp(2.8rem,7vw,4.5rem)}.hero-photo-wrap:before{background:linear-gradient(90deg,#090909f5 0%,#090909d9 42%,#09090972 72%,#09090938 100%),linear-gradient(0deg,#080808cc 0%,transparent 50%)}}
+@media(max-width:720px){.hero{min-height:calc(100svh - 64px)}.hero-grid{display:block;min-height:calc(100svh - 64px);padding-top:36px;padding-bottom:42px}.hero-copy{display:block;width:100%}.hero h1{font-size:clamp(2.35rem,10.7vw,3.75rem);line-height:1.04;letter-spacing:-.045em;margin:0 0 20px}.hero-subtitle{font-size:1rem;line-height:1.55;margin-bottom:24px}.hero-labels{margin-bottom:20px}.hero-actions{display:flex;align-items:center;flex-wrap:wrap;margin:0 0 30px;gap:18px}.hero-actions .button{width:auto}.hero-proof{grid-template-columns:repeat(3,1fr);gap:8px}.hero-proof div{display:grid;align-items:start;justify-content:stretch;gap:4px}.hero-proof strong{font-size:16px}.hero-proof span{font-size:13px;text-align:left;line-height:1.3}.hero-visual{position:absolute;inset:0;transform:translateX(-50%)}.hero-photo-wrap{height:100%;aspect-ratio:auto;border-radius:0}.hero-photo-wrap>img{object-position:58% center}.hero-photo-wrap:before{background:linear-gradient(180deg,#080808d9 0%,#080808b8 47%,#080808f2 78%,#080808 100%),linear-gradient(90deg,#08080894,transparent 90%)}.photo-caption{right:14px;bottom:12px;font-size:12px}.eyebrow{margin-bottom:18px}}
+@media(max-width:390px){.hero-grid{padding-top:26px}.hero h1{font-size:2.25rem}.hero-subtitle{font-size:.94rem}.hero-actions{margin-bottom:22px}.hero-proof span{font-size:12px}}
+
 /* Wider handover portraits: keep faces visible and captions outside the image. */
 .story-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 .story-card{height:auto;background:#f4f4f1;display:flex;flex-direction:column}
@@ -33,39 +44,26 @@ html{overflow-x:clip}body{overflow-x:clip}
 .story-card span{color:#666}.story-card a{color:#695100}
 @media(max-width:720px){.story-grid{gap:16px}.story-card{flex:0 0 92%;height:auto}.story-card>div{padding:20px}.story-card img{aspect-ratio:1/1}}
 
-/* Stage 1 final: full-screen photographic hero with an independent reading zone. */
-.hero{position:relative;isolation:isolate;min-height:calc(100svh - 78px);display:flex;align-items:flex-end;background:#111;overflow:hidden}
-.hero:before{content:"";position:absolute;inset:0;z-index:-3;background:url("assets/catalog-15.webp") center 58%/cover no-repeat}
-.hero:after{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(6,6,6,.96) 0%,rgba(8,8,8,.82) 38%,rgba(8,8,8,.28) 67%,rgba(8,8,8,.22) 100%),linear-gradient(0deg,rgba(0,0,0,.66),transparent 46%)}
-.hero-grid{display:block;width:100%;padding-top:clamp(88px,12vh,142px);padding-bottom:clamp(62px,9vh,104px)}
-.hero-visual{display:none}
-.hero-copy{max-width:720px;padding:clamp(24px,3vw,42px);border-left:4px solid var(--yellow);background:linear-gradient(110deg,rgba(13,13,13,.82),rgba(13,13,13,.54));box-shadow:0 28px 90px rgba(0,0,0,.2);backdrop-filter:blur(5px)}
-.hero h1{max-width:680px;font-size:clamp(2.75rem,5.3vw,5.4rem);line-height:.98;letter-spacing:-.055em}
-.hero h1 mark{color:var(--yellow)}
-.hero-subtitle{max-width:610px;color:#e0e0e0}
-.hero-actions{margin-bottom:38px}
-.hero-proof{max-width:650px}
-.hero-proof div{border-color:rgba(255,255,255,.3)}
-.hero-labels span{background:rgba(0,0,0,.34);border-color:rgba(255,255,255,.38)}
-
-@media(max-width:900px){
- .hero{min-height:760px}.hero:after{background:linear-gradient(90deg,rgba(6,6,6,.93),rgba(6,6,6,.5) 72%,rgba(6,6,6,.28)),linear-gradient(0deg,rgba(0,0,0,.78),transparent 55%)}
- .hero-copy{max-width:650px}
-}
-@media(max-width:720px){
- .hero{min-height:calc(100svh - 64px);align-items:flex-end}
- .hero:before{background-image:url("assets/catalog-01.webp");background-position:center 28%}
- .hero:after{background:linear-gradient(0deg,rgba(5,5,5,.98) 0%,rgba(5,5,5,.93) 42%,rgba(5,5,5,.32) 72%,rgba(5,5,5,.1) 100%)}
- .hero-grid{display:block;padding-top:clamp(245px,39vh,390px);padding-bottom:28px}
- .hero-copy{display:block;max-width:none;padding:22px 18px 18px;border-left:3px solid var(--yellow);background:rgba(10,10,10,.64);backdrop-filter:blur(3px)}
- .hero .eyebrow{margin:0 0 12px}.hero-labels{margin:0 0 14px}
- .hero h1{font-size:clamp(32px,9.1vw,50px);line-height:1.02;margin:0 0 18px;letter-spacing:-.045em}
- .hero-subtitle{font-size:16px;line-height:1.48;margin:0 0 22px}
- .hero-actions{display:grid;gap:14px;margin:0 0 24px}.hero-actions .text-link{justify-self:start}
- .hero-proof{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
- .hero-proof div{display:grid;align-content:start;justify-content:start;gap:4px;padding-top:10px}
- .hero-proof strong{font-size:16px}.hero-proof span{font-size:13px;text-align:left;line-height:1.25}
-}
-@media(max-width:390px){
- .hero-grid{padding-top:250px}.hero-copy{padding:18px 14px 16px}.hero h1{font-size:30px}.hero-labels span{font-size:13px}.hero .eyebrow{font-size:14px}
-}
+/* Client-preview compatibility with the portable stage-one markup. */
+.hero-background img{content:url("assets/hero-park.webp");object-position:62% 56%}
+.car-media{aspect-ratio:8/5;background:#f4f4f1}
+.car-media img{width:100%;height:100%;object-fit:contain;object-position:center}
+.car-card:nth-child(1) .car-media img{content:url("assets/catalog-06.webp")}
+.car-card:nth-child(2) .car-media img{content:url("assets/catalog-01.webp")}
+.car-card:nth-child(3) .car-media img{content:url("assets/catalog-02.webp")}
+.car-card:nth-child(4) .car-media img{content:url("assets/catalog-03.webp")}
+.car-card:nth-child(5) .car-media img{content:url("assets/catalog-04.webp")}
+.car-card:nth-child(6) .car-media img{content:url("assets/catalog-05.webp")}
+.car-card:nth-child(7) .car-media img{content:url("assets/catalog-07.webp")}
+.car-card:nth-child(8) .car-media img{content:url("assets/catalog-08.webp")}
+.car-card:nth-child(9) .car-media img{content:url("assets/catalog-09.webp")}
+.car-card:nth-child(10) .car-media img{content:url("assets/catalog-10.webp")}
+.car-card:nth-child(11) .car-media img{content:url("assets/catalog-11.webp")}
+.car-card:nth-child(12) .car-media img{content:url("assets/catalog-12.webp")}
+.car-card:nth-child(13) .car-media img{content:url("assets/catalog-13.webp")}
+.car-card:nth-child(14) .car-media img{content:url("assets/catalog-14.webp")}
+.car-card:nth-child(15) .car-media img{content:url("assets/catalog-15.webp")}
+.car-modal{max-height:min(90vh,820px);overflow:auto}
+.cookie-panel{max-height:min(76vh,580px);overflow:auto}
+:focus-visible{outline:3px solid #ffc800;outline-offset:3px}
+@media(max-width:720px){.hero-background img{content:url("assets/hero-park-720.webp");object-position:58% center}.car-media{aspect-ratio:8/5}}
