@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демо CRM для монтажа септиков: подбор слота с учётом бригад, спецтехники и дороги между объектами, календарь недели и карточка клиента.">
+<title>CRM монтажа септиков — планировщик выездов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#F7F7F5; --surf:#FFFFFF; --surf2:#F0F0EC; --surf3:#E4E4DE;
+  --ink:#1A1A18; --ink2:#55544F; --ink3:#86847D;
+  --line:#E3E2DC; --line2:#CDCBC4;
+  --acc:#3F6212; --acc2:#4D7C0F; --acc-s:#EEF3E4;
+  --t1:#0369A1; --t1s:#E6F0F8;
+  --t2:#B45309; --t2s:#FBF0E3;
+  --t3:#6D28D9; --t3s:#EFEAFB;
+  --ok:#047857; --ok-s:#E4F3EE;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --r:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141413; --surf:#1C1C1B; --surf2:#232322; --surf3:#2E2E2C;
+    --ink:#F2F1ED; --ink2:#ACAAA3; --ink3:#7C7A73;
+    --line:#2A2A28; --line2:#3B3B38;
+    --acc:#A3C948; --acc2:#BEDB6E; --acc-s:#222A14;
+    --t1:#2E9BD4; --t1s:#12242E;
+    --t2:#B78A22; --t2s:#2B2312;
+    --t3:#EC4899; --t3s:#331522;
+    --ok:#34D399; --ok-s:#12291F;
+    --bad:#FB7185; --bad-s:#331419;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141413; --surf:#1C1C1B; --surf2:#232322; --surf3:#2E2E2C;
+  --ink:#F2F1ED; --ink2:#ACAAA3; --ink3:#7C7A73;
+  --line:#2A2A28; --line2:#3B3B38;
+  --acc:#A3C948; --acc2:#BEDB6E; --acc-s:#222A14;
+  --t1:#2E9BD4; --t1s:#12242E;
+  --t2:#B78A22; --t2s:#2B2312;
+  --t3:#EC4899; --t3s:#331522;
+  --ok:#34D399; --ok-s:#12291F;
+  --bad:#FB7185; --bad-s:#331419;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Manrope",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.021em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(22px,5.4vw,32px)}
+h2{font-size:clamp(18px,4.4vw,23px)}
+h3{font-size:15.5px;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:5px}
+.mono{font-family:"Roboto Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#141413}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:17px;height:17px;display:block}
+.brand b{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:66ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:66ch}
+
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"Roboto Mono",monospace;font-size:12px;color:var(--acc);font-weight:500;
+  border:1px solid var(--line2);border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:64ch}
+
+/* backlog */
+.bl{display:grid;gap:8px;margin-top:16px}
+@media(min-width:760px){.bl{grid-template-columns:repeat(3,1fr)}}
+.req{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px;text-align:left;
+  display:block;width:100%;border-left:3px solid var(--line2);transition:border-color .18s,box-shadow .18s}
+.req:hover{border-color:var(--line2)}
+.req[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.req.t1{border-left-color:var(--t1)} .req.t2{border-left-color:var(--t2)} .req.t3{border-left-color:var(--t3)}
+.req.done{opacity:.42}
+.req .top{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.req .cl{font-weight:700;font-size:14.5px}
+.req .meta{margin-top:6px;display:flex;flex-wrap:wrap;gap:3px 12px}
+.req .note2{margin-top:7px;font-size:12.5px;color:var(--ink3)}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+.chip.t1{background:var(--t1s);color:var(--t1)}
+.chip.t2{background:var(--t2s);color:var(--t2)}
+.chip.t3{background:var(--t3s);color:var(--t3)}
+.chip.eq{background:var(--surf3);color:var(--ink2);font-weight:500}
+.chip.urg{background:var(--bad-s);color:var(--bad)}
+
+.actions{margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 17px;
+  border-radius:10px;font-weight:700;font-size:14.5px;background:var(--acc);color:#fff}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#141413}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn:disabled{opacity:.4;cursor:default}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2);font-weight:600}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+
+/* slots */
+.slots{margin-top:14px;display:grid;gap:8px}
+.slot{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px;text-align:left;width:100%;
+  border-left:3px solid var(--ok);transition:border-color .18s}
+.slot:hover{border-color:var(--acc)}
+.slot .t{display:flex;gap:10px;justify-content:space-between;align-items:baseline;flex-wrap:wrap}
+.slot .when{font-weight:700;font-size:15px}
+.slot .why{margin-top:7px;font-size:13px;color:var(--ink2)}
+.rej{background:var(--surf2);border:1px dashed var(--line2);border-radius:10px;padding:10px 12px;
+  font-size:12.5px;color:var(--ink3)}
+.rej b{color:var(--bad);font-weight:600}
+
+/* grid */
+.gridwrap{margin-top:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surf);overflow:hidden}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cal{min-width:800px;display:grid;grid-template-columns:132px repeat(6,1fr)}
+.cal .hd{position:sticky;top:0;background:var(--surf2);border-bottom:1px solid var(--line);padding:9px 10px;
+  font-size:12px;font-weight:700;z-index:2}
+.cal .hd.res{left:0;z-index:3}
+.cal .res{position:sticky;left:0;background:var(--surf);border-right:1px solid var(--line);padding:10px;
+  font-size:12.5px;font-weight:700;z-index:1;display:flex;flex-direction:column;justify-content:center}
+.cal .res span{font-weight:500;color:var(--ink3);font-size:10.5px;margin-top:2px}
+.cal .cell{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:6px;min-height:78px;
+  display:flex;flex-direction:column;gap:4px}
+.cal .res{border-bottom:1px solid var(--line)}
+.job{border-radius:7px;padding:5px 7px;font-size:11.5px;line-height:1.35;text-align:left;width:100%;
+  border-left:3px solid var(--line2);background:var(--surf2)}
+.job.t1{background:var(--t1s);border-left-color:var(--t1)}
+.job.t2{background:var(--t2s);border-left-color:var(--t2)}
+.job.t3{background:var(--t3s);border-left-color:var(--t3)}
+.job.neu{outline:2px solid var(--acc);outline-offset:-2px}
+.job b{display:block;font-weight:700;font-family:"Roboto Mono",monospace;font-size:11px}
+.job i{font-style:normal;display:block;color:var(--ink2);margin-top:1px}
+.job em{font-style:normal;display:block;color:var(--ink3);font-size:10.5px;margin-top:1px}
+
+.load{display:grid;gap:7px;margin-top:14px}
+.load .r{display:grid;grid-template-columns:132px 1fr 52px;gap:10px;align-items:center;font-size:12.5px}
+.loadbar{height:9px;border-radius:5px;background:var(--surf3);overflow:hidden}
+.loadbar i{display:block;height:100%;background:var(--acc);border-radius:5px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+.leg{display:flex;flex-wrap:wrap;gap:13px;margin-top:13px}
+.leg span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)}
+.leg i{width:11px;height:11px;border-radius:3px;flex:none}
+
+/* client card */
+.card{margin-top:16px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card .hd2{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.kv{display:grid;gap:6px;margin-top:13px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"Roboto Mono",monospace;font-size:12.5px;text-align:right}
+.tl{margin-top:16px;display:grid;gap:0}
+.tl .e{display:grid;grid-template-columns:20px 1fr;gap:11px;padding-bottom:14px;position:relative}
+.tl .e:not(:last-child)::before{content:"";position:absolute;left:9px;top:18px;bottom:0;width:2px;background:var(--line)}
+.tl .dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);background:var(--surf);
+  display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--ink3);z-index:1}
+.tl .dot.on{border-color:var(--acc);background:var(--acc-s);color:var(--acc)}
+.tl .dot.next{border-style:dashed}
+.tl .b{min-width:0}
+.tl .b b{font-size:14px;font-weight:700;display:block}
+.tl .b .d{font-family:"Roboto Mono",monospace;font-size:11.5px;color:var(--ink3);margin-top:2px}
+.tl .b p{font-size:13px;color:var(--ink2);margin-top:4px}
+
+.toast{position:fixed;left:16px;right:16px;bottom:16px;max-width:480px;margin:0 auto;z-index:60;
+  background:var(--ink);color:var(--bg);border-radius:11px;padding:12px 14px;font-size:13.5px;line-height:1.45;
+  box-shadow:0 8px 28px rgba(0,0,0,.22);transform:translateY(130%);transition:transform .32s cubic-bezier(.4,0,.2,1)}
+.toast.on{transform:none}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></div>
+      <b>Септик-CRM · планировщик</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Планирование замеров, монтажей и сервиса — с проверкой техники и дороги</h1>
+    <p>Календарь в такой CRM ломается не на отрисовке сетки, а на том, что ресурсов три сразу: бригада, спецтехника и дорога между объектами. Экскаватор один на три бригады, а переезд из Одинцова в Раменское съедает два часа рабочего дня. Ниже — работающий подбор слота, который считает всё это и показывает, почему остальные варианты не подошли.</p>
+    <div class="note">Данные условные, но правила настоящие: смена 09:00–18:00, скорость по области 45 км/ч плюс 15 минут на подъезд, экскаватор и манипулятор в одном экземпляре, замеры делают инженеры, монтаж и сервис — бригады. После монтажа ТО ставится автоматически.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Очередь заявок</h2></div>
+    <p class="sdesc">Выберите заявку и нажмите «Подобрать слот». Планировщик переберёт все дни и всех исполнителей.</p>
+    <div class="bl" id="bl"></div>
+    <div class="actions">
+      <button class="btn" id="find" type="button" disabled>Подобрать слот</button>
+      <button class="btn-g btn" id="reset" type="button">Сбросить неделю</button>
+    </div>
+    <div id="slots" class="slots"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Неделя 28 сентября — 3 октября</h2></div>
+    <p class="sdesc">Строки — исполнители, столбцы — дни. Нажмите на любую работу, чтобы открыть карточку клиента.</p>
+    <div class="gridwrap"><div class="scroll"><div class="cal" id="cal"></div></div></div>
+    <div class="leg">
+      <span><i style="background:var(--t1)"></i>Замер</span>
+      <span><i style="background:var(--t2)"></i>Монтаж</span>
+      <span><i style="background:var(--t3)"></i>Сервис / ТО</span>
+      <span class="mut3">Э — экскаватор, М — манипулятор</span>
+    </div>
+    <div class="load" id="load"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Карточка клиента</h2></div>
+    <p class="sdesc">История ведётся сквозной: заявка, замер, монтаж, гарантия и все ТО — одной лентой. Следующее ТО система ставит сама, от даты монтажа.</p>
+    <div class="card" id="card"></div>
+  </section>
+
+  <footer>Демо механик CRM для монтажа септиков. Денис, Telegram @hockey81.</footer>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var DAYS=["Пн 28.09","Вт 29.09","Ср 30.09","Чт 01.10","Пт 02.10","Сб 03.10"];
+var OPEN=540, CLOSE=1080;                       /* 09:00 – 18:00 */
+var GEO={ "Мытищи":[2,20],"Пушкино":[5,32],"Щёлково":[22,18],"Балашиха":[20,5],
+          "Одинцово":[-22,2],"Подольск":[-3,-33],"Раменское":[30,-20],"Домодедово":[5,-30] };
+var RES=[
+ {id:"e1",name:"Инженер Сомов",role:"замерщик",can:["zamer"]},
+ {id:"e2",name:"Инженер Дятлов",role:"замерщик",can:["zamer"]},
+ {id:"b1",name:"Бригада №1",role:"монтаж",can:["montazh","servis"]},
+ {id:"b2",name:"Бригада №2",role:"монтаж",can:["montazh","servis"]},
+ {id:"b3",name:"Бригада №3",role:"монтаж / сервис",can:["montazh","servis"]}
+];
+var TYPE={zamer:{c:"t1",n:"Замер"},montazh:{c:"t2",n:"Монтаж"},servis:{c:"t3",n:"Сервис"}};
+
+function hhmm(m){var h=Math.floor(m/60),x=m%60;return (h<10?"0":"")+h+":"+(x<10?"0":"")+x}
+function travel(a,b){
+  if(!a||a===b)return a?15:0;
+  var p=GEO[a],q=GEO[b];
+  var km=Math.sqrt(Math.pow(p[0]-q[0],2)+Math.pow(p[1]-q[1],2));
+  return Math.round(km/45*60)+15;                /* 45 км/ч + 15 мин на подъезд */
+}
+
+var BASE=[
+ {res:"e1",day:0,start:570,dur:90,type:"zamer",cl:"Хромов Д.А.",d:"Мытищи"},
+ {res:"e1",day:0,start:780,dur:90,type:"zamer",cl:"Панин В.В.",d:"Щёлково"},
+ {res:"b1",day:0,start:540,dur:360,type:"montazh",cl:"Гаврилов С.С.",d:"Одинцово",exc:1},
+ {res:"b2",day:0,start:600,dur:120,type:"servis",cl:"Лыков А.Н.",d:"Подольск"},
+ {res:"b1",day:1,start:540,dur:420,type:"montazh",cl:"ООО «Гринвуд»",d:"Раменское",exc:1,man:1},
+ {res:"e2",day:1,start:660,dur:90,type:"zamer",cl:"Сотникова М.И.",d:"Домодедово"},
+ {res:"b2",day:2,start:540,dur:360,type:"montazh",cl:"Ерохин П.С.",d:"Балашиха",exc:1},
+ {res:"b3",day:2,start:570,dur:120,type:"servis",cl:"Жукова Т.А.",d:"Пушкино"},
+ {res:"b3",day:2,start:810,dur:120,type:"servis",cl:"Хромов Д.А.",d:"Мытищи"},
+ {res:"b1",day:3,start:540,dur:360,type:"montazh",cl:"Панин В.В.",d:"Щёлково",exc:1},
+ {res:"e1",day:3,start:600,dur:90,type:"zamer",cl:"Агапов Р.Р.",d:"Одинцово"},
+ {res:"b3",day:4,start:540,dur:390,type:"montazh",cl:"Лыков А.Н.",d:"Подольск",exc:1,man:1},
+ {res:"b2",day:5,start:600,dur:120,type:"servis",cl:"ООО «Гринвуд»",d:"Раменское"}
+];
+var REQ=[
+ {id:"r1",type:"zamer",cl:"Ковалёв А.П.",d:"Пушкино",dur:90,note:"Участок 12 соток, грунт глина, высокий УГВ"},
+ {id:"r2",type:"montazh",cl:"Носова И.В.",d:"Раменское",dur:420,exc:1,man:1,note:"Тополь-5 ПР, бетонные кольца, подъезд с поля"},
+ {id:"r3",type:"servis",cl:"Агапов Р.Р.",d:"Одинцово",dur:120,note:"ТО-1 по гарантии, замена фильтра"},
+ {id:"r4",type:"montazh",cl:"ООО «Верес»",d:"Домодедово",dur:360,exc:1,note:"Астра-8, кафе на трассе, работы до открытия"},
+ {id:"r5",type:"zamer",cl:"Тимофеева О.Л.",d:"Щёлково",dur:90,note:"Замена старой станции, нужен доступ к колодцу"},
+ {id:"r6",type:"servis",cl:"Ерохин П.С.",d:"Балашиха",dur:150,urg:1,note:"Аварийно: не откачивается, запах в доме"}
+];
+var jobs=[], placed={}, sel=null, cardKey=null;
+
+function reset(){
+  jobs=BASE.map(function(j){var c={};for(var k in j)c[k]=j[k];c.id="b_"+Math.random().toString(36).slice(2,8);return c});
+  placed={};sel=null;cardKey="Панин В.В.";
+  $("#slots").innerHTML="";$("#find").disabled=true;
+  renderAll();
+}
+
+/* ---------- планировщик ---------- */
+function dayJobs(res,day){
+  return jobs.filter(function(j){return j.res===res&&j.day===day})
+             .sort(function(a,b){return a.start-b.start});
+}
+function eqBusy(day,kind,from,to){
+  return jobs.some(function(j){
+    return j.day===day&&j[kind]&&!(to<=j.start||from>=j.start+j.dur);
+  });
+}
+function search(req){
+  var good=[],bad=[];
+  for(var day=0;day<DAYS.length;day++){
+    for(var i=0;i<RES.length;i++){
+      var r=RES[i];
+      if(r.can.indexOf(req.type)<0)continue;
+      var list=dayJobs(r.id,day);
+      var last=list.length?list[list.length-1]:null;
+      var from=last?last.start+last.dur:OPEN;
+      var tv=travel(last?last.d:null,req.d);
+      var start=Math.max(OPEN,from+(last?tv:15));
+      var end=start+req.dur;
+      if(end>CLOSE){
+        bad.push({r:r,day:day,why:last
+          ? "смена кончается: после объекта в «"+last.d+"» и "+tv+" мин дороги работа влезает только до "+hhmm(end)
+          : "длительность "+Math.round(req.dur/60*10)/10+" ч не помещается в смену"});
+        continue;
+      }
+      var busy=null;
+      if(req.exc&&eqBusy(day,"exc",start,end))busy="экскаватор занят на другом объекте";
+      if(!busy&&req.man&&eqBusy(day,"man",start,end))busy="манипулятор занят на другом объекте";
+      if(busy){bad.push({r:r,day:day,why:busy});continue}
+      good.push({r:r,day:day,start:start,end:end,travel:last?tv:0,last:last,
+        cost:day*2000+start+(last?tv:0)});
+    }
+  }
+  good.sort(function(a,b){return a.cost-b.cost});
+  return {good:good,bad:bad};
+}
+
+function renderSlots(){
+  var box=$("#slots");box.innerHTML="";
+  if(!sel)return;
+  var req=REQ.filter(function(r){return r.id===sel})[0];
+  var res=search(req);
+  if(!res.good.length){
+    box.innerHTML='<div class="rej">Свободных слотов на этой неделе нет. Заявка уходит в следующую неделю или требует перестановки уже назначенных работ.</div>';
+    return;
+  }
+  var h="";
+  res.good.slice(0,3).forEach(function(s,i){
+    h+='<button class="slot" type="button" data-i="'+i+'">'+
+       '<div class="t"><span class="when">'+DAYS[s.day]+" · "+hhmm(s.start)+"–"+hhmm(s.end)+"</span>"+
+       '<span class="chip '+TYPE[req.type].c+'">'+s.r.name+"</span></div>"+
+       '<div class="why">'+(s.last
+          ? "После объекта в «"+s.last.d+"» (до "+hhmm(s.last.start+s.last.dur)+"), переезд "+s.travel+" мин."
+          : "Первый выезд дня, объект в «"+req.d+"».")+
+       (req.exc?" Экскаватор свободен в этом окне.":"")+
+       (req.man?" Манипулятор свободен.":"")+
+       (i===0?" <b>Ближайший возможный вариант.</b>":"")+"</div></button>";
+  });
+  var shown=res.bad.slice(0,4);
+  if(shown.length){
+    h+='<div class="rej"><b>Не подошли:</b> '+shown.map(function(b){
+      return b.r.name+", "+DAYS[b.day].split(" ")[0]+" — "+b.why}).join("; ")+
+      (res.bad.length>shown.length?" и ещё "+(res.bad.length-shown.length)+" вариантов.":".")+"</div>";
+  }
+  box.innerHTML=h;
+  Array.prototype.forEach.call(box.querySelectorAll(".slot"),function(b){
+    b.addEventListener("click",function(){place(req,res.good[+b.dataset.i])});
+  });
+}
+
+function place(req,s){
+  var j={id:"n_"+req.id,res:s.r.id,day:s.day,start:s.start,dur:req.dur,type:req.type,
+    cl:req.cl,d:req.d,exc:req.exc,man:req.man,neu:1};
+  jobs.push(j);placed[req.id]=j;
+  var msg="«"+req.cl+"» — "+TYPE[req.type].n.toLowerCase()+", "+DAYS[s.day]+" "+hhmm(s.start)+", "+s.r.name+".";
+  if(req.type==="montazh"){
+    msg+=" Гарантия 24 мес, ТО-1 поставлено на "+svcDate(s.day)+" автоматически.";
+  }
+  sel=null;cardKey=req.cl;
+  $("#slots").innerHTML="";$("#find").disabled=true;
+  renderAll();toast(msg);
+}
+function svcDate(day){
+  var base=new Date(2026,8,28+day);
+  base.setMonth(base.getMonth()+6);
+  var mm=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+  return base.getDate()+" "+mm[base.getMonth()]+" "+base.getFullYear();
+}
+function toast(t){
+  var el=$("#toast");el.textContent=t;el.classList.add("on");
+  clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove("on")},5200);
+}
+
+/* ---------- очередь ---------- */
+function renderBl(){
+  var box=$("#bl");box.innerHTML="";
+  REQ.forEach(function(r){
+    var b=document.createElement("button");
+    b.type="button";b.className="req "+TYPE[r.type].c+(placed[r.id]?" done":"");
+    b.setAttribute("aria-pressed",sel===r.id?"true":"false");
+    b.innerHTML='<div class="top"><span class="cl">'+r.cl+"</span>"+
+      '<span class="chip '+TYPE[r.type].c+'">'+TYPE[r.type].n+"</span></div>"+
+      '<div class="meta sm mut"><span>'+r.d+"</span><span>"+(r.dur/60).toFixed(1).replace(".0","")+" ч</span>"+
+      (r.exc?'<span class="chip eq">Э</span>':"")+(r.man?'<span class="chip eq">М</span>':"")+
+      (r.urg?'<span class="chip urg">срочно</span>':"")+"</div>"+
+      '<div class="note2">'+(placed[r.id]?"Назначено: "+DAYS[placed[r.id].day]+" "+hhmm(placed[r.id].start):r.note)+"</div>";
+    b.addEventListener("click",function(){
+      if(placed[r.id])return;
+      sel=sel===r.id?null:r.id;$("#find").disabled=!sel;$("#slots").innerHTML="";renderBl();
+    });
+    box.appendChild(b);
+  });
+}
+
+/* ---------- календарь ---------- */
+function renderCal(){
+  var c=$("#cal");c.innerHTML="";
+  var h='<div class="hd res">Исполнитель</div>';
+  DAYS.forEach(function(d){h+='<div class="hd">'+d+"</div>"});
+  RES.forEach(function(r){
+    h+='<div class="res">'+r.name+"<span>"+r.role+"</span></div>";
+    for(var day=0;day<DAYS.length;day++){
+      h+='<div class="cell">';
+      dayJobs(r.id,day).forEach(function(j){
+        h+='<button class="job '+TYPE[j.type].c+(j.neu?" neu":"")+'" type="button" data-cl="'+j.cl+'">'+
+           "<b>"+hhmm(j.start)+"–"+hhmm(j.start+j.dur)+(j.exc?" Э":"")+(j.man?" М":"")+"</b>"+
+           "<i>"+j.cl+"</i><em>"+j.d+" · "+TYPE[j.type].n+"</em></button>";
+      });
+      h+="</div>";
+    }
+  });
+  c.innerHTML=h;
+  Array.prototype.forEach.call(c.querySelectorAll(".job"),function(b){
+    b.addEventListener("click",function(){cardKey=b.dataset.cl;renderCard()});
+  });
+}
+function renderLoad(){
+  var box=$("#load");var h='<div class="lbl" style="margin-bottom:2px">Загрузка исполнителей за неделю</div>';
+  var cap=(CLOSE-OPEN)*DAYS.length;
+  RES.forEach(function(r){
+    var used=jobs.filter(function(j){return j.res===r.id}).reduce(function(a,j){return a+j.dur},0);
+    var p=Math.round(used/cap*100);
+    h+='<div class="r"><span>'+r.name+'</span><span class="loadbar"><i style="width:'+p+'%"></i></span>'+
+       '<span class="mono" style="text-align:right">'+p+"%</span></div>";
+  });
+  box.innerHTML=h;
+}
+
+/* ---------- карточка клиента ---------- */
+var EQP={
+ "Панин В.В.":{model:"Тополь-8 ПР",depth:"2,3 м",salvo:"250 л",soil:"суглинок",addr:"Щёлково, СНТ «Радуга», уч. 41",phone:"+7 916 ***-40-18"},
+ "Носова И.В.":{model:"Тополь-5 ПР",depth:"—",salvo:"180 л",soil:"глина, высокий УГВ",addr:"Раменское, д. Клишева, уч. 7",phone:"+7 903 ***-22-71"},
+ "Ковалёв А.П.":{model:"не выбран",depth:"—",salvo:"—",soil:"глина",addr:"Пушкино, СНТ «Луч», уч. 12",phone:"+7 926 ***-19-04"},
+ "ООО «Верес»":{model:"Астра-8",depth:"—",salvo:"400 л",soil:"песок",addr:"Домодедово, 23 км трассы М4",phone:"+7 495 ***-60-12"},
+ "Агапов Р.Р.":{model:"Тополь-6 ПР",depth:"1,9 м",salvo:"200 л",soil:"песок",addr:"Одинцово, КП «Сосны», д. 18",phone:"+7 985 ***-77-39"},
+ "Ерохин П.С.":{model:"Астра-5",depth:"2,1 м",salvo:"180 л",soil:"суглинок",addr:"Балашиха, мкр. Керамик, д. 4",phone:"+7 977 ***-05-63"},
+ "Тимофеева О.Л.":{model:"не выбран",depth:"—",salvo:"—",soil:"—",addr:"Щёлково, ул. Садовая, д. 9",phone:"+7 915 ***-83-50"}
+};
+var HIST={
+ "Панин В.В.":[
+  ["Заявка с сайта","12 августа 2026","Форма «рассчитать септик», источник — Яндекс.Директ."],
+  ["Замер","28 сентября 2026","Инженер Сомов. Суглинок, УГВ 1,6 м, залповый сброс 250 л."],
+  ["КП согласовано","29 сентября 2026","Тополь-8 ПР под ключ, 214 500 ₽."],
+  ["Монтаж","1 октября 2026","Бригада №1, экскаватор. В работе."],
+  ["Гарантия","до 1 октября 2028","24 месяца при условии ТО раз в полгода."],
+  ["ТО-1","1 апреля 2027","Создано автоматически. Статус: запланировано."]],
+ "Ерохин П.С.":[
+  ["Заявка","3 марта 2025","Звонок, рекомендация соседа."],
+  ["Замер","11 марта 2025","Инженер Дятлов."],
+  ["Монтаж","30 сентября 2026","Бригада №2. Астра-5, экскаватор."],
+  ["Сервис аварийный","в очереди","Не откачивается, запах в доме. Приоритет — срочно."]],
+ "Агапов Р.Р.":[
+  ["Заявка","14 апреля 2025","Сайт, форма обратного звонка."],
+  ["Замер","1 октября 2026","Инженер Сомов, повторный выезд по расширению."],
+  ["Монтаж","22 апреля 2025","Бригада №3. Тополь-6 ПР."],
+  ["ТО-1","в очереди","По гарантии, замена фильтра."]]
+};
+function renderCard(){
+  var k=cardKey, e=EQP[k], box=$("#card");
+  var mine=jobs.filter(function(j){return j.cl===k}).sort(function(a,b){return a.day-b.day||a.start-b.start});
+  if(!e){
+    box.innerHTML='<div class="hd2"><h3>'+k+'</h3></div><p class="sm mut" style="margin-top:10px">Карточка заполняется после первого замера. Пока есть только назначенные работы.</p>';
+  } else {
+    var h='<div class="hd2"><div><h3>'+k+'</h3><div class="sm mut" style="margin-top:3px">'+e.addr+"</div></div>"+
+      '<span class="chip eq mono">'+e.phone+"</span></div>"+
+      '<div class="kv"><div><span>Оборудование</span><span>'+e.model+"</span></div>"+
+      "<div><span>Глубина залегания</span><span>"+e.depth+"</span></div>"+
+      "<div><span>Залповый сброс</span><span>"+e.salvo+"</span></div>"+
+      "<div><span>Грунт</span><span>"+e.soil+"</span></div></div>";
+    var hist=HIST[k];
+    if(hist){
+      h+='<div class="lbl" style="margin-top:18px">История работы</div><div class="tl">';
+      hist.forEach(function(x,i){
+        var future=/в очереди|запланировано|до /.test(x[1])||/запланировано/.test(x[2]);
+        h+='<div class="e"><div class="dot '+(future?"next":"on")+'">'+(future?"·":"✓")+"</div>"+
+           '<div class="b"><b>'+x[0]+'</b><div class="d">'+x[1]+"</div><p>"+x[2]+"</p></div></div>";
+      });
+      h+="</div>";
+    }
+    if(mine.length){
+      h+='<div class="lbl" style="margin-top:14px">В этой неделе</div><div class="sm mut" style="margin-top:6px">'+
+        mine.map(function(j){return TYPE[j.type].n+" — "+DAYS[j.day]+" "+hhmm(j.start)+"–"+hhmm(j.start+j.dur)+
+        ", "+RES.filter(function(r){return r.id===j.res})[0].name}).join("<br>")+"</div>";
+    }
+    box.innerHTML=h;
+  }
+}
+
+function renderAll(){renderBl();renderCal();renderLoad();renderCard()}
+$("#find").addEventListener("click",renderSlots);
+$("#reset").addEventListener("click",function(){reset();toast("Неделя сброшена к исходному расписанию.")});
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+reset();
+})();
+</script>
+
+</body>
+</html>
