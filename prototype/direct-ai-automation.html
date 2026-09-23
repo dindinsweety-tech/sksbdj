@@ -1,0 +1,543 @@
+<title>AI-надстройка над Яндекс.Директ — демо механики</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#FAFAF9; --surf:#FFFFFF; --surf2:#F4F4F2; --surf3:#EAEAE6;
+  --ink:#1C1C1A; --ink2:#55534E; --ink3:#87847D;
+  --line:#E2E1DC; --line2:#CFCDC6;
+  --acc:#6D28D9; --acc2:#7C3AED; --acc-s:#F2EDFD;
+  --keep:#047857; --keep-s:#E4F3EE;
+  --rev:#1D4ED8;  --rev-s:#E7EDFD;
+  --blk:#BE123C;  --blk-s:#FBE9ED;
+  --r:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131315; --surf:#1B1B1F; --surf2:#232328; --surf3:#2D2D33;
+    --ink:#F2F1EE; --ink2:#AEACA6; --ink3:#7E7B75;
+    --line:#2A2A30; --line2:#3A3A42;
+    --acc:#A78BFA; --acc2:#C4B5FD; --acc-s:#251E3B;
+    --keep:#34D399; --keep-s:#12291F;
+    --rev:#7DA8FF;  --rev-s:#15213A;
+    --blk:#FB7185;  --blk-s:#33141C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131315; --surf:#1B1B1F; --surf2:#232328; --surf3:#2D2D33;
+  --ink:#F2F1EE; --ink2:#AEACA6; --ink3:#7E7B75;
+  --line:#2A2A30; --line2:#3A3A42;
+  --acc:#A78BFA; --acc2:#C4B5FD; --acc-s:#251E3B;
+  --keep:#34D399; --keep-s:#12291F;
+  --rev:#7DA8FF;  --rev-s:#15213A;
+  --blk:#FB7185;  --blk-s:#33141C;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"Space Grotesk",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(22px,5.4vw,31px)}
+h2{font-size:clamp(18px,4.4vw,23px)}
+h3{font-size:16px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--acc);text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:5px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1060px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:12px;line-height:1.4}
+.mut{color:var(--ink2)}
+.mut3{color:var(--ink3)}
+.lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+
+/* header */
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:30}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;min-width:0;flex:1}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--acc);flex:none;
+  display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;font-family:"IBM Plex Mono",monospace}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#1B1B1F}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.brand b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+/* intro */
+.intro{padding:26px 0 8px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:66ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;border-radius:0 8px 8px 0;
+  font-size:13.5px;color:var(--ink2);max-width:66ch}
+
+/* sections */
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:26px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--acc);font-weight:600;border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:64ch}
+
+/* controls */
+.ctl{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.ctl .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.slider{flex:1;min-width:230px}
+.slider .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+input[type=range]{width:100%;margin:9px 0 0;accent-color:var(--acc);height:22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 17px;
+  border-radius:9px;font-weight:600;font-size:14.5px;background:var(--acc);color:#fff;white-space:nowrap}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#1B1B1F}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn:disabled{opacity:.45;cursor:default}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2);font-weight:500}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+
+/* stat tiles */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}
+@media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:12px 13px}
+.stat .v{font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600;letter-spacing:-.02em;margin-top:5px;
+  font-variant-numeric:tabular-nums}
+.stat .v.bad{color:var(--blk)}
+.stat .v.good{color:var(--keep)}
+
+/* bar */
+.split{margin-top:14px;background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:14px}
+.barrow{display:flex;height:26px;border-radius:5px;overflow:hidden;background:var(--surf3);margin-top:10px;gap:2px}
+.barrow i{display:block;height:100%;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.barrow i:first-child{border-radius:5px 0 0 5px}
+.barrow i:last-child{border-radius:0 5px 5px 0}
+.leg{display:flex;flex-wrap:wrap;gap:13px;margin-top:11px}
+.leg span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)}
+.leg i{width:11px;height:11px;border-radius:3px;flex:none}
+
+/* rows */
+.list{margin-top:14px;display:grid;gap:7px}
+.item{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:12px 13px;
+  border-left:3px solid var(--line2);transition:border-color .25s,background-color .25s}
+.item.keep{border-left-color:var(--keep)}
+.item.rev{border-left-color:var(--rev)}
+.item.blk{border-left-color:var(--blk);background:var(--blk-s)}
+.item .t{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.item .q{font-weight:500;font-size:14.5px;word-break:break-word;min-width:0}
+.tag{display:inline-flex;align-items:center;gap:5px;flex:none;border-radius:20px;padding:3px 9px;
+  font-size:11.5px;font-weight:600;white-space:nowrap}
+.tag.keep{background:var(--keep-s);color:var(--keep)}
+.tag.rev{background:var(--rev-s);color:var(--rev)}
+.tag.blk{background:var(--blk-s);color:var(--blk)}
+.tag.wait{background:var(--surf3);color:var(--ink3)}
+.item .m{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:7px}
+.item .m b{font-weight:500;color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+.item .why{margin-top:8px;font-size:13px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px}
+.item .why em{font-style:normal;color:var(--acc);font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+
+/* code */
+.code{margin-top:13px;background:var(--surf2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.code .h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line)}
+.code pre{margin:0;padding:12px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.6}
+.k{color:var(--acc)}.s{color:var(--keep)}.n{color:var(--rev)}.c{color:var(--ink3)}
+
+/* calls */
+.calls{display:grid;gap:7px;margin-top:14px}
+@media(min-width:720px){.calls{grid-template-columns:repeat(2,1fr)}}
+.call{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:12px 13px;text-align:left;
+  display:block;width:100%;transition:border-color .2s}
+.call:hover{border-color:var(--acc)}
+.call[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.call .who{font-weight:600;font-size:14px}
+.call .pv{margin-top:6px;font-size:13px;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.panel{margin-top:13px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.tr{margin-top:10px;display:grid;gap:8px}
+.tr div{font-size:13.5px;line-height:1.5}
+.tr .op{color:var(--ink3)}
+.tr b{font-weight:600;color:var(--acc)}
+.kv{display:grid;gap:6px;margin-top:12px}
+.kv div{display:flex;gap:10px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"IBM Plex Mono",monospace;text-align:right;font-size:13px}
+
+/* telegram */
+.tg{margin-top:14px;background:var(--surf2);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.msg{background:var(--surf);border:1px solid var(--line);border-radius:12px 12px 12px 4px;padding:13px 14px;
+  font-size:13.5px;line-height:1.62;white-space:pre-wrap;word-break:break-word;max-width:520px}
+.msg b{font-weight:600}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo mono">AI</div>
+      <b>Надстройка над Яндекс.Директ</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Чистка трафика, квалификация лидов и обучение автостратегий — рабочая логика</h1>
+    <p>Это не макет дашборда. Ниже четыре механики из задачи, каждая считает на реальных формулах: классификатор поисковых фраз с порогом строгости, антифрод-скоринг площадок РСЯ, разбор звонка в офлайн-конверсию и сборка ежедневного отчёта. Цифры в отчёте пересчитываются из того, что вы нажали выше.</p>
+    <div class="note">Данные — обезличенный слепок кабинета из ниши «дезинсекция / просушка, Москва и МО». В демо роль LLM играет детерминированный классификатор, чтобы вердикты воспроизводились: в проде на этом месте вызов YandexGPT / Claude с тем же контрактом ответа <span class="mono">{verdict, confidence, reason}</span>.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Чистка поисковых фраз</h2></div>
+    <p class="sdesc">Порог строгости задаёт, с какой уверенности LLM фраза уходит в минус-слова автоматически, а какая остаётся человеку на ревью. Двигайте ползунок — вердикты и экономия пересчитываются.</p>
+
+    <div class="ctl">
+      <div class="row">
+        <div class="slider">
+          <div class="top"><span class="lbl">Строгость классификатора</span><span class="mono" id="thVal" style="font-size:13px;font-weight:600"></span></div>
+          <input type="range" id="th" min="1" max="5" step="1" value="3">
+          <div class="xs mut3" id="thHint" style="margin-top:6px"></div>
+        </div>
+        <button class="btn" id="runQ" type="button">Прогнать через LLM</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="lbl">Фраз в выборке</div><div class="v mono" id="s1">—</div></div>
+      <div class="stat"><div class="lbl">В минус-слова</div><div class="v mono bad" id="s2">—</div></div>
+      <div class="stat"><div class="lbl">Экономия / мес</div><div class="v mono good" id="s3">—</div></div>
+      <div class="stat"><div class="lbl">На ревью</div><div class="v mono" id="s4">—</div></div>
+    </div>
+
+    <div class="split">
+      <span class="lbl">Расход за месяц по вердиктам</span>
+      <div class="barrow" id="bar"><i style="width:100%;background:var(--surf3)"></i></div>
+      <div class="leg">
+        <span><i style="background:var(--keep)"></i>Целевые<b class="mono" style="margin-left:4px" id="lg1"></b></span>
+        <span><i style="background:var(--rev)"></i>На ревью<b class="mono" style="margin-left:4px" id="lg2"></b></span>
+        <span><i style="background:var(--blk)"></i>Мусор<b class="mono" style="margin-left:4px" id="lg3"></b></span>
+      </div>
+    </div>
+
+    <div class="list" id="qList"></div>
+
+    <div class="code" id="qApi" hidden>
+      <div class="h"><span class="lbl">POST → api.direct.yandex.com/json/v5/adgroups · update</span><button class="btn-g xs" id="qCopy" type="button" style="padding:5px 9px;border-radius:6px">Копировать</button></div>
+      <pre class="mono" id="qJson"></pre>
+    </div>
+    <div style="margin-top:11px"><button class="btn-g" id="qShow" type="button" style="min-height:40px;padding:0 14px;border-radius:9px">Показать запрос к Direct API</button></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Антифрод: площадки РСЯ</h2></div>
+    <p class="sdesc">Скликивание ботами видно не по одному признаку, а по их совпадению. Скоринг считается по формуле ниже, площадка уходит в бан при score ≥ порога. Формула открытая — её можно спорить и крутить, в отличие от «чёрного ящика» сервиса-антифрода.</p>
+
+    <div class="ctl">
+      <div class="row">
+        <div class="slider">
+          <div class="top"><span class="lbl">Порог блокировки, score</span><span class="mono" id="fsVal" style="font-size:13px;font-weight:600"></span></div>
+          <input type="range" id="fs" min="30" max="85" step="5" value="60">
+          <div class="xs mut3" style="margin-top:6px">score = 40·(отказы) + 35·(доля сессий &lt; 5 c) + 15·(аномалия CTR) + 10·(нулевые конверсии при расходе)</div>
+        </div>
+      </div>
+    </div>
+    <div class="list" id="pList"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Звонок → офлайн-конверсия</h2></div>
+    <p class="sdesc">Автостратегия учится на том, что вы ей отдаёте. Если в Метрику уходит каждая поднятая трубка, Директ оптимизируется на спам и «я просто спросить». Здесь звонок разбирается на поля, получает вердикт и превращается в payload офлайн-конверсии — но только если он целевой.</p>
+    <div class="calls" id="cList"></div>
+    <div class="panel" id="cPanel" hidden></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">04</span><h2>Ежедневный отчёт в Telegram</h2></div>
+    <p class="sdesc">Собирается из состояния трёх панелей выше. Меняете строгость классификатора или порог антифрода — меняется и отчёт.</p>
+    <div class="tg"><div class="msg" id="tgMsg"></div></div>
+    <div style="margin-top:11px"><button class="btn-g" id="tgUp" type="button" style="min-height:40px;padding:0 14px;border-radius:9px">Пересобрать отчёт</button></div>
+  </section>
+
+  <footer>
+    Демо технических механик под задачу автоматизации Яндекс.Директа. Денис, Telegram @hockey81.
+  </footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+var pct=function(x){return Math.round(x*100)+"%"};
+
+/* ---------- 1. поисковые фразы ---------- */
+var PH=[
+ {q:"уничтожение клопов в квартире москва",cat:"коммерческий",spend:4200,clicks:18,conv:3,score:.04,
+  reason:"Прямой коммерческий интент, услуга и гео совпадают с оффером. Есть конверсии."},
+ {q:"просушка стен после залива квартиры",cat:"коммерческий",spend:5400,clicks:19,conv:4,score:.05,
+  reason:"Профильная услуга, формулировка проблемы клиента. Лучший сегмент по конверсии."},
+ {q:"срочно уничтожить тараканов в кафе",cat:"B2B, срочный",spend:3800,clicks:9,conv:2,score:.06,
+  reason:"B2B-сегмент с высоким чеком, маркер срочности. Расширять, а не минусовать."},
+ {q:"дезинсекция цена",cat:"коммерческий, широкий",spend:3100,clicks:22,conv:1,score:.22,
+  reason:"Коммерческий, но без гео и без вида вредителя. Оставить, следить за CPA."},
+ {q:"обработка от клопов отзывы",cat:"инфо + выбор",spend:1400,clicks:11,conv:1,score:.46,
+  reason:"Стадия выбора подрядчика: пользователь сравнивает. Конверсия есть, но ниже средней."},
+ {q:"просушка бетона после заливки пола",cat:"смежная услуга",spend:1500,clicks:8,conv:0,score:.58,
+  reason:"Строительная сушка, а не устранение последствий залива. Целевая, только если оффер это покрывает — вопрос заказчику."},
+ {q:"экотеррамед дезинсекция",cat:"бренд конкурента",spend:800,clicks:6,conv:0,score:.62,
+  reason:"Брендовый запрос конкурента. Трафик дорогой и холодный, но иногда перехватывается. Решение за маркетологом."},
+ {q:"дезинфекция covid помещений",cat:"устаревший спрос",spend:700,clicks:5,conv:0,score:.71,
+  reason:"Спрос умер вместе с регламентами 2021 года. Ноль конверсий за 3 месяца."},
+ {q:"средство от тараканов купить в магазине",cat:"товарный",spend:1900,clicks:14,conv:0,score:.88,
+  reason:"Товарный интент: человек ищет баллончик, а не бригаду. Услугу не купит."},
+ {q:"осушитель воздуха купить",cat:"товарный",spend:2300,clicks:16,conv:0,score:.9,
+  reason:"Покупка оборудования вместо заказа услуги. Прямой конкурент офферу по бюджету."},
+ {q:"как избавиться от клопов самостоятельно народными средствами",cat:"DIY",spend:2800,clicks:31,conv:0,score:.93,
+  reason:"Явный DIY-интент: пользователь решил делать сам. Самая дорогая мусорная группа по кликам."},
+ {q:"клопы фото укусов на теле",cat:"инфо",spend:2100,clicks:27,conv:0,score:.94,
+  reason:"Информационный запрос, стадия «что это у меня». Коммерческого намерения нет."},
+ {q:"работа дезинсектором вакансии москва",cat:"вакансии",spend:1200,clicks:9,conv:0,score:.96,
+  reason:"Соискатель, а не клиент. Минусовать вместе с «вакансии», «зарплата», «обучение»."},
+ {q:"дезинсекция бесплатно от государства",cat:"бесплатно",spend:1100,clicks:13,conv:0,score:.96,
+  reason:"Ищет бесплатную обработку. Платить не планирует по определению."},
+ {q:"санэпидемстанция москва официальный сайт телефон",cat:"госорган",spend:1600,clicks:12,conv:0,score:.97,
+  reason:"Навигационный запрос к госучреждению. Пользователь ищет не подрядчика."},
+ {q:"дезинсекция спб",cat:"чужое гео",spend:900,clicks:7,conv:0,score:.98,
+  reason:"Гео вне зоны выезда (Москва и МО). Минусовать на уровне кампании."}
+];
+var HINTS={1:"Только очевидный мусор. Минимум ложных срабатываний, но часть слива останется.",
+ 2:"Осторожный режим. Хорош на старте, пока не набрана статистика по спорным фразам.",
+ 3:"Баланс. Спорное уходит человеку на ревью, явный мусор режется сам.",
+ 4:"Агрессивно. Режет смежные и брендовые запросы — нужен присмотр первые недели.",
+ 5:"Максимум. Оставляет только прямой коммерческий интент, возможна потеря объёма."};
+var THR={1:.90,2:.80,3:.70,4:.60,5:.50};
+var ran=false, qState=[];
+
+function classify(){
+  var t=THR[+$("#th").value], band=t-.18;
+  qState=PH.map(function(p){
+    var v=p.score>=t?"blk":(p.score>=band?"rev":"keep");
+    return {p:p,v:v};
+  });
+  return qState;
+}
+function verdictName(v){return v==="blk"?"Минусовать":v==="rev"?"На ревью":"Оставить"}
+function icon(v){return v==="blk"?"✕":v==="rev"?"?":"✓"}
+
+function renderQ(){
+  var t=+$("#th").value;
+  $("#thVal").textContent=t+" / 5";
+  $("#thHint").textContent=HINTS[t];
+  var list=$("#qList"); list.innerHTML="";
+  var sum={keep:0,rev:0,blk:0},cnt={keep:0,rev:0,blk:0};
+  var st=ran?classify():PH.map(function(p){return {p:p,v:null}});
+  st.forEach(function(r){
+    if(r.v){sum[r.v]+=r.p.spend;cnt[r.v]++}
+    var el=document.createElement("div");
+    el.className="item"+(r.v?" "+r.v:"");
+    var tag=r.v?'<span class="tag '+r.v+'">'+icon(r.v)+" "+verdictName(r.v)+"</span>"
+               :'<span class="tag wait">ждёт разбора</span>';
+    el.innerHTML='<div class="t"><div class="q">'+r.p.q+"</div>"+tag+"</div>"+
+      '<div class="m sm mut"><span>расход <b>'+fmt(r.p.spend)+" ₽</b></span>"+
+      "<span>клики <b>"+r.p.clicks+"</b></span>"+
+      "<span>конверсии <b>"+r.p.conv+"</b></span>"+
+      "<span>тип <b>"+r.p.cat+"</b></span></div>"+
+      (r.v?'<div class="why">'+r.p.reason+' <em>confidence '+r.p.score.toFixed(2)+"</em></div>":"");
+    list.appendChild(el);
+  });
+  var total=sum.keep+sum.rev+sum.blk;
+  $("#s1").textContent=PH.length;
+  $("#s2").textContent=ran?cnt.blk:"—";
+  $("#s3").textContent=ran?fmt(sum.blk)+" ₽":"—";
+  $("#s4").textContent=ran?cnt.rev:"—";
+  var bar=$("#bar");
+  if(!ran||!total){bar.innerHTML='<i style="width:100%;background:var(--surf3)"></i>'}
+  else{
+    bar.innerHTML='<i style="width:'+(sum.keep/total*100)+'%;background:var(--keep)"></i>'+
+      '<i style="width:'+(sum.rev/total*100)+'%;background:var(--rev)"></i>'+
+      '<i style="width:'+(sum.blk/total*100)+'%;background:var(--blk)"></i>';
+  }
+  $("#lg1").textContent=ran?fmt(sum.keep)+" ₽":"—";
+  $("#lg2").textContent=ran?fmt(sum.rev)+" ₽":"—";
+  $("#lg3").textContent=ran?fmt(sum.blk)+" ₽":"—";
+  if(ran)renderQApi();
+}
+
+function renderQApi(){
+  var neg=qState.filter(function(r){return r.v==="blk"}).map(function(r){return r.p.q});
+  var j='<span class="c">// минус-фразы добавляются к группе, не переписывая существующие</span>\n{\n'+
+   '  <span class="k">"method"</span>: <span class="s">"update"</span>,\n'+
+   '  <span class="k">"params"</span>: {\n'+
+   '    <span class="k">"AdGroups"</span>: [{\n'+
+   '      <span class="k">"Id"</span>: <span class="n">5214880371</span>,\n'+
+   '      <span class="k">"NegativeKeywords"</span>: { <span class="k">"Items"</span>: [\n'+
+   neg.map(function(q){return '        <span class="s">"'+q+'"</span>'}).join(",\n")+"\n      ] }\n    }]\n  }\n}";
+  $("#qJson").innerHTML=j;
+}
+
+$("#th").addEventListener("input",renderQ);
+$("#runQ").addEventListener("click",function(){
+  var b=this;b.disabled=true;b.textContent="Классифицирую…";
+  setTimeout(function(){ran=true;renderQ();b.disabled=false;b.textContent="Переклассифицировать";},550);
+});
+$("#qShow").addEventListener("click",function(){
+  if(!ran){$("#runQ").click();}
+  var c=$("#qApi");c.hidden=!c.hidden;
+  this.textContent=c.hidden?"Показать запрос к Direct API":"Скрыть запрос";
+});
+$("#qCopy").addEventListener("click",function(){
+  var txt=$("#qJson").textContent;var b=this;
+  if(navigator.clipboard)navigator.clipboard.writeText(txt);
+  b.textContent="Скопировано";setTimeout(function(){b.textContent="Копировать"},1400);
+});
+
+/* ---------- 2. площадки РСЯ ---------- */
+var PL=[
+ {h:"com.weather.free (мобильное приложение)",shows:31000,clicks:420,bounce:.99,short:.97,conv:0,spend:9800},
+ {h:"kinogo-online.xyz",shows:18000,clicks:140,bounce:.92,short:.88,conv:0,spend:4100},
+ {h:"vsevkurse-news.ru",shows:12000,clicks:95,bounce:.90,short:.85,conv:0,spend:2700},
+ {h:"com.puzzle.blocks (мобильное приложение)",shows:42000,clicks:310,bounce:.97,short:.94,conv:0,spend:7300},
+ {h:"otzovik.com",shows:9000,clicks:60,bounce:.61,short:.40,conv:1,spend:1800},
+ {h:"avito.ru",shows:7000,clicks:44,bounce:.52,short:.25,conv:2,spend:1500},
+ {h:"mail.ru",shows:25000,clicks:190,bounce:.55,short:.30,conv:3,spend:5200},
+ {h:"dzen.ru",shows:40000,clicks:260,bounce:.48,short:.22,conv:5,spend:6900}
+];
+PL.forEach(function(p){
+  p.ctr=p.clicks/p.shows;
+  var anom=Math.max(0,Math.min(1,(p.ctr*100-.7)/.7));
+  p.anom=anom;
+  p.score=Math.round(40*p.bounce+35*p.short+15*anom+10*((p.conv===0&&p.spend>1000)?1:0));
+});
+function renderP(){
+  var t=+$("#fs").value;
+  $("#fsVal").textContent=t;
+  var list=$("#pList");list.innerHTML="";
+  PL.slice().sort(function(a,b){return b.score-a.score}).forEach(function(p){
+    var v=p.score>=t?"blk":(p.score>=t-12?"rev":"keep");
+    var el=document.createElement("div");
+    el.className="item "+v;
+    el.innerHTML='<div class="t"><div class="q">'+p.h+"</div>"+
+      '<span class="tag '+v+'">'+icon(v)+" "+(v==="blk"?"Блокировать":v==="rev"?"Под наблюдением":"Оставить")+"</span></div>"+
+      '<div class="m sm mut"><span>score <b>'+p.score+"</b></span>"+
+      "<span>CTR <b>"+(p.ctr*100).toFixed(2)+"%</b></span>"+
+      "<span>отказы <b>"+pct(p.bounce)+"</b></span>"+
+      "<span>&lt;5 c <b>"+pct(p.short)+"</b></span>"+
+      "<span>конверсии <b>"+p.conv+"</b></span>"+
+      "<span>расход <b>"+fmt(p.spend)+" ₽</b></span></div>"+
+      '<div class="why">'+(v==="blk"
+        ? "Совпали "+(p.anom>.4?"аномальный CTR, ":"")+"отказы "+pct(p.bounce)+" и "+pct(p.short)+" сессий короче пяти секунд при нуле конверсий. Поведение ботовой сетки, а не людей."
+        : v==="rev" ? "Метрики на границе. Не блокируем, но снижаем ставку и смотрим неделю."
+        : "Поведение живой аудитории: досматривают, возвращаются, дают конверсии.")+
+      ' <em>порог '+t+"</em></div>";
+    list.appendChild(el);
+  });
+}
+$("#fs").addEventListener("input",function(){renderP();buildTg()});
+
+/* ---------- 3. звонки ---------- */
+var CALLS=[
+ {who:"+7 903 ***-14-22 · 3 мин 41 с",prev:"Клопы в двушке, Люберцы, готова принять бригаду завтра утром",
+  lines:[["Оператор","Здравствуйте, служба обработки, слушаю вас."],
+    ["Клиент","Здравствуйте. У нас клопы, двухкомнатная квартира, Люберцы. Соседи травили — к нам полезли."],
+    ["Оператор","Площадь примерно какая?"],
+    ["Клиент","Пятьдесят четыре квадрата. Можно завтра с утра? Я до двенадцати дома."],
+    ["Оператор","Да, есть окно на девять. Обработка холодным туманом, шесть с половиной тысяч, гарантия год."],
+    ["Клиент","Хорошо, записывайте. Адрес диктую…"]],
+  f:{"Услуга":"Дезинсекция, клопы","Гео":"Люберцы, МО — в зоне выезда","Объект":"Квартира, 54 м²",
+     "Срочность":"Завтра, 09:00","Названа цена":"6 500 ₽","Итог":"Записан на выезд"},
+  ok:true,price:6500,target:"call_qualified_deal",yclid:"17284419300011"},
+ {who:"+7 926 ***-08-73 · 1 мин 12 с",prev:"Спрашивает цену на тараканов, взял паузу подумать",
+  lines:[["Клиент","Добрый день, вы тараканов травите?"],
+    ["Оператор","Да, работаем по Москве и области."],
+    ["Клиент","А сколько будет стоить однушку?"],
+    ["Оператор","От трёх тысяч, зависит от степени заражения."],
+    ["Клиент","Понял, спасибо, я подумаю и перезвоню."]],
+  f:{"Услуга":"Дезинсекция, тараканы","Гео":"Москва — в зоне выезда","Объект":"Квартира, 1 комната",
+     "Срочность":"Не обозначена","Названа цена":"от 3 000 ₽","Итог":"Взял паузу"},
+  ok:true,price:3000,target:"call_qualified_lead",yclid:"17284420155096"},
+ {who:"+7 495 ***-77-01 · 0 мин 48 с",prev:"Холодный звонок от поставщика оборудования",
+  lines:[["Клиент","Здравствуйте, компания «ХимТоргСнаб». Мы поставляем профессиональные генераторы тумана…"],
+    ["Оператор","Спасибо, нам не нужно."],
+    ["Клиент","А может, каталог на почту отправить?"],
+    ["Оператор","Не нужно, до свидания."]],
+  f:{"Услуга":"—","Гео":"—","Объект":"—","Срочность":"—","Названа цена":"—","Итог":"Входящая реклама"},
+  ok:false,reason:"Холодное предложение от поставщика. Не клиент — в Метрику не передаём, иначе автостратегия начнёт искать таких же."},
+ {who:"+7 910 ***-52-16 · 2 мин 03 с",prev:"Нужна просушка после потопа, но Тверь — вне зоны выезда",
+  lines:[["Клиент","У нас залило квартиру, нужна просушка стен."],
+    ["Оператор","Подскажите адрес?"],
+    ["Клиент","Тверь, центр."],
+    ["Оператор","К сожалению, мы работаем по Москве и области, в Тверь не выезжаем."],
+    ["Клиент","Жаль. А кого посоветуете?"]],
+  f:{"Услуга":"Просушка после залива","Гео":"Тверь — вне зоны выезда","Объект":"Квартира",
+     "Срочность":"Высокая","Названа цена":"—","Итог":"Отказ по гео"},
+  ok:false,reason:"Интент целевой, но гео вне зоны выезда. В офлайн-конверсии не идёт, зато это сигнал на минусовку и корректировку гео-таргетинга."}
+];
+function renderCalls(){
+  var l=$("#cList");l.innerHTML="";
+  CALLS.forEach(function(c,i){
+    var b=document.createElement("button");
+    b.type="button";b.className="call";b.setAttribute("aria-pressed","false");
+    b.innerHTML='<div class="who">'+c.who+'</div><div class="pv">'+c.prev+"</div>";
+    b.addEventListener("click",function(){openCall(i)});
+    l.appendChild(b);
+  });
+}
+function openCall(i){
+  var c=CALLS[i];
+  Array.prototype.forEach.call(document.querySelectorAll(".call"),function(b,j){
+    b.setAttribute("aria-pressed",j===i?"true":"false")});
+  var p=$("#cPanel");p.hidden=false;
+  var kv="";for(var k in c.f){kv+="<div><span>"+k+"</span><span>"+c.f[k]+"</span></div>"}
+  var tr=c.lines.map(function(l){
+    return "<div><span class='op'>"+l[0]+":</span> "+(l[0]==="Клиент"?"<b>"+l[1]+"</b>":l[1])+"</div>"}).join("");
+  var api=c.ok
+    ? '<div class="code"><div class="h"><span class="lbl">POST → api-metrika.yandex.net · offline_conversions/upload</span></div>'+
+      '<pre class="mono">{\n  <span class="k">"Yclid"</span>: <span class="s">"'+c.yclid+'"</span>,\n'+
+      '  <span class="k">"Target"</span>: <span class="s">"'+c.target+'"</span>,\n'+
+      '  <span class="k">"DateTime"</span>: <span class="n">1790160420</span>,\n'+
+      '  <span class="k">"Price"</span>: <span class="n">'+c.price+'</span>,\n'+
+      '  <span class="k">"Currency"</span>: <span class="s">"RUB"</span>\n}</pre></div>'
+    : '<div class="why" style="border:0;padding:0;margin-top:12px">'+c.reason+"</div>";
+  p.innerHTML='<span class="lbl">Транскрибация</span><div class="tr">'+tr+"</div>"+
+    '<div style="margin-top:16px" class="lbl">Разбор LLM</div><div class="kv">'+kv+"</div>"+
+    '<div style="margin-top:14px"><span class="tag '+(c.ok?"keep":"blk")+'">'+(c.ok?"✓ Целевой — передаём в Метрику":"✕ Нецелевой — не передаём")+"</span></div>"+api;
+}
+
+/* ---------- 4. отчёт ---------- */
+function buildTg(){
+  var t=THR[+$("#th").value], band=t-.18;
+  var blocked=0,saved=0,review=0;
+  PH.forEach(function(p){
+    if(p.score>=t){blocked++;saved+=p.spend}
+    else if(p.score>=band){review++}
+  });
+  var ft=+$("#fs").value, fb=0,fspend=0;
+  PL.forEach(function(p){if(p.score>=ft){fb++;fspend+=p.spend}});
+  var leads=CALLS.filter(function(c){return c.ok}).length;
+  var junkCalls=CALLS.length-leads;
+  var total=saved+fspend;
+  $("#tgMsg").innerHTML="🧹 <b>Отчёт за 22 сентября</b>\n\n"+
+    "<b>Поисковые фразы</b>\n"+
+    "  • в минус-слова: "+blocked+"\n"+
+    "  • на ревью: "+review+"\n"+
+    "  • не сольётся за месяц: "+fmt(saved)+" ₽\n\n"+
+    "<b>Площадки РСЯ</b>\n"+
+    "  • заблокировано: "+fb+"\n"+
+    "  • снято с расхода: "+fmt(fspend)+" ₽\n\n"+
+    "<b>Звонки</b>\n"+
+    "  • разобрано: "+CALLS.length+"\n"+
+    "  • целевых → в Метрику: "+leads+"\n"+
+    "  • отсеяно (спам, чужое гео): "+junkCalls+"\n\n"+
+    "💰 <b>Итого сэкономлено: "+fmt(total)+" ₽/мес</b>\n\n"+
+    "<span class='mut'>Спорные фразы ждут решения — /review</span>";
+}
+$("#tgUp").addEventListener("click",buildTg);
+
+/* ---------- тема ---------- */
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+renderQ();renderP();renderCalls();openCall(0);buildTg();
+})();
+</script>
