@@ -1,0 +1,410 @@
+<title>Робот-обзвонщик для логистики — пульт кампании</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F8F8F7; --surf:#FFFFFF; --surf2:#F1F1EF; --surf3:#E4E4E1;
+  --ink:#18181A; --ink2:#52525A; --ink3:#84848C;
+  --line:#E3E3E0; --line2:#CACAC6;
+  --acc:#C2410C; --acc2:#EA580C; --acc-s:#FBEDE5;
+  --run:#047857; --run-s:#E3F2EC;
+  --hold:#475569; --hold-s:#ECEEF1;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111112; --surf:#1A1A1C; --surf2:#222225; --surf3:#2D2D31;
+    --ink:#F1F1F0; --ink2:#A8A8AF; --ink3:#78787F;
+    --line:#272729; --line2:#38383C;
+    --acc:#FB923C; --acc2:#FDBA74; --acc-s:#2C1A0E;
+    --run:#34D399; --run-s:#11291F;
+    --hold:#94A3B8; --hold-s:#1D2229;
+    --bad:#FB7185; --bad-s:#331419;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111112; --surf:#1A1A1C; --surf2:#222225; --surf3:#2D2D31;
+  --ink:#F1F1F0; --ink2:#A8A8AF; --ink3:#78787F;
+  --line:#272729; --line2:#38383C;
+  --acc:#FB923C; --acc2:#FDBA74; --acc-s:#2C1A0E;
+  --run:#34D399; --run-s:#11291F;
+  --hold:#94A3B8; --hold-s:#1D2229;
+  --bad:#FB7185; --bad-s:#331419;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Figtree",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.022em;line-height:1.16;text-wrap:balance}
+h1{font-size:clamp(22px,5.4vw,32px)}
+h2{font-size:clamp(18px,4.4vw,23px)}
+h3{font-size:15.5px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"Fira Code",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"Fira Code",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#111112}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:66ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:66ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"Fira Code",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:64ch}
+
+/* пульт */
+.pult{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.stbar{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:7px;border-radius:22px;padding:6px 13px;font-size:13px;font-weight:600}
+.pill.run{background:var(--run-s);color:var(--run)}
+.pill.hold{background:var(--hold-s);color:var(--hold)}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.pill.run .dot{animation:bl 1.1s ease-in-out infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.25}}
+.clock{font-family:"Fira Code",monospace;font-size:15px;font-weight:500}
+.why{margin-top:10px;font-size:13.5px;color:var(--ink2);background:var(--surf2);border-radius:9px;padding:10px 12px}
+.why b{color:var(--acc)}
+.rowbtn{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 17px;
+  border-radius:10px;font-weight:600;font-size:14.5px;background:var(--acc);color:#fff}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#111112}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2);font-weight:500}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+
+.sets{display:grid;gap:13px;margin-top:16px}
+@media(min-width:720px){.sets{grid-template-columns:repeat(2,1fr)}}
+.f .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.f .v{font-family:"Fira Code",monospace;font-size:13px;font-weight:500}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--acc);height:22px}
+
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:16px}
+@media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px}
+.stat .v{font-family:"Fira Code",monospace;font-size:21px;font-weight:500;letter-spacing:-.02em;margin-top:5px}
+.stat .v.acc{color:var(--acc)} .stat .v.ok{color:var(--run)}
+.bar{height:8px;border-radius:5px;background:var(--surf3);margin-top:12px;overflow:hidden;display:flex;gap:2px}
+.bar i{display:block;height:100%;transition:width .35s linear}
+.leg{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px}
+.leg span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2)}
+.leg i{width:11px;height:11px;border-radius:3px;flex:none}
+
+.cols{display:grid;gap:13px;margin-top:16px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,380px);align-items:start}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.log{margin-top:9px;display:grid;gap:4px;max-height:260px;overflow-y:auto;
+  font-family:"Fira Code",monospace;font-size:11.5px;line-height:1.55}
+.log div{display:flex;gap:9px;color:var(--ink2)}
+.log i{font-style:normal;color:var(--ink3);flex:none}
+.log .g{color:var(--run)} .log .o{color:var(--acc)} .log .r{color:var(--bad)} .log .h{color:var(--hold)}
+.lead{background:var(--surf2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:7px;
+  border-left:3px solid var(--acc)}
+.lead .t{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lead .c{font-weight:600;font-size:14px}
+.lead .m{margin-top:5px;font-size:12.5px;color:var(--ink2)}
+.lead .m b{font-family:"Fira Code",monospace;font-weight:500;color:var(--ink)}
+.lead button{margin-top:9px;min-height:38px;padding:0 13px;border-radius:9px;border:1px solid var(--line2);
+  font-size:13px;color:var(--ink2);font-weight:500}
+.lead button:hover{border-color:var(--acc);color:var(--acc)}
+.empty{color:var(--ink3);font-size:13.5px;font-style:italic}
+
+/* диалог */
+.talk{display:grid;gap:8px;margin-top:16px}
+.tb{max-width:84%;border-radius:13px;padding:9px 12px;font-size:14px;line-height:1.5}
+.tb.bot{background:var(--acc-s);align-self:flex-start;border-bottom-left-radius:4px}
+.tb.cl{background:var(--surf2);align-self:flex-end;border-bottom-right-radius:4px}
+.tb b{font-weight:600}
+.tb .who{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px;
+  font-family:"Fira Code",monospace}
+.kv{display:grid;gap:6px;margin-top:11px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"Fira Code",monospace;font-size:12.5px;text-align:right}
+.kv .tot span{font-weight:700;color:var(--acc);font-size:14px}
+pre{margin:10px 0 0;background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px;
+  overflow-x:auto;font-family:"Fira Code",monospace;font-size:11.5px;line-height:1.6}
+.k{color:var(--acc)} .s{color:var(--run)} .n{color:var(--hold)} .c2{color:var(--ink3)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3h-3v4c0 7.2 6.3 13.5 13.5 13.5h4v-3l-4.5-2-2.5 2.5C11 16.5 7.5 13 6 9.5L8.5 7z"/></svg></div>
+      <b>Робот-обзвонщик · пульт кампании</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Обзвон, который сам тормозит, когда логисты не успевают</h1>
+    <p>В брифе есть фраза, мимо которой обычно проходят: «если лидов окажется слишком много, робот должен приостанавливаться». Это и есть главный узел — дроссель. Ниже он работает по-настоящему: запустите кампанию и смотрите, как робот сам встаёт на паузу при переполнении очереди и сам возобновляется, когда логисты разобрали лиды.</p>
+    <div class="note">Модель воронки взята консервативная: дозвон 38 %, из поднявших трубку 8 % просят КП и 3 % готовы обсуждать перевозку сейчас. Одна секунда демо — одна минута рабочего дня.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Пульт</h2></div>
+    <p class="sdesc">Крутите лимиты на ходу: сколько линий, сколько горячих лидов терпит очередь, сколько логистов на смене. Робот подстраивается в реальном времени.</p>
+
+    <div class="pult">
+      <div class="stbar">
+        <span class="pill hold" id="pill"><i class="dot"></i><span id="pillTxt">остановлен</span></span>
+        <span class="clock mono" id="clock">09:00</span>
+        <span class="sm mut3" id="left"></span>
+      </div>
+      <div class="why" id="why">Нажмите «Запустить кампанию».</div>
+      <div class="rowbtn">
+        <button class="btn" id="run" type="button">Запустить кампанию</button>
+        <button class="btn btn-g" id="rst" type="button">Сбросить</button>
+      </div>
+      <div class="sets">
+        <div class="f"><div class="top"><span class="lbl">Одновременных линий</span><span class="v" id="vLines"></span></div>
+          <input type="range" id="lines" min="1" max="30" step="1" value="12"></div>
+        <div class="f"><div class="top"><span class="lbl">Потолок очереди горячих лидов</span><span class="v" id="vCap"></span></div>
+          <input type="range" id="cap" min="1" max="20" step="1" value="6"></div>
+        <div class="f"><div class="top"><span class="lbl">Логистов на смене</span><span class="v" id="vOps"></span></div>
+          <input type="range" id="ops" min="1" max="8" step="1" value="2"></div>
+        <div class="f"><div class="top"><span class="lbl">Лимит лидов в час</span><span class="v" id="vHr"></span></div>
+          <input type="range" id="hr" min="5" max="60" step="5" value="25"></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="lbl">Набрано</div><div class="v mono" id="s1">0</div></div>
+      <div class="stat"><div class="lbl">Дозвонились</div><div class="v mono" id="s2">0</div></div>
+      <div class="stat"><div class="lbl">Запросили КП</div><div class="v mono acc" id="s3">0</div></div>
+      <div class="stat"><div class="lbl">Горячих лидов</div><div class="v mono ok" id="s4">0</div></div>
+    </div>
+    <div class="bar" id="bar"><i style="width:100%;background:var(--surf3)"></i></div>
+    <div class="leg">
+      <span><i style="background:var(--hold)"></i>Недозвон<b class="mono" style="margin-left:4px" id="l1">0</b></span>
+      <span><i style="background:var(--ink3)"></i>Отказ<b class="mono" style="margin-left:4px" id="l2">0</b></span>
+      <span><i style="background:var(--acc)"></i>КП на почту<b class="mono" style="margin-left:4px" id="l3">0</b></span>
+      <span><i style="background:var(--run)"></i>Горячий<b class="mono" style="margin-left:4px" id="l4">0</b></span>
+    </div>
+
+    <div class="cols">
+      <div class="box"><span class="lbl">Лог звонков</span><div class="log" id="log"></div></div>
+      <div class="box"><span class="lbl">Очередь логистов</span><div id="q" style="margin-top:10px"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Разговор и расчёт цены</h2></div>
+    <p class="sdesc">Робот бесполезен, если на вопрос «а сколько до Казани?» отвечает «вам перезвонят». Цена считается прямо в диалоге по вашему тарифу, а не берётся из скрипта.</p>
+    <div class="cols">
+      <div class="box">
+        <span class="lbl">Транскрипт · ООО «Мехзавод», Пермь</span>
+        <div class="talk" id="talk"></div>
+      </div>
+      <div>
+        <div class="box">
+          <span class="lbl">Тарификатор в момент разговора</span>
+          <div class="kv" id="calc"></div>
+        </div>
+        <div class="box" style="margin-top:13px">
+          <span class="lbl">Что уходит в CRM</span>
+          <pre class="mono" id="api"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Демо механик робота-обзвонщика для логистики. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+
+var BASE=4200, TICK=200;          /* 1 тик = 1 минута рабочего дня */
+var CO=["ООО «Мехзавод»","ТД «Ремстрой»","ООО «Агропоставка»","ИП Кузнецов","ООО «Севергаз-сервис»",
+  "ЗАО «Полимер-НН»","ООО «Тяжмаш»","ТК «Вектор»","ООО «Уралхим-трейд»","ООО «Профметалл»",
+  "ООО «Сибпродукт»","АО «Стройбаза-7»","ООО «Ленмебель»","ТД «Электроком»","ООО «Байкал-лес»"];
+var CITY=["Пермь","Казань","Нижний Новгород","Самара","Екатеринбург","Ростов-на-Дону","Новосибирск","Воронеж","Уфа","Тюмень"];
+
+var S,timer=null;
+function initS(){
+  S={min:540,left:BASE,dialed:0,answered:0,nores:0,refused:0,kp:0,hot:0,
+     queue:[],handled:0,hourLeads:0,hourMark:9,running:false,reason:"",lastOp:0,seq:1};
+}
+function P(){return {lines:+$("#lines").value,cap:+$("#cap").value,ops:+$("#ops").value,hr:+$("#hr").value}}
+
+function hhmm(m){var h=Math.floor(m/60),x=m%60;return (h<10?"0":"")+h+":"+(x<10?"0":"")+x}
+function log(cls,t){
+  var b=$("#log"),d=document.createElement("div");
+  d.innerHTML="<i>"+hhmm(S.min)+'</i><span class="'+cls+'">'+t+"</span>";
+  b.appendChild(d);if(b.children.length>120)b.removeChild(b.firstChild);
+  b.scrollTop=b.scrollHeight;
+}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+
+function tick(){
+  var p=P();
+  if(S.min>=1080){stop("Рабочее окно закрыто — 18:00. Обзвон возобновится завтра в 09:00.");render();return}
+  if(Math.floor(S.min/60)!==S.hourMark){S.hourMark=Math.floor(S.min/60);S.hourLeads=0;
+    log("h","новый час — счётчик лимита лидов обнулён");}
+
+  /* логисты разбирают очередь */
+  if(S.queue.length&&S.min-S.lastOp>=Math.ceil(9/p.ops)){
+    S.queue.shift();S.handled++;S.lastOp=S.min;
+    log("g","логист взял лид в работу · в очереди "+S.queue.length);
+  }
+
+  /* дроссель */
+  var blocked=null;
+  if(S.queue.length>=p.cap)blocked="очередь заполнена: "+S.queue.length+" из "+p.cap+" горячих лидов ждут логиста";
+  else if(S.hourLeads>=p.hr)blocked="достигнут лимит "+p.hr+" лидов в час — ждём следующего часа";
+  if(blocked){
+    if(S.running){S.running=false;S.reason=blocked;log("o","ПАУЗА · "+blocked)}
+  } else if(!S.running&&S.reason){
+    S.running=true;S.reason="";log("g","возобновлено — очередь разгрузилась");
+  }
+
+  if(S.running&&S.left>0){
+    var calls=Math.max(1,Math.round(p.lines/1.6));   /* средний звонок 1,6 мин */
+    for(var i=0;i<calls&&S.left>0;i++){
+      S.left--;S.dialed++;
+      var r=Math.random();
+      if(r<.62){S.nores++;continue}
+      S.answered++;
+      var co=pick(CO),ci=pick(CITY);
+      if(r<.89){S.refused++;if(Math.random()<.08)log("","«"+co+"» — отказ, в стоп-лист")}
+      else if(r<.97){S.kp++;log("","«"+co+"» ("+ci+") — просит КП на почту")}
+      else{
+        S.hot++;S.hourLeads++;
+        S.queue.push({id:"L-"+(1000+S.seq++),co:co,ci:ci,
+          w:(Math.random()*18+2).toFixed(1),t:hhmm(S.min)});
+        log("g","«"+co+"» ("+ci+") — ГОРЯЧИЙ, передан логисту");
+        if(S.queue.length>=p.cap)break;
+      }
+    }
+  }
+  if(S.left<=0&&S.running)stop("База на сегодня закончилась: "+fmt(BASE)+" номеров обработано.");
+  S.min++;render();
+}
+
+function stop(reason){S.running=false;S.reason=reason;clearInterval(timer);timer=null;$("#run").textContent="Запустить кампанию"}
+
+function render(){
+  var p=P();
+  $("#vLines").textContent=p.lines;$("#vCap").textContent=p.cap;
+  $("#vOps").textContent=p.ops;$("#vHr").textContent=p.hr;
+  $("#clock").textContent=hhmm(S.min);
+  $("#left").textContent="осталось в базе: "+fmt(S.left)+" из "+fmt(BASE);
+  var pill=$("#pill");
+  pill.className="pill "+(S.running?"run":"hold");
+  $("#pillTxt").textContent=S.running?"обзвон идёт":(timer?"на паузе":"остановлен");
+  $("#why").innerHTML=S.running
+    ? "Работает на "+p.lines+" линиях. Дроссель свободен: в очереди "+S.queue.length+" из "+p.cap+", за час "+S.hourLeads+" из "+p.hr+" лидов."
+    : "<b>"+(S.reason||"Нажмите «Запустить кампанию».")+"</b>";
+  $("#s1").textContent=fmt(S.dialed);$("#s2").textContent=fmt(S.answered);
+  $("#s3").textContent=fmt(S.kp);$("#s4").textContent=fmt(S.hot);
+  $("#l1").textContent=fmt(S.nores);$("#l2").textContent=fmt(S.refused);
+  $("#l3").textContent=fmt(S.kp);$("#l4").textContent=fmt(S.hot);
+  var tot=S.dialed||1;
+  $("#bar").innerHTML=
+    '<i style="width:'+(S.nores/tot*100)+'%;background:var(--hold)"></i>'+
+    '<i style="width:'+(S.refused/tot*100)+'%;background:var(--ink3)"></i>'+
+    '<i style="width:'+(S.kp/tot*100)+'%;background:var(--acc)"></i>'+
+    '<i style="width:'+(S.hot/tot*100)+'%;background:var(--run)"></i>';
+  var q=$("#q");
+  if(!S.queue.length){
+    q.innerHTML='<div class="empty">Очередь пуста'+(S.handled?" · разобрано логистами: "+S.handled:"")+"</div>";
+  } else {
+    q.innerHTML=S.queue.map(function(l){
+      return '<div class="lead"><div class="t"><span class="c">'+l.co+'</span><span class="mono xs mut3">'+l.id+"</span></div>"+
+        '<div class="m">'+l.ci+" · груз <b>"+l.w+" т</b> · звонок в <b>"+l.t+"</b></div>"+
+        '<button type="button" data-id="'+l.id+'">Взять в работу</button></div>';
+    }).join("")+'<div class="sm mut3" style="margin-top:4px">Разобрано за день: '+S.handled+"</div>";
+    Array.prototype.forEach.call(q.querySelectorAll("button[data-id]"),function(b){
+      b.addEventListener("click",function(){
+        S.queue=S.queue.filter(function(x){return x.id!==b.dataset.id});
+        S.handled++;log("g","логист вручную забрал "+b.dataset.id);render();
+      });
+    });
+  }
+}
+
+$("#run").addEventListener("click",function(){
+  if(timer){stop("Остановлено вручную.");render();return}
+  if(S.min>=1080||S.left<=0)initS();
+  S.running=true;S.reason="";this.textContent="Остановить";
+  log("g","кампания запущена · база "+fmt(S.left)+" номеров");
+  timer=setInterval(tick,TICK);render();
+});
+$("#rst").addEventListener("click",function(){
+  clearInterval(timer);timer=null;initS();$("#log").innerHTML="";
+  $("#run").textContent="Запустить кампанию";render();
+});
+["lines","cap","ops","hr"].forEach(function(id){$("#"+id).addEventListener("input",render)});
+
+/* ---------- разговор и тариф ---------- */
+var TALK=[
+ ["bot","Робот","Добрый день! Компания «Транзит-Логистик». Звоню по поводу грузоперевозок: подбираем машины по России. Вы отправляете грузы?"],
+ ["cl","Клиент","Отправляем, а что у вас по Казани?"],
+ ["bot","Робот","Уточню два момента, чтобы назвать точную цену. Какой вес и тип груза?"],
+ ["cl","Клиент","Станки, тонн двенадцать. Тент подойдёт."],
+ ["bot","Робот","Когда нужна машина?"],
+ ["cl","Клиент","Желательно послезавтра."],
+ ["bot","Робот","Пермь — Казань, 12 тонн, тент, подача послезавтра — <b>52 400 ₽</b> с НДС, машина в течение суток. Отправить расчёт на почту и соединить с логистом?"],
+ ["cl","Клиент","Давайте логиста, обсудим сроки."],
+ ["bot","Робот","Соединяю, Сергей на линии. Расчёт уже у вас на почте."]
+];
+var CALC=[["Маршрут","Пермь → Казань"],["Расстояние","615 км"],["Тип ТС","Тент 20 т"],
+ ["Базовая ставка","72 ₽/км"],["Вес груза","12 т · без надбавки"],["Срочность (48 ч)","+12 %"],
+ ["Обратная загрузка","−8 %"],["Итого без НДС","43 667 ₽"]];
+function renderTalk(){
+  $("#talk").innerHTML=TALK.map(function(t){
+    return '<div class="tb '+t[0]+'"><span class="who">'+t[1]+"</span>"+t[2]+"</div>"}).join("");
+  $("#calc").innerHTML=CALC.map(function(r){
+    return "<div><span>"+r[0]+"</span><span>"+r[1]+"</span></div>"}).join("")+
+    '<div class="tot"><span>С НДС 20 %</span><span>52 400 ₽</span></div>';
+  $("#api").innerHTML='{\n  <span class="k">"lead_id"</span>: <span class="s">"L-1042"</span>,\n'+
+   '  <span class="k">"company"</span>: <span class="s">"ООО «Мехзавод»"</span>,\n'+
+   '  <span class="k">"route"</span>: <span class="s">"Пермь → Казань"</span>,\n'+
+   '  <span class="k">"weight_t"</span>: <span class="n">12</span>,\n'+
+   '  <span class="k">"body_type"</span>: <span class="s">"tent"</span>,\n'+
+   '  <span class="k">"quoted_total"</span>: <span class="n">52400</span>,\n'+
+   '  <span class="k">"ready_date"</span>: <span class="s">"2026-09-28"</span>,\n'+
+   '  <span class="k">"intent"</span>: <span class="s">"hot"</span>,\n'+
+   '  <span class="k">"transferred_to"</span>: <span class="s">"logist_sergey"</span>,\n'+
+   '  <span class="k">"recording"</span>: <span class="s">"calls/2026-09-25/L-1042.mp3"</span>\n}';
+}
+
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+initS();render();renderTalk();
+})();
+</script>
