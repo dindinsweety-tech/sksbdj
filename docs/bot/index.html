@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Рабочий эмулятор Telegram-бота записи: конечный автомат диалога, занятые слоты, валидация телефона, предоплата и payload в CRM.">
+<title>Telegram-бот автоматизации — рабочий эмулятор сценария</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#F6F7F9; --surf:#FFFFFF; --surf2:#EFF1F4; --surf3:#E2E5EA;
+  --ink:#16181C; --ink2:#51555C; --ink3:#83878F;
+  --line:#E1E4E9; --line2:#C9CDD4;
+  --acc:#1D4ED8; --acc2:#2563EB; --acc-s:#E8EDFC;
+  --ok:#047857; --ok-s:#E3F2EC;
+  --warn:#B45309; --warn-s:#FAF0E2;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --bub:#E7F0FC;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101113; --surf:#191B1E; --surf2:#212429; --surf3:#2C3037;
+    --ink:#F0F1F3; --ink2:#A8ACB3; --ink3:#797D85;
+    --line:#26292E; --line2:#373B42;
+    --acc:#7DA8FF; --acc2:#A5C2FF; --acc-s:#16223C;
+    --ok:#34D399; --ok-s:#112A20;
+    --warn:#E0A63C; --warn-s:#2B2212;
+    --bad:#FB7185; --bad-s:#331419;
+    --bub:#1B2941;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101113; --surf:#191B1E; --surf2:#212429; --surf3:#2C3037;
+  --ink:#F0F1F3; --ink2:#A8ACB3; --ink3:#797D85;
+  --line:#26292E; --line2:#373B42;
+  --acc:#7DA8FF; --acc2:#A5C2FF; --acc-s:#16223C;
+  --ok:#34D399; --ok-s:#112A20;
+  --warn:#E0A63C; --warn-s:#2B2212;
+  --bad:#FB7185; --bad-s:#331419;
+  --bub:#1B2941;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Onest",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.022em;line-height:1.16;text-wrap:balance}
+h1{font-size:clamp(22px,5.4vw,32px)}
+h2{font-size:clamp(18px,4.4vw,23px)}
+h3{font-size:15.5px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:50%;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#101113}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:17px;height:17px;display:block}
+.brand b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:66ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:66ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:64ch}
+
+.cols{display:grid;gap:14px;margin-top:18px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,380px) minmax(0,1fr);align-items:start}}
+
+/* phone */
+.phone{background:var(--surf);border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  display:flex;flex-direction:column;max-height:640px}
+.pbar{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--line);background:var(--surf2)}
+.av{width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;
+  font-weight:700;font-size:13px;flex:none}
+:root[data-theme="dark"] .av,:root:not([data-theme="light"]) .av{color:#101113}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .av{color:#fff}}
+.pbar b{font-size:14px;font-weight:600;display:block}
+.pbar span{font-size:11.5px;color:var(--ok)}
+.chat{flex:1;overflow-y:auto;padding:14px 13px;display:flex;flex-direction:column;gap:9px;min-height:360px}
+.b{max-width:86%;border-radius:14px;padding:9px 12px;font-size:14px;line-height:1.48;white-space:pre-wrap;word-break:break-word}
+.b.bot{background:var(--surf2);border-bottom-left-radius:4px;align-self:flex-start}
+.b.me{background:var(--bub);border-bottom-right-radius:4px;align-self:flex-end}
+.b b{font-weight:600}
+.kb{display:grid;gap:6px;margin-top:3px;align-self:flex-start;max-width:86%;width:100%}
+.kb.two{grid-template-columns:1fr 1fr}
+.kb button{background:var(--surf2);border:1px solid var(--line2);border-radius:9px;padding:9px 11px;
+  font-size:13.5px;font-weight:500;text-align:center;min-height:40px;transition:border-color .15s,color .15s}
+.kb button:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.kb button:disabled{opacity:.42;cursor:default;text-decoration:line-through}
+.typing{align-self:flex-start;color:var(--ink3);font-size:13px;padding:4px 2px}
+.inp{border-top:1px solid var(--line);padding:9px 11px;display:flex;gap:8px;background:var(--surf2)}
+.inp input{flex:1;min-width:0;background:var(--surf);border:1px solid var(--line2);border-radius:10px;
+  padding:10px 12px;font:inherit;font-size:14px;color:var(--ink)}
+.inp input::placeholder{color:var(--ink3)}
+.inp button{background:var(--acc);color:#fff;border-radius:10px;padding:0 15px;font-weight:600;font-size:14px;min-height:42px}
+:root[data-theme="dark"] .inp button,:root:not([data-theme="light"]) .inp button{color:#101113}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .inp button{color:#fff}}
+.inp.off{opacity:.5;pointer-events:none}
+
+/* under the hood */
+.hood{display:grid;gap:12px}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.state{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.st{border:1px solid var(--line2);border-radius:20px;padding:4px 10px;font-size:11.5px;color:var(--ink3);
+  font-family:"IBM Plex Mono",monospace}
+.st.on{background:var(--acc);border-color:var(--acc);color:#fff}
+:root[data-theme="dark"] .st.on,:root:not([data-theme="light"]) .st.on{color:#101113}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .st.on{color:#fff}}
+.kv{display:grid;gap:5px;margin-top:10px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:5px;font-size:13px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"IBM Plex Mono",monospace;font-size:12.5px;text-align:right}
+.kv .no{color:var(--ink3)}
+.log{margin-top:9px;display:grid;gap:4px;max-height:210px;overflow-y:auto;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.5}
+.log div{display:flex;gap:8px;color:var(--ink2)}
+.log i{font-style:normal;color:var(--ink3);flex:none}
+.log b{font-weight:500;color:var(--acc)}
+.log .g{color:var(--ok)} .log .w{color:var(--warn)} .log .r{color:var(--bad)}
+.adm{margin-top:9px;background:var(--surf2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;
+  font-size:13px;line-height:1.55;white-space:pre-wrap}
+.adm.empty{color:var(--ink3);font-style:italic;white-space:normal}
+pre{margin:9px 0 0;background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px;
+  overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.6}
+.k{color:var(--acc)} .s{color:var(--ok)} .n{color:var(--warn)} .c{color:var(--ink3)}
+.rowbtn{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 15px;
+  border-radius:10px;font-weight:600;font-size:14px;background:var(--acc);color:#fff}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#101113}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2);font-weight:500}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+
+/* checklist */
+.chk{display:grid;gap:9px;margin-top:16px}
+@media(min-width:760px){.chk{grid-template-columns:1fr 1fr}}
+.ci{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:13px;border-left:3px solid var(--warn)}
+.ci h3{display:flex;gap:8px;align-items:baseline}
+.ci p{margin-top:6px;font-size:13.5px;color:var(--ink2)}
+.ci .q{margin-top:8px;font-size:12.5px;color:var(--acc);border-top:1px dashed var(--line);padding-top:7px}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.6 18.8 19c-.2 1-.9 1.3-1.7.8l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 12.6 1.9 11c-1-.3-1-1 .2-1.5l18.4-7.1c.9-.3 1.6.2 1.4 2.2z"/></svg></div>
+      <b>Демо Telegram-бота · сценарий записи</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Рабочий бот, а не скриншоты: сценарий, состояние и то, что уходит в CRM</h1>
+    <p>Слева — живой эмулятор чата: настоящий конечный автомат, валидация телефона, занятые слоты, предоплата, отмена и перенос. Справа — что происходит под капотом на каждом шаге: состояние диалога, собранные поля, лог событий, уведомление администратору и payload, который уходит в вашу систему. Ровно это я и пишу на бэкенде.</p>
+    <div class="note">Сценарий взят типовой — запись на услугу с предоплатой. Ваш шаблонный бот наверняка делает что-то своё: чтобы повторить его точь-в-точь, мне нужен либо доступ к нему, либо ссылка. Во втором блоке — список того, чего снаружи не видно и о чём придётся договориться на старте.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Эмулятор</h2></div>
+    <p class="sdesc">Нажимайте кнопки как в настоящем чате. Попробуйте выбрать занятый слот, ввести кривой телефон или отменить запись — обработка ошибок и есть та часть, которой шаблонные боты обычно не имеют.</p>
+    <div class="cols">
+      <div class="phone">
+        <div class="pbar">
+          <div class="av">AB</div>
+          <div><b>AutoBot · Студия «Три метра»</b><span>бот · онлайн</span></div>
+        </div>
+        <div class="chat" id="chat"></div>
+        <div class="inp off" id="inp">
+          <input id="txt" placeholder="Напишите сообщение…" autocomplete="off" inputmode="tel">
+          <button id="send" type="button">→</button>
+        </div>
+      </div>
+
+      <div class="hood">
+        <div class="box">
+          <span class="lbl">Состояние диалога (FSM)</span>
+          <div class="state" id="states"></div>
+          <span class="lbl" style="display:block;margin-top:14px">Собранные данные</span>
+          <div class="kv" id="ctx"></div>
+        </div>
+        <div class="box">
+          <span class="lbl">Лог событий</span>
+          <div class="log" id="log"></div>
+        </div>
+        <div class="box">
+          <span class="lbl">Уведомление администратору</span>
+          <div class="adm empty" id="adm">Появится, когда запись будет подтверждена.</div>
+        </div>
+        <div class="box">
+          <span class="lbl">POST → ваша CRM / Google Sheets</span>
+          <pre class="mono" id="api"><span class="c">// заполнится после подтверждения записи</span></pre>
+        </div>
+      </div>
+    </div>
+    <div class="rowbtn"><button class="btn btn-g" id="restart" type="button">Начать диалог заново</button></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Чего не видно в чужом боте</h2></div>
+    <p class="sdesc">«Сделать такой же» — это повторить поведение, а не код: исходников вам никто не отдаст. Снаружи видны кнопки и тексты, а половина работы спрятана на сервере. Вот что я спрошу на старте — и чем точнее ответы, тем точнее срок и цена.</p>
+    <div class="chk">
+      <div class="ci"><h3>Где живут данные</h3><p>Записи, клиенты, история — в базе, в Google-таблице или в CRM? От этого зависит, переносимы ли старые данные и сколько стоит интеграция.</p><div class="q">→ Что у шаблона внутри и нужно ли перенести накопленное?</div></div>
+      <div class="ci"><h3>Платежи</h3><p>Предоплата через ЮKassa, Telegram Payments или «переведите на карту»? Первое требует онлайн-кассу и 54-ФЗ, второе — договор с провайдером.</p><div class="q">→ Оплата в боте нужна и кто уже подключён?</div></div>
+      <div class="ci"><h3>Админка и роли</h3><p>Кто управляет ботом: один владелец, несколько мастеров, отдельная панель? Роли — это отдельный слой, который снаружи не виден совсем.</p><div class="q">→ Сколько человек работает с ботом и что им можно?</div></div>
+      <div class="ci"><h3>Рассылки и напоминания</h3><p>Напоминание за два часа — это планировщик и очередь. Массовая рассылка по базе — риск блокировки, нужны лимиты и дробление.</p><div class="q">→ Рассылки нужны? По какой базе и как часто?</div></div>
+      <div class="ci"><h3>Нагрузка и хостинг</h3><p>Сто пользователей и десять тысяч — разная архитектура: polling против вебхуков, одна нода против очереди. И разный сервер.</p><div class="q">→ Сколько людей пользуется ботом сейчас?</div></div>
+      <div class="ci"><h3>Что именно «усовершенствовать»</h3><p>Самый важный пункт. «Немного доработать» может означать две кнопки, а может — личный кабинет и аналитику.</p><div class="q">→ Назовите три вещи, которых не хватает в шаблоне.</div></div>
+    </div>
+  </section>
+
+  <footer>Демо механик Telegram-бота. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var chat=$("#chat"), logBox=$("#log");
+
+var SERV=[{k:"str",n:"Мужская стрижка",p:1800,d:60},
+          {k:"brd",n:"Стрижка + борода",p:2500,d:90},
+          {k:"det",n:"Детская стрижка",p:1400,d:45}];
+var MAST=[{k:"any",n:"Любой свободный"},{k:"iv",n:"Иван"},{k:"kr",n:"Кристина"}];
+var DAYS=[{k:0,n:"Чт, 24 сентября"},{k:1,n:"Пт, 25 сентября"},{k:2,n:"Сб, 27 сентября"}];
+var SLOTS=["10:00","11:30","13:00","14:30","16:00","17:30"];
+var BUSY={"0|iv":["10:00","13:00","14:30"],"0|kr":["10:00","11:30","16:00"],
+          "1|iv":["11:30","16:00"],      "1|kr":["13:00","14:30","17:30"],
+          "2|iv":["10:00","11:30","13:00","14:30"],"2|kr":["16:00","17:30"]};
+var STATES=["start","service","master","day","time","phone","confirm","pay","done"];
+var PREPAY=500;
+
+var st="start", ctx={}, mybook=null, queue=[], running=false, locked=false;
+
+function free(day,m,t){
+  if(m==="any")return !(BUSY[day+"|iv"]||[]).includes(t)||!(BUSY[day+"|kr"]||[]).includes(t);
+  return !(BUSY[day+"|"+m]||[]).includes(t);
+}
+function whoFree(day,t){
+  if(!(BUSY[day+"|iv"]||[]).includes(t))return "iv";
+  if(!(BUSY[day+"|kr"]||[]).includes(t))return "kr";
+  return null;
+}
+function mname(k){for(var i=0;i<MAST.length;i++)if(MAST[i].k===k)return MAST[i].n;return k}
+function sname(k){for(var i=0;i<SERV.length;i++)if(SERV[i].k===k)return SERV[i];return null}
+
+/* ---- лог ---- */
+function log(kind,text){
+  var d=document.createElement("div");
+  var now=new Date(); var hh=(now.getHours()<10?"0":"")+now.getHours();
+  var mm=(now.getMinutes()<10?"0":"")+now.getMinutes();
+  var ss=(now.getSeconds()<10?"0":"")+now.getSeconds();
+  d.innerHTML='<i>'+hh+":"+mm+":"+ss+'</i><span class="'+kind+'">'+text+"</span>";
+  logBox.appendChild(d);logBox.scrollTop=logBox.scrollHeight;
+}
+
+/* ---- сообщения ---- */
+function scroll(){chat.scrollTop=chat.scrollHeight}
+function meSay(t){
+  var b=document.createElement("div");b.className="b me";b.textContent=t;chat.appendChild(b);scroll();
+}
+function draw(text,rows){
+  var b=document.createElement("div");b.className="b bot";b.innerHTML=text;chat.appendChild(b);
+  if(rows&&rows.length){
+    var k=document.createElement("div");
+    k.className="kb"+(rows.length>2&&rows.every(function(r){return r[0].length<16})?" two":"");
+    rows.forEach(function(r){
+      var btn=document.createElement("button");btn.type="button";btn.textContent=r[0];
+      if(r[2]){btn.disabled=true}
+      btn.addEventListener("click",function(){
+        if(locked)return;
+        Array.prototype.forEach.call(chat.querySelectorAll(".kb"),function(x){x.remove()});
+        meSay(r[0]);
+        log("","callback_query <b>"+r[1]+"</b>");
+        handle(r[1]);
+      });
+      k.appendChild(btn);
+    });
+    chat.appendChild(k);
+  }
+  scroll();
+}
+function pump(){
+  if(running||!queue.length)return;
+  running=true;locked=true;
+  var item=queue.shift();
+  var tp=document.createElement("div");tp.className="typing";tp.textContent="бот печатает…";
+  chat.appendChild(tp);scroll();
+  setTimeout(function(){
+    tp.remove();draw(item[0],item[1]);
+    running=false;locked=queue.length>0;pump();
+  },item[2]||430);
+}
+function say(text,rows,delay){queue.push([text,rows,delay]);pump()}
+
+/* ---- панели ---- */
+function setState(s){
+  st=s;
+  var box=$("#states");box.innerHTML="";
+  STATES.forEach(function(x){
+    var e=document.createElement("span");
+    e.className="st"+(x===s?" on":"");e.textContent=x;box.appendChild(e);
+  });
+  log("","state → <b>"+s+"</b>");
+  renderCtx();
+}
+function renderCtx(){
+  var rows=[["Услуга",ctx.serv?sname(ctx.serv).n:null],
+    ["Мастер",ctx.mast?mname(ctx.mast):null],
+    ["Дата",ctx.day!=null?DAYS[ctx.day].n:null],
+    ["Время",ctx.time||null],
+    ["Телефон",ctx.phone||null],
+    ["Предоплата",ctx.paid?PREPAY+" ₽ · оплачено":null],
+    ["Стоимость",ctx.serv?sname(ctx.serv).p+" ₽":null]];
+  $("#ctx").innerHTML=rows.map(function(r){
+    return "<div><span>"+r[0]+"</span><span"+(r[1]?"":' class="no"')+">"+(r[1]||"—")+"</span></div>"}).join("");
+}
+
+/* ---- сценарий ---- */
+function menu(){
+  setState("start");
+  say("Привет! Это бот студии «Три метра».\nЧем помочь?",
+   [["📅 Записаться","go_serv"],["💈 Прайс","price"],["🗂 Мои записи","my"],["💬 Оператор","op"]]);
+}
+function handle(a){
+  if(a==="price"){
+    setState("start");
+    say(SERV.map(function(s){return "<b>"+s.n+"</b> — "+s.p+" ₽ · "+s.d+" мин"}).join("\n"),
+      [["📅 Записаться","go_serv"],["← Назад","back"]]);
+    return;
+  }
+  if(a==="op"){
+    setState("start");
+    log("w","escalation → оператор, чат передан в очередь");
+    say("Передал диалог администратору, ответит в течение 10 минут.\nМожно продолжить запись самостоятельно.",
+      [["📅 Записаться","go_serv"],["← Назад","back"]]);
+    return;
+  }
+  if(a==="my"){
+    setState("start");
+    if(!mybook){say("Активных записей нет.",[["📅 Записаться","go_serv"],["← Назад","back"]])}
+    else{say("Ваша запись:\n<b>"+mybook.s+"</b>\n"+mybook.d+", "+mybook.t+" · мастер "+mybook.m,
+      [["✏️ Перенести","resched"],["✖️ Отменить","cancel"],["← Назад","back"]])}
+    return;
+  }
+  if(a==="cancel"){
+    log("r","booking.cancel → слот "+mybook.t+" освобождён");
+    var arr=BUSY[mybook.dayK+"|"+mybook.mk];
+    if(arr){var i=arr.indexOf(mybook.t);if(i>=0)arr.splice(i,1)}
+    mybook=null;$("#adm").className="adm empty";
+    $("#adm").textContent="Запись отменена клиентом — уведомление ушло администратору.";
+    setState("start");
+    say("Запись отменена. Слот снова свободен, администратор уведомлён.",[["📅 Записаться","go_serv"],["← Назад","back"]]);
+    return;
+  }
+  if(a==="resched"){
+    var arr0=BUSY[mybook.dayK+"|"+mybook.mk];
+    if(arr0){var j=arr0.indexOf(mybook.t);if(j>=0)arr0.splice(j,1)}
+    log("w","booking.reschedule → старый слот "+mybook.t+" освобождён до выбора нового");
+    for(var z=0;z<SERV.length;z++)if(SERV[z].n===mybook.s)ctx.serv=SERV[z].k;
+    ctx.mast=mybook.mk;ctx.phone=ctx.phone||"+7 926 774-18-03";mybook=null;
+    handle("go_day");return;
+  }
+  if(a==="back"){menu();return}
+  if(a==="go_serv"){
+    setState("service");
+    say("Выберите услугу:",SERV.map(function(s){return [s.n+" · "+s.p+" ₽","serv_"+s.k]}).concat([["← Назад","back"]]));
+    return;
+  }
+  if(a.indexOf("serv_")===0){
+    ctx.serv=a.slice(5);setState("master");renderCtx();
+    say("К кому записать?",MAST.map(function(m){return [m.n,"mast_"+m.k]}).concat([["← Назад","go_serv"]]));
+    return;
+  }
+  if(a.indexOf("mast_")===0){ctx.mast=a.slice(5);handle("go_day");return}
+  if(a==="go_day"){
+    if(!ctx.mast)ctx.mast="any";
+    setState("day");renderCtx();
+    say("На какой день?",DAYS.map(function(d){return [d.n,"day_"+d.k]}).concat([["← Назад","go_serv"]]));
+    return;
+  }
+  if(a.indexOf("day_")===0){
+    ctx.day=+a.slice(4);setState("time");renderCtx();
+    var rows=SLOTS.map(function(t){
+      var ok=free(ctx.day,ctx.mast,t);
+      return [ok?t:t+" занято","time_"+t,!ok];
+    });
+    var openCnt=rows.filter(function(r){return !r[2]}).length;
+    log(openCnt?"":"w","slots.check day="+ctx.day+" master="+ctx.mast+" → свободно "+openCnt+" из "+SLOTS.length);
+    rows.push(["← Другой день","go_day"]);
+    say(openCnt
+      ? "Свободное время на "+DAYS[ctx.day].n.toLowerCase()+":"
+      : "На этот день всё занято. Выберите другой день или другого мастера.",rows);
+    return;
+  }
+  if(a.indexOf("time_")===0){
+    ctx.time=a.slice(5);
+    if(ctx.mast==="any"){
+      var w=whoFree(ctx.day,ctx.time);
+      if(w){ctx.mast=w;log("","master.autopick → "+mname(w)+" свободен в "+ctx.time)}
+    }
+    setState("phone");renderCtx();
+    $("#inp").classList.remove("off");
+    say("Записываю на <b>"+ctx.time+"</b>, мастер "+mname(ctx.mast)+".\nОставьте телефон для подтверждения — введите его в поле ниже или нажмите кнопку.",
+      [["📱 Отправить мой контакт","share"]]);
+    return;
+  }
+  if(a==="share"){gotPhone("+7 926 774-18-03");return}
+  if(a==="confirm"){
+    setState("pay");
+    say("Для брони нужна предоплата <b>"+PREPAY+" ₽</b>, она вычитается из стоимости услуги.\nОстаток "+(sname(ctx.serv).p-PREPAY)+" ₽ — на месте.",
+      [["💳 Оплатить "+PREPAY+" ₽","pay"],["← Изменить запись","go_serv"]]);
+    return;
+  }
+  if(a==="pay"){
+    log("","invoice.create amount="+PREPAY*100+" currency=RUB");
+    say("Счёт выставлен. Оплата через ЮKassa…",null,300);
+    setTimeout(function(){
+      ctx.paid=true;renderCtx();
+      log("g","payment.succeeded → бронь подтверждена");
+      finish();
+    },1200);
+    return;
+  }
+  if(a==="edit"){ctx={};setState("start");handle("go_serv");return}
+}
+
+function gotPhone(v){
+  var digits=v.replace(/\D/g,"");
+  if(digits.length===11&&/^[78]/.test(digits))digits="7"+digits.slice(1);
+  else if(digits.length===10&&digits[0]==="9")digits="7"+digits;
+  else{
+    log("r","validate.phone → отклонён: «"+v+"»");
+    meSay(v);
+    say("Не похоже на номер. Нужен формат +7 9XX XXX-XX-XX — попробуйте ещё раз.",[["📱 Отправить мой контакт","share"]]);
+    return;
+  }
+  var pretty="+"+digits[0]+" "+digits.slice(1,4)+" "+digits.slice(4,7)+"-"+digits.slice(7,9)+"-"+digits.slice(9);
+  if(v!=="+7 926 774-18-03")meSay(v); else meSay("📱 "+pretty);
+  ctx.phone=pretty;
+  log("g","validate.phone → ок, нормализован в "+digits);
+  $("#inp").classList.add("off");$("#txt").value="";
+  setState("confirm");renderCtx();
+  var s=sname(ctx.serv);
+  say("Проверьте запись:\n<b>"+s.n+"</b>\n"+DAYS[ctx.day].n+", "+ctx.time+"\nМастер: "+mname(ctx.mast)+
+      "\nСтоимость: "+s.p+" ₽\nТелефон: "+pretty,
+    [["✅ Всё верно","confirm"],["✏️ Изменить","edit"]]);
+}
+
+function finish(){
+  setState("done");
+  var s=sname(ctx.serv);
+  (BUSY[ctx.day+"|"+ctx.mast]=BUSY[ctx.day+"|"+ctx.mast]||[]).push(ctx.time);
+  mybook={s:s.n,d:DAYS[ctx.day].n,t:ctx.time,m:mname(ctx.mast),dayK:ctx.day,mk:ctx.mast};
+  say("Записал!\n<b>"+s.n+"</b>\n"+DAYS[ctx.day].n+", "+ctx.time+" · "+mname(ctx.mast)+
+      "\n\nНапомню за 2 часа. Если планы изменятся — «Мои записи», перенос и отмена бесплатны до 3 часов.",
+    [["🗂 Мои записи","my"],["📅 Записаться ещё","go_serv"]]);
+  log("g","booking.create id=BK-4471 → слот закрыт для других");
+  log("","scheduler.add reminder −2ч");
+  log("","admin.notify chat_id=−100234…");
+  var adm=$("#adm");adm.className="adm";
+  adm.textContent="🔔 Новая запись BK-4471\n"+s.n+" · "+s.p+" ₽\n"+DAYS[ctx.day].n+", "+ctx.time+
+    "\nМастер: "+mname(ctx.mast)+"\nКлиент: "+ctx.phone+"\nПредоплата: "+PREPAY+" ₽ получена";
+  $("#api").innerHTML='{\n  <span class="k">"booking_id"</span>: <span class="s">"BK-4471"</span>,\n'+
+    '  <span class="k">"service"</span>: <span class="s">"'+s.n+'"</span>,\n'+
+    '  <span class="k">"master"</span>: <span class="s">"'+mname(ctx.mast)+'"</span>,\n'+
+    '  <span class="k">"starts_at"</span>: <span class="s">"2026-09-2'+(4+ctx.day)+"T"+ctx.time+':00+03:00"</span>,\n'+
+    '  <span class="k">"duration_min"</span>: <span class="n">'+s.d+"</span>,\n"+
+    '  <span class="k">"phone"</span>: <span class="s">"'+ctx.phone+'"</span>,\n'+
+    '  <span class="k">"tg_user_id"</span>: <span class="n">418772031</span>,\n'+
+    '  <span class="k">"total"</span>: <span class="n">'+s.p+"</span>,\n"+
+    '  <span class="k">"prepaid"</span>: <span class="n">'+PREPAY+"</span>,\n"+
+    '  <span class="k">"source"</span>: <span class="s">"telegram_bot"</span>\n}';
+}
+
+$("#send").addEventListener("click",function(){
+  var v=$("#txt").value.trim();if(!v||st!=="phone")return;
+  $("#txt").value="";log("","message.text «"+v+"»");gotPhone(v);
+});
+$("#txt").addEventListener("keydown",function(e){if(e.key==="Enter")$("#send").click()});
+$("#restart").addEventListener("click",function(){
+  chat.innerHTML="";logBox.innerHTML="";queue=[];running=false;locked=false;
+  ctx={};mybook=null;$("#inp").classList.add("off");
+  $("#adm").className="adm empty";$("#adm").textContent="Появится, когда запись будет подтверждена.";
+  $("#api").innerHTML='<span class="c">// заполнится после подтверждения записи</span>';
+  BUSY={"0|iv":["10:00","13:00","14:30"],"0|kr":["10:00","11:30","16:00"],
+        "1|iv":["11:30","16:00"],      "1|kr":["13:00","14:30","17:30"],
+        "2|iv":["10:00","11:30","13:00","14:30"],"2|kr":["16:00","17:30"]};
+  log("","/start от пользователя 418772031");
+  menu();
+});
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+log("","/start от пользователя 418772031");
+menu();
+})();
+</script>
+
+</body>
+</html>
