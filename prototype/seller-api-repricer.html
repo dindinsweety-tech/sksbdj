@@ -1,0 +1,362 @@
+<title>Репрайсер с защитой маржи — демо модулей</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F7F7FA; --surf:#FFFFFF; --surf2:#F0F0F5; --surf3:#E3E3EB;
+  --ink:#17171C; --ink2:#51515C; --ink3:#83838F;
+  --line:#E3E3E9; --line2:#CACAD4;
+  --acc:#4338CA; --acc2:#5B50E0; --acc-s:#EAE8FB;
+  --ok:#047857; --ok-s:#E3F2EC;
+  --warn:#B45309; --warn-s:#FAF0E3;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101014; --surf:#191920; --surf2:#212129; --surf3:#2C2C36;
+    --ink:#F0F0F4; --ink2:#A8A8B4; --ink3:#787884;
+    --line:#26262E; --line2:#37373F;
+    --acc:#A5B4FC; --acc2:#C7D2FE; --acc-s:#1C1B3A;
+    --ok:#34D399; --ok-s:#112A20;
+    --warn:#E0A63C; --warn-s:#2B2212;
+    --bad:#FB7185; --bad-s:#331419;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101014; --surf:#191920; --surf2:#212129; --surf3:#2C2C36;
+  --ink:#F0F0F4; --ink2:#A8A8B4; --ink3:#787884;
+  --line:#26262E; --line2:#37373F;
+  --acc:#A5B4FC; --acc2:#C7D2FE; --acc-s:#1C1B3A;
+  --ok:#34D399; --ok-s:#112A20;
+  --warn:#E0A63C; --warn-s:#2B2212;
+  --bad:#FB7185; --bad-s:#331419;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.024em;line-height:1.16;text-wrap:balance}
+h1{font-size:clamp(22px,5.4vw,32px)}
+h2{font-size:clamp(18px,4.4vw,23px)}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#101014}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:68ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:68ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:66ch}
+
+.ctl{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px;
+  display:grid;gap:14px}
+@media(min-width:760px){.ctl{grid-template-columns:repeat(4,1fr)}}
+.f .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.f .v{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:500}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--acc);height:22px}
+
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px}
+.stat .v{font-family:"JetBrains Mono",monospace;font-size:20px;font-weight:500;margin-top:5px;letter-spacing:-.02em}
+.stat .v.ok{color:var(--ok)} .stat .v.bad{color:var(--bad)} .stat .v.acc{color:var(--acc)}
+
+.tblwrap{margin-top:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surf);overflow:hidden}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;min-width:920px;width:100%;font-size:13px}
+th{background:var(--surf2);text-align:right;padding:10px 11px;font-weight:600;font-size:11.5px;
+  color:var(--ink2);border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surf);z-index:1}
+th:first-child{background:var(--surf2)}
+td{padding:10px 11px;text-align:right;border-bottom:1px solid var(--line);
+  font-family:"JetBrains Mono",monospace;font-size:12.5px;white-space:nowrap}
+td.nm{font-family:"Plus Jakarta Sans",sans-serif;font-size:13px;font-weight:500;max-width:210px;white-space:normal}
+td.nm span{display:block;font-size:10.5px;color:var(--ink3);font-family:"JetBrains Mono",monospace;margin-top:2px}
+tr.dang td:first-child{box-shadow:inset 3px 0 0 var(--bad)}
+tr.warn td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+tr.good td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
+.b{display:inline-block;border-radius:20px;padding:2px 8px;font-size:11px;font-weight:600;font-family:"Plus Jakarta Sans",sans-serif}
+.b.ok{background:var(--ok-s);color:var(--ok)}
+.b.warn{background:var(--warn-s);color:var(--warn)}
+.b.bad{background:var(--bad-s);color:var(--bad)}
+.b.acc{background:var(--acc-s);color:var(--acc)}
+
+.acts{margin-top:14px;display:grid;gap:6px}
+.act{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;
+  border-left:3px solid var(--line2);color:var(--ink2)}
+.act.stop{border-left-color:var(--bad)}
+.act.go{border-left-color:var(--ok)}
+.act.px{border-left-color:var(--acc)}
+.act b{color:var(--ink);font-weight:600}
+.act .mono{font-size:12px}
+
+.cols{display:grid;gap:13px;margin-top:16px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,400px);align-items:start}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.kv{display:grid;gap:6px;margin-top:11px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"JetBrains Mono",monospace;font-size:12.5px;text-align:right}
+.kv .tot span:last-child{font-weight:700;color:var(--acc);font-size:14px}
+.pipe{display:grid;gap:5px;margin-top:11px}
+.pipe .p{display:grid;grid-template-columns:96px 1fr 64px;gap:9px;align-items:center;font-size:12px}
+.pbar{height:9px;border-radius:5px;background:var(--surf3);overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:5px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+pre{margin:10px 0 0;background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px;
+  overflow-x:auto;font-family:"JetBrains Mono",monospace;font-size:11.5px;line-height:1.6}
+.k{color:var(--acc)} .s{color:var(--ok)} .n{color:var(--warn)} .c2{color:var(--ink3)}
+.seg{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line2);border-radius:8px;padding:7px 12px;font-size:12.5px;color:var(--ink2);min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+:root[data-theme="dark"] .seg button[aria-pressed="true"],:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#101014}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .seg button[aria-pressed="true"]{color:#fff}}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-7"/><path d="M14 7h4v4"/><path d="M3 21h18"/></svg></div>
+      <b>Репрайсер с защитой маржи · демо</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Floor Price считается первым — всё остальное только под ним</h1>
+    <p>Четыре модуля из вашего ТЗ, собранные в одну логику: юнит-экономика задаёт порог, репрайсер и акции двигаются только над ним, рекламный стоп-кран режет ставки, когда ДРР съедает маржу, а лимитер держит всё это в рамках квот API. Крутите параметры — решения робота по 10 SKU пересчитываются на лету.</p>
+    <div class="note">Ставки комиссий, логистики и пороги индекса цен вынесены в настройки, а не зашиты: когда маркетплейс их меняет, правится конфиг, а не код. Цифры в демо условные, формулы — рабочие.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Юнит-экономика и Floor Price</h2></div>
+    <p class="sdesc">Порог окупаемости считается из себестоимости, логистики, комиссии категории, эквайринга, налога и рекламы на единицу. Ни один модуль ниже не имеет права отправить цену меньше этого числа.</p>
+    <div class="ctl">
+      <div class="f"><div class="top"><span class="lbl">Целевая маржа</span><span class="v" id="vM"></span></div>
+        <input type="range" id="m" min="0" max="25" step="1" value="12"></div>
+      <div class="f"><div class="top"><span class="lbl">Налог (УСН)</span><span class="v" id="vT"></span></div>
+        <input type="range" id="t" min="1" max="15" step="1" value="7"></div>
+      <div class="f"><div class="top"><span class="lbl">Порог ДРР</span><span class="v" id="vD"></span></div>
+        <input type="range" id="d" min="4" max="30" step="1" value="12"></div>
+      <div class="f"><span class="lbl">Режим сезона</span><div class="seg" id="seas"></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lbl">SKU в матрице</div><div class="v mono" id="k1">10</div></div>
+      <div class="stat"><div class="lbl">Ниже порога</div><div class="v mono bad" id="k2">0</div></div>
+      <div class="stat"><div class="lbl">Прибыль / день</div><div class="v mono ok" id="k3">0</div></div>
+      <div class="stat"><div class="lbl">Индекс «Выгодный»</div><div class="v mono acc" id="k4">0</div></div>
+    </div>
+    <div class="tblwrap"><div class="scroll"><table id="tbl"></table></div></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Что робот сделает прямо сейчас</h2></div>
+    <p class="sdesc">Каждое решение — с обоснованием и цифрой. Акция принимается или отклоняется по юнит-экономике, цена двигается микрошагами ради индекса, но упирается в Floor Price и там останавливается.</p>
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Рекламный стоп-кран и лимитер API</h2></div>
+    <p class="sdesc">Слева — как расходы Performance API сопоставляются с заказами по каждому SKU. Справа — во что превращается матрица при батчинге: столько запросов уходит в минуту вместо лавины.</p>
+    <div class="cols">
+      <div class="box">
+        <span class="lbl">Сопоставление расхода и заказов за сутки</span>
+        <div class="kv" id="adkv"></div>
+      </div>
+      <div>
+        <div class="box">
+          <span class="lbl">Лимитер и батчинг</span>
+          <div class="f" style="margin-top:11px"><div class="top"><span class="lbl">SKU в матрице</span><span class="v" id="vN"></span></div>
+            <input type="range" id="n" min="10" max="500" step="10" value="40"></div>
+          <div class="pipe" id="pipe"></div>
+          <div class="kv" id="rlkv"></div>
+        </div>
+        <div class="box" style="margin-top:13px">
+          <span class="lbl">Пакетная отправка цен</span>
+          <pre class="mono" id="api"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Демо модулей автоматизации Seller API. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+
+/* себестоимость, логистика ₽, комиссия %, цена, мин. цена рынка, цена акции, расход рекл. ₽/сут, заказов/сут */
+var SKU=[
+ {n:"Обогреватель конвекторный 2 кВт",id:"KRM-2041",c:2180,l:340,k:16,p:4290,ref:4150,promo:3690,ad:1450,q:11},
+ {n:"Плед с рукавами, флис 180×140",id:"KRM-1188",c:410,l:95,k:19,p:1090,ref:1040,promo:890,ad:620,q:24},
+ {n:"Термокружка 500 мл, сталь",id:"KRM-0473",c:395,l:70,k:18,p:1190,ref:1150,promo:990,ad:380,q:18},
+ {n:"Увлажнитель воздуха 4 л",id:"KRM-3310",c:1340,l:210,k:17,p:2790,ref:2690,promo:2390,ad:1180,q:9},
+ {n:"Тепловая завеса 3 кВт",id:"KRM-5502",c:5900,l:520,k:15,p:11400,ref:11900,promo:10200,ad:2100,q:3},
+ {n:"Грелка электрическая 60×40",id:"KRM-0921",c:640,l:110,k:19,p:1590,ref:1490,promo:1290,ad:540,q:14},
+ {n:"Ковёр придверный влаговпит.",id:"KRM-0655",c:290,l:85,k:20,p:790,ref:820,promo:690,ad:300,q:21},
+ {n:"Обогреватель масляный 9 секций",id:"KRM-2077",c:3450,l:480,k:16,p:6890,ref:6790,promo:5990,ad:1760,q:6},
+ {n:"Термос 1,2 л с чехлом",id:"KRM-0512",c:720,l:120,k:18,p:1890,ref:1830,promo:1590,ad:410,q:12},
+ {n:"Сушилка для обуви УФ",id:"KRM-1744",c:380,l:65,k:19,p:1090,ref:1120,promo:940,ad:260,q:16}
+];
+var SEAS=[{k:"peak",n:"Пик сезона",qm:1.45,mm:1.0},{k:"mid",n:"Ровный спрос",qm:1,mm:1},
+          {k:"end",n:"Конец сезона",qm:.55,mm:.55}];
+var seas="mid";
+var ACQ=1.5, IDX=1.02;   /* эквайринг %, порог «Выгодный» = эталон +2 % */
+
+function P(){return {m:+$("#m").value,t:+$("#t").value,d:+$("#d").value}}
+function sObj(){for(var i=0;i<SEAS.length;i++)if(SEAS[i].k===seas)return SEAS[i];return SEAS[1]}
+
+function calc(s){
+  var p=P(),so=sObj();
+  var q=Math.max(1,Math.round(s.q*so.qm));
+  var adUnit=s.ad/q;
+  var kPct=(s.k+ACQ+p.t)/100;
+  var mPct=(p.m*so.mm)/100;
+  var floor=(s.c+s.l+adUnit)/(1-kPct-mPct);
+  var net=function(price){return price*(1-kPct)-s.l-s.c-adUnit};
+  var idxTarget=s.ref*IDX;
+  var idxOk=s.p<=idxTarget;
+  var canIdx=idxTarget>=floor;
+  var newPrice=s.p;
+  if(!idxOk&&canIdx)newPrice=Math.max(floor,Math.floor(idxTarget/10)*10);
+  var promoOk=s.promo>=floor;
+  var drr=s.ad/(s.p*q)*100;
+  return {q:q,adUnit:adUnit,floor:floor,net:net(s.p),netNew:net(newPrice),idxOk:idxOk,canIdx:canIdx,
+    idxTarget:idxTarget,newPrice:newPrice,promoOk:promoOk,drr:drr,belowFloor:s.p<floor,kPct:kPct};
+}
+
+function render(){
+  var p=P(),so=sObj();
+  $("#vM").textContent=p.m+"%";$("#vT").textContent=p.t+"%";$("#vD").textContent=p.d+"%";
+  var rows='<thead><tr><th>SKU</th><th>Цена</th><th>Floor</th><th>Прибыль/шт</th><th>Индекс цен</th><th>Акция</th><th>ДРР</th><th>Реклама</th></tr></thead><tbody>';
+  var below=0,profit=0,good=0,acts=[],adkv="";
+  SKU.forEach(function(s){
+    var r=calc(s);
+    if(r.belowFloor)below++;
+    profit+=r.net*r.q;
+    var idxState=r.idxOk?"ok":(r.canIdx?"warn":"bad");
+    if(r.idxOk)good++;
+    var cls=r.belowFloor?"dang":(r.idxOk&&r.promoOk?"good":"warn");
+    var adBad=r.drr>p.d;
+    rows+='<tr class="'+cls+'"><td class="nm">'+s.n+"<span>"+s.id+"</span></td>"+
+      "<td>"+fmt(s.p)+"</td><td>"+fmt(r.floor)+"</td>"+
+      '<td style="color:'+(r.net>0?"var(--ok)":"var(--bad)")+'">'+(r.net>0?"+":"")+fmt(r.net)+"</td>"+
+      '<td><span class="b '+idxState+'">'+(r.idxOk?"Выгодный":r.canIdx?"можно поднять":"упёрлись в floor")+"</span></td>"+
+      '<td><span class="b '+(r.promoOk?"ok":"bad")+'">'+(r.promoOk?"вступаем":"выводим")+"</span></td>"+
+      '<td style="color:'+(adBad?"var(--bad)":"var(--ink2)")+'">'+r.drr.toFixed(1)+"%</td>"+
+      '<td><span class="b '+(adBad?(r.drr>p.d*1.6?"bad":"warn"):"acc")+'">'+
+        (adBad?(r.drr>p.d*1.6?"пауза":"ставка −15%"):"держим")+"</span></td></tr>";
+
+    if(!r.promoOk)acts.push(['stop','<b>'+s.n+"</b> — выводим из акции. Цена участия <span class='mono'>"+fmt(s.promo)+
+      " ₽</span> ниже порога <span class='mono'>"+fmt(r.floor)+" ₽</span>: минус <span class='mono'>"+
+      fmt(r.floor-s.promo)+" ₽</span> с единицы."]);
+    else if(!r.idxOk&&r.canIdx)acts.push(['px','<b>'+s.n+"</b> — двигаем цену <span class='mono'>"+fmt(s.p)+" → "+
+      fmt(r.newPrice)+" ₽</span> ради статуса «Выгодный». Прибыль <span class='mono'>"+fmt(r.net)+" → "+
+      fmt(r.netNew)+" ₽</span>, порог <span class='mono'>"+fmt(r.floor)+" ₽</span> не задет."]);
+    else if(!r.idxOk&&!r.canIdx)acts.push(['stop','<b>'+s.n+"</b> — «Выгодный» требует <span class='mono'>"+
+      fmt(r.idxTarget)+" ₽</span>, порог окупаемости <span class='mono'>"+fmt(r.floor)+
+      " ₽</span>. Ниже не идём: скидка площадки не стоит убытка."]);
+    if(r.drr>p.d)acts.push([r.drr>p.d*1.6?'stop':'px','<b>'+s.n+"</b> — ДРР <span class='mono'>"+r.drr.toFixed(1)+
+      "%</span> при пороге "+p.d+"%. "+(r.drr>p.d*1.6
+        ? "Кампания на паузу: реклама съедает <span class='mono'>"+fmt(r.adUnit)+" ₽</span> из <span class='mono'>"+
+          fmt(r.net+r.adUnit)+" ₽</span> маржи."
+        : "Снижаем ставку в Трафаретах на шаг −15%.")]);
+    adkv+="<div><span>"+s.id+" · заказов "+r.q+"</span><span>"+fmt(s.ad)+" ₽ · "+fmt(r.adUnit)+" ₽/шт · "+
+      r.drr.toFixed(1)+"%</span></div>";
+  });
+  rows+="</tbody>";
+  $("#tbl").innerHTML=rows;
+  $("#k1").textContent=SKU.length;$("#k2").textContent=below;
+  $("#k3").textContent=fmt(profit)+" ₽";$("#k4").textContent=good+" / "+SKU.length;
+  if(!acts.length)acts.push(['go',"Все SKU в норме: цены над порогом, акции проходят по юнит-экономике, ДРР в рамках. Робот ничего не меняет."]);
+  $("#acts").innerHTML=acts.map(function(a){return '<div class="act '+a[0]+'">'+a[1]+"</div>"}).join("");
+  var totAd=SKU.reduce(function(x,s){return x+s.ad},0);
+  var totRev=SKU.reduce(function(x,s){var r=calc(s);return x+s.p*r.q},0);
+  $("#adkv").innerHTML=adkv+'<div class="tot"><span>Итого ДРР по матрице</span><span>'+
+    (totAd/totRev*100).toFixed(1)+"% · "+fmt(totAd)+" ₽/сут</span></div>";
+  renderRL();
+}
+
+/* лимитер */
+function renderRL(){
+  var n=+$("#n").value;
+  $("#vN").textContent=n;
+  var ops=[{n:"Цены",batch:1000,per:1},{n:"Остатки",batch:100,per:1},
+           {n:"Акции",batch:100,per:1},{n:"Ставки",batch:50,per:1}];
+  var naive=n*ops.length, batched=0;
+  ops.forEach(function(o){o.req=Math.ceil(n/o.batch);batched+=o.req});
+  var limit=60;
+  var h="";
+  ops.forEach(function(o){
+    h+='<div class="p"><span>'+o.n+'</span><span class="pbar"><i style="width:'+
+      Math.min(100,o.req/limit*100)+'%;background:var(--acc)"></i></span>'+
+      '<span class="mono" style="text-align:right">'+o.req+"</span></div>";
+  });
+  $("#pipe").innerHTML=h;
+  $("#rlkv").innerHTML=
+    "<div><span>Без батчинга</span><span>"+fmt(naive)+" запросов</span></div>"+
+    "<div><span>С батчингом</span><span>"+batched+" запросов</span></div>"+
+    "<div><span>Лимит очереди</span><span>"+limit+" req/мин</span></div>"+
+    "<div><span>Пауза между пачками</span><span>"+(Math.max(1,Math.round(60/limit*1000)))+" мс</span></div>"+
+    '<div class="tot"><span>Полный цикл</span><span>'+(batched<=limit?"< 1 мин":Math.ceil(batched/limit)+" мин")+"</span></div>";
+  $("#api").innerHTML='<span class="c2">// одна пачка вместо '+Math.min(n,1000)+' отдельных вызовов</span>\n'+
+   'POST /v1/product/import/prices\n{\n  <span class="k">"prices"</span>: [\n'+
+   '    { <span class="k">"offer_id"</span>: <span class="s">"KRM-1188"</span>, <span class="k">"price"</span>: <span class="s">"1060"</span>, '+
+   '<span class="k">"min_price"</span>: <span class="s">"1010"</span> },\n'+
+   '    { <span class="k">"offer_id"</span>: <span class="s">"KRM-0473"</span>, <span class="k">"price"</span>: <span class="s">"1170"</span>, '+
+   '<span class="k">"min_price"</span>: <span class="s">"1120"</span> },\n'+
+   '    <span class="c2">… ещё '+Math.max(0,Math.min(n,1000)-2)+' позиций в этой же пачке</span>\n  ]\n}\n\n'+
+   '<span class="c2">← 200 OK · следующая пачка через паузу, очередь не превышает лимит</span>';
+}
+
+function segs(){
+  var b=$("#seas");b.innerHTML="";
+  SEAS.forEach(function(x){
+    var e=document.createElement("button");e.type="button";e.textContent=x.n;
+    e.setAttribute("aria-pressed",x.k===seas?"true":"false");
+    e.addEventListener("click",function(){seas=x.k;segs();render()});
+    b.appendChild(e);
+  });
+}
+["m","t","d"].forEach(function(id){$("#"+id).addEventListener("input",render)});
+$("#n").addEventListener("input",renderRL);
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+segs();render();
+})();
+</script>
