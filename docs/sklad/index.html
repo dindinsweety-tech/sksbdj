@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демо операционного агента: сверка банковской выписки с МойСклад по допускам и уверенности, приёмка по заказу поставщика из команды на человеческом языке.">
+<title>Агент операционки на МойСклад — демо механик</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#F7F8F8; --surf:#FFFFFF; --surf2:#EFF1F1; --surf3:#E2E5E5;
+  --ink:#16191A; --ink2:#4F5457; --ink3:#828789;
+  --line:#E2E4E5; --line2:#C9CDCE;
+  --acc:#155E75; --acc2:#0E7490; --acc-s:#E4EFF3;
+  --ok:#047857; --ok-s:#E3F2EC;
+  --warn:#B45309; --warn-s:#FAF0E3;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1112; --surf:#181B1C; --surf2:#202425; --surf3:#2B2F31;
+    --ink:#F0F1F1; --ink2:#A5AAAC; --ink3:#767B7D;
+    --line:#252929; --line2:#363B3C;
+    --acc:#67E8F9; --acc2:#A5F3FC; --acc-s:#132B31;
+    --ok:#34D399; --ok-s:#112A20;
+    --warn:#E0A63C; --warn-s:#2B2212;
+    --bad:#FB7185; --bad-s:#331419;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1112; --surf:#181B1C; --surf2:#202425; --surf3:#2B2F31;
+  --ink:#F0F1F1; --ink2:#A5AAAC; --ink3:#767B7D;
+  --line:#252929; --line2:#363B3C;
+  --acc:#67E8F9; --acc2:#A5F3FC; --acc-s:#132B31;
+  --ok:#34D399; --ok-s:#112A20;
+  --warn:#E0A63C; --warn-s:#2B2212;
+  --bad:#FB7185; --bad-s:#331419;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Sora",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.024em;line-height:1.18;text-wrap:balance}
+h1{font-size:clamp(21px,5.2vw,30px)}
+h2{font-size:clamp(18px,4.3vw,22px)}
+h3{font-size:15px}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"Source Code Pro",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"Source Code Pro",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#0F1112}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:68ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:68ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"Source Code Pro",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:66ch}
+
+.ctl{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px;
+  display:grid;gap:14px}
+@media(min-width:760px){.ctl{grid-template-columns:repeat(3,1fr)}}
+.f .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.f .v{font-family:"Source Code Pro",monospace;font-size:13px;font-weight:500}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--acc);height:22px}
+
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px}
+.stat .v{font-family:"Source Code Pro",monospace;font-size:20px;font-weight:500;margin-top:5px}
+.stat .v.ok{color:var(--ok)} .stat .v.warn{color:var(--warn)} .stat .v.bad{color:var(--bad)}
+
+.rows{display:grid;gap:7px;margin-top:16px}
+.row{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px;
+  border-left:3px solid var(--line2)}
+.row.m{border-left-color:var(--ok)}
+.row.a{border-left-color:var(--warn);background:var(--warn-s)}
+.row.x{border-left-color:var(--bad);background:var(--bad-s)}
+.row.p{border-left-color:var(--acc)}
+.row .t{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.row .who{font-weight:500;font-size:14.5px;min-width:0}
+.row .who i{font-style:normal;display:block;font-size:12px;color:var(--ink3);margin-top:2px;
+  font-family:"Source Code Pro",monospace}
+.amt{font-family:"Source Code Pro",monospace;font-weight:500;font-size:15px;white-space:nowrap}
+.b{display:inline-block;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;white-space:nowrap}
+.b.ok{background:var(--ok-s);color:var(--ok)}
+.b.warn{background:var(--warn-s);color:var(--warn)}
+.b.bad{background:var(--bad-s);color:var(--bad)}
+.b.acc{background:var(--acc-s);color:var(--acc)}
+.row .why{margin-top:8px;font-size:13px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px}
+.row .why b{color:var(--ink);font-weight:600}
+.row .why em{font-style:normal;font-family:"Source Code Pro",monospace;font-size:11.5px;color:var(--acc)}
+.row .cand{margin-top:7px;display:grid;gap:5px}
+.row .cand button{border:1px solid var(--line2);border-radius:9px;padding:8px 11px;text-align:left;
+  font-size:12.5px;min-height:40px;color:var(--ink2)}
+.row .cand button:hover{border-color:var(--acc);color:var(--acc)}
+.row.gone{opacity:.45}
+
+/* приёмка */
+.cols{display:grid;gap:13px;margin-top:16px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,420px);align-items:start}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.cmd{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.cmd input{flex:1;min-width:220px;background:var(--surf2);border:1px solid var(--line2);border-radius:10px;
+  padding:11px 13px;font:inherit;font-size:14px;color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;
+  border-radius:10px;font-weight:600;font-size:14px;background:var(--acc);color:#fff}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#0F1112}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2);font-weight:400;min-height:38px;
+  padding:0 12px;font-size:12.5px;border-radius:9px}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+.ex{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:12px}
+th{text-align:right;padding:8px 9px;font-weight:600;font-size:11px;color:var(--ink2);
+  border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:8px 9px;text-align:right;border-bottom:1px solid var(--line);
+  font-family:"Source Code Pro",monospace;font-size:12.5px}
+td.nm{font-family:"Sora",sans-serif;font-size:13px}
+tr.diff td{color:var(--bad)}
+.kv{display:grid;gap:6px;margin-top:11px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"Source Code Pro",monospace;font-size:12.5px;text-align:right}
+.kv .tot span:last-child{font-weight:600;color:var(--acc);font-size:14px}
+pre{margin:10px 0 0;background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px;
+  overflow-x:auto;font-family:"Source Code Pro",monospace;font-size:11.5px;line-height:1.6}
+.k{color:var(--acc)} .s{color:var(--ok)} .n{color:var(--warn)} .c2{color:var(--ink3)}
+.warnbox{margin-top:11px;background:var(--warn-s);border-radius:10px;padding:11px 12px;font-size:13px;color:var(--ink2)}
+.warnbox b{color:var(--warn)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16v13H4zM4 7l2-3h12l2 3M9 12h6"/></svg></div>
+      <b>Агент операционки · МойСклад</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Сверка платежей и приёмка по команде — там, где агент реально экономит часы</h1>
+    <p>Две операционные задачи из брифа, собранные как работающая логика. Первая — сопоставление банковской выписки с платежами в учётной системе: не «нашлось / не нашлось», а с допусками, оценкой уверенности и разбором спорных случаев. Вторая — приёмка по заказу поставщика, которую агент собирает из фразы человеческим языком и сам считает расхождения.</p>
+    <div class="note">Главный принцип: агент не проводит документы молча. Он предлагает решение с обоснованием, а спорные случаи выносит человеку. Автопроведение включается только для совпадений с высокой уверенностью — порог настраивается ниже.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Сверка выписки с МойСклад</h2></div>
+    <p class="sdesc">12 строк банковской выписки против платежей в учётной системе. Двигайте допуски — видно, как меняется граница между «сопоставлено автоматически» и «на решение человеку».</p>
+    <div class="ctl">
+      <div class="f"><div class="top"><span class="lbl">Допуск по дате</span><span class="v" id="vD"></span></div>
+        <input type="range" id="dd" min="0" max="7" step="1" value="2"></div>
+      <div class="f"><div class="top"><span class="lbl">Допуск по сумме</span><span class="v" id="vS"></span></div>
+        <input type="range" id="ds" min="0" max="500" step="10" value="0"></div>
+      <div class="f"><div class="top"><span class="lbl">Порог автопроведения</span><span class="v" id="vC"></span></div>
+        <input type="range" id="dc" min="60" max="100" step="5" value="85"></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lbl">Строк в выписке</div><div class="v mono" id="k1">12</div></div>
+      <div class="stat"><div class="lbl">Сопоставлено</div><div class="v mono ok" id="k2">0</div></div>
+      <div class="stat"><div class="lbl">Спорных</div><div class="v mono warn" id="k3">0</div></div>
+      <div class="stat"><div class="lbl">Нет в учёте</div><div class="v mono bad" id="k4">0</div></div>
+    </div>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Приёмка по команде</h2></div>
+    <p class="sdesc">Напишите агенту фразу так, как сказали бы кладовщику. Он найдёт заказ поставщика, подставит позиции, посчитает расхождения и покажет, что уйдёт в МойСклад — до того, как что-то проведёт.</p>
+    <div class="cols">
+      <div class="box">
+        <span class="lbl">Команда агенту</span>
+        <div class="cmd">
+          <input id="cmd" autocomplete="off" placeholder="прими поставку по ЗП-00142, кабеля не пришло 3 шт">
+          <button class="btn" id="go" type="button">Разобрать</button>
+        </div>
+        <div class="ex" id="ex"></div>
+        <div id="out"></div>
+      </div>
+      <div>
+        <div class="box"><span class="lbl">Что распознал агент</span><div class="kv" id="parsed"></div></div>
+        <div class="box" style="margin-top:13px"><span class="lbl">Запрос в МойСклад</span><pre class="mono" id="api"><span class="c2">// разберите команду слева</span></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>Демо механик операционного агента. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+
+/* ---------- 01. сверка ---------- */
+var BANK=[
+ {id:"b1",d:12,cp:'ООО "Автозвук-Про"',a:148500,p:"Оплата по счёту 1204"},
+ {id:"b2",d:12,cp:"ИП Гафаров Р.Р.",a:36900,p:"Оплата по договору 77"},
+ {id:"b3",d:13,cp:'ООО "Магнитола Групп"',a:92400,p:"За магнитолы, счёт 3391"},
+ {id:"b4",d:15,cp:'ООО "СиДиЭй Трейд"',a:214000,p:"Предоплата 50%, счёт 812"},
+ {id:"b5",d:15,cp:'ООО "Кабель-Маркет"',a:18760,p:"Оплата счёта 4471"},
+ {id:"b6",d:16,cp:"ИП Сафин И.М.",a:45000,p:"Оплата по счёту"},
+ {id:"b7",d:16,cp:'ООО "Трейд-Авто"',a:67300,p:"Оплата счёта 9910"},
+ {id:"b8",d:17,cp:'ООО "Автозвук-Про"',a:120000,p:"Оплата счетов 1288, 1290"},
+ {id:"b9",d:17,cp:"ИП Гафаров Р.Р.",a:12400,p:"Доплата по договору 77"},
+ {id:"b10",d:18,cp:'ООО "Динамик Плюс"',a:88900,p:"Оплата счёта 226"},
+ {id:"b11",d:18,cp:'ООО "Шумка-Строй"',a:31200,p:"Оплата счёта 1501"},
+ {id:"b12",d:19,cp:'ООО "СиДиЭй Трейд"',a:9800,p:"Доставка, счёт 815"}
+];
+var MS=[
+ {id:"m1",d:12,cp:'ООО "Автозвук-Про"',a:148500,doc:"Входящий платёж 00341"},
+ {id:"m2",d:13,cp:"ИП Гафаров Р.Р.",a:36900,doc:"Входящий платёж 00344"},
+ {id:"m3",d:13,cp:'Магнитола-Групп, ООО',a:92400,doc:"Входящий платёж 00347"},
+ {id:"m4",d:18,cp:'ООО "СиДиЭй Трейд"',a:214000,doc:"Входящий платёж 00359"},
+ {id:"m5",d:15,cp:'ООО "Кабель-Маркет"',a:18800,doc:"Входящий платёж 00351"},
+ {id:"m6",d:16,cp:"ИП Сафин И.М.",a:45000,doc:"Входящий платёж 00352 (счёт 601)"},
+ {id:"m7",d:16,cp:"ИП Сафин И.М.",a:45000,doc:"Входящий платёж 00353 (счёт 604)"},
+ {id:"m8",d:17,cp:'ООО "Автозвук-Про"',a:70000,doc:"Входящий платёж 00355"},
+ {id:"m9",d:17,cp:'ООО "Автозвук-Про"',a:50000,doc:"Входящий платёж 00356"},
+ {id:"m10",d:17,cp:"ИП Гафаров Р.Р.",a:12400,doc:"Входящий платёж 00357"},
+ {id:"m11",d:18,cp:'ООО "Динамик Плюс"',a:88900,doc:"Входящий платёж 00360"},
+ {id:"m12",d:19,cp:'ООО "СиДиЭй Трейд"',a:9800,doc:"Входящий платёж 00362"},
+ {id:"m13",d:17,cp:'ООО "Эхо-Саунд"',a:54000,doc:"Входящий платёж 00358"}
+];
+var resolved={};
+
+function norm(s){return s.toLowerCase().replace(/[«»"'.,]/g," ").replace(/\b(ооо|ип|зао|ао)\b/g," ")
+  .replace(/\s+/g," ").trim()}
+function sim(a,b){
+  var x=norm(a).split(" ").filter(Boolean), y=norm(b).split(" ").filter(Boolean);
+  var inter=x.filter(function(t){return y.indexOf(t)>=0}).length;
+  var uni=x.concat(y.filter(function(t){return x.indexOf(t)<0})).length;
+  return uni?inter/uni:0;
+}
+function conf(b,m,p){
+  var dd=Math.abs(b.d-m.d), da=Math.abs(b.a-m.a), ns=sim(b.cp,m.cp);
+  if(dd>p.dd||da>p.ds)return 0;
+  var c=100-dd*5-(da>0?10+da/40:0)-(1-ns)*38;
+  return Math.max(0,Math.round(c));
+}
+function P(){return {dd:+$("#dd").value,ds:+$("#ds").value,dc:+$("#dc").value}}
+
+function renderMatch(){
+  var p=P();
+  $("#vD").textContent="± "+p.dd+" дн";
+  $("#vS").textContent="± "+p.ds+" ₽";
+  $("#vC").textContent=p.dc+"%";
+  var used={},out=[],n={m:0,a:0,x:0};
+  BANK.forEach(function(b){
+    var cands=MS.filter(function(m){return !used[m.id]})
+      .map(function(m){return {m:m,c:conf(b,m,p)}})
+      .filter(function(x){return x.c>0})
+      .sort(function(x,y){return y.c-x.c});
+    var pair=null;
+    if(!cands.length||cands[0].c<50){
+      for(var i=0;i<MS.length&&!pair;i++)for(var j=i+1;j<MS.length;j++){
+        var A=MS[i],B=MS[j];
+        if(used[A.id]||used[B.id])continue;
+        if(Math.abs(A.a+B.a-b.a)>p.ds)continue;
+        if(sim(b.cp,A.cp)<.5||sim(b.cp,B.cp)<.5)continue;
+        if(Math.abs(A.d-b.d)>p.dd||Math.abs(B.d-b.d)>p.dd)continue;
+        pair=[A,B];break;
+      }
+    }
+    if(pair){
+      out.push({b:b,t:"a",why:"Одна сумма в банке — два платежа в учёте: <b>"+fmt(pair[0].a)+" ₽</b> и <b>"+
+        fmt(pair[1].a)+" ₽</b>. Агент предлагает связать строку с обоими.",
+        cands:pair.map(function(m){return m.doc+" · "+fmt(m.a)+" ₽"})});
+      used[pair[0].id]=1;used[pair[1].id]=1;n.a++;return;
+    }
+    if(!cands.length){
+      out.push({b:b,t:"x",why:"В учёте платежа нет. Деньги пришли, документ не заведён — агент готовит входящий платёж и ставит на подтверждение."});
+      n.x++;return;
+    }
+    var best=cands[0], second=cands[1];
+    var ambiguous=second&&best.c-second.c<7;
+    if(best.c>=p.dc&&!ambiguous){
+      used[best.m.id]=1;n.m++;
+      var det=[];
+      if(best.m.d!==b.d)det.push("дата расходится на "+Math.abs(best.m.d-b.d)+" дн");
+      if(best.m.a!==b.a)det.push("сумма отличается на "+fmt(Math.abs(best.m.a-b.a))+" ₽ — похоже на комиссию банка");
+      if(sim(b.cp,best.m.cp)<1)det.push("наименование записано иначе: «"+best.m.cp+"»");
+      out.push({b:b,t:"m",m:best.m,c:best.c,
+        why:(det.length?det.join(", ")+". ":"Полное совпадение суммы, даты и контрагента. ")+
+        "Сопоставлено автоматически."});
+      return;
+    }
+    n.a++;
+    used[best.m.id]=1;
+    out.push({b:b,t:"a",c:best.c,
+      why:ambiguous
+        ? "Два платежа в учёте одинаково подходят под эту строку — автоматом связывать нельзя, решает человек."
+        : "Уверенность <b>"+best.c+"%</b> ниже порога автопроведения "+p.dc+"%. Агент не проводит сам, выносит на подтверждение.",
+      cands:cands.slice(0,2).map(function(x){return x.m.doc+" · "+fmt(x.m.a)+" ₽ · "+x.c+"%"})});
+  });
+  MS.forEach(function(m){
+    if(used[m.id])return;
+    out.push({b:{cp:m.cp,a:m.a,d:m.d,p:m.doc},t:"p",
+      why:"Платёж есть в учёте, но в выписке его нет. Либо вбит ошибочно, либо деньги не дошли — агент помечает и спрашивает."});
+  });
+  $("#k2").textContent=n.m;$("#k3").textContent=n.a;$("#k4").textContent=n.x;
+  $("#rows").innerHTML=out.map(function(o,i){
+    var name={m:"сопоставлено",a:"на решение",x:"нет в учёте",p:"нет в банке"}[o.t];
+    var cls={m:"ok",a:"warn",x:"bad",p:"acc"}[o.t];
+    return '<div class="row '+o.t+(resolved[o.b.id||("p"+i)]?" gone":"")+'">'+
+      '<div class="t"><div class="who">'+o.b.cp+"<i>"+(o.b.d)+".09 · "+o.b.p+"</i></div>"+
+      '<div style="text-align:right"><div class="amt">'+fmt(o.b.a)+' ₽</div>'+
+      '<span class="b '+cls+'" style="margin-top:5px;display:inline-block">'+name+(o.c?" · "+o.c+"%":"")+"</span></div></div>"+
+      '<div class="why">'+o.why+"</div>"+
+      (o.cands?'<div class="cand">'+o.cands.map(function(c){
+        return '<button type="button" data-r="'+(o.b.id||("p"+i))+'">Связать с: '+c+"</button>"}).join("")+"</div>":"")+
+      "</div>";
+  }).join("");
+  Array.prototype.forEach.call($("#rows").querySelectorAll("button[data-r]"),function(b){
+    b.addEventListener("click",function(){resolved[b.dataset.r]=1;renderMatch()});
+  });
+}
+["dd","ds","dc"].forEach(function(id){$("#"+id).addEventListener("input",renderMatch)});
+
+/* ---------- 02. приёмка ---------- */
+var ORD={
+ "00142":{sup:'ООО "Кабель-Маркет"',date:"22.09.2026",lines:[
+   {n:"Кабель питания 4 мм²",q:50,pr:210},{n:"Разъём ISO универсальный",q:120,pr:95},
+   {n:"Шумоизоляция, лист 50×70",q:30,pr:640}]},
+ "00151":{sup:'ООО "Динамик Плюс"',date:"23.09.2026",lines:[
+   {n:"Динамик коаксиальный 16 см",q:24,pr:1450},{n:"Проставки под динамики",q:24,pr:380},
+   {n:"Усилитель 4-канальный",q:6,pr:7900}]}
+};
+var EX=["прими поставку по ЗП-00142, всё пришло",
+        "прими ЗП-00142, кабеля не пришло 3 шт, шумки брак 2 листа",
+        "приёмка по заказу ЗП-00151, недовоз 4 динамика"];
+
+function parse(txt){
+  var t=txt.toLowerCase();
+  var mo=t.match(/зп[\s-]*0*(\d+)/);
+  var num=mo?("0000"+mo[1]).slice(-5):null;
+  var ord=num&&ORD[num]?ORD[num]:null;
+  if(!ord){
+    for(var k in ORD){if(sim(t,ORD[k].sup)>.12){ord=ORD[k];num=k;break}}
+  }
+  if(!ord)return {err:"Не понял, по какому заказу поставщика приёмка. Назовите номер вида ЗП-00142 или поставщика."};
+  var short={};
+  t.split(/[,;.]/).forEach(function(cl){
+    if(!/не пришл|недовоз|недовез|недостач|брак|бой|некомплект/.test(cl))return;
+    var qm=cl.match(/(\d+)/);
+    if(!qm)return;
+    var qty=+qm[1];
+    var best=null,bs=0;
+    ord.lines.forEach(function(l){
+      var s=0;
+      norm(l.n).split(" ").forEach(function(w){
+        if(w.length<4)return;
+        if(cl.indexOf(w.slice(0,Math.min(5,w.length-1)))>=0)s++;
+      });
+      if(s>bs){bs=s;best=l}
+    });
+    if(best)short[best.n]=(short[best.n]||0)+qty;
+  });
+  return {num:num,ord:ord,short:short,full:!Object.keys(short).length};
+}
+
+function renderRec(txt){
+  var r=parse(txt);
+  if(r.err){
+    $("#out").innerHTML='<div class="warnbox"><b>Уточнение.</b> '+r.err+"</div>";
+    $("#parsed").innerHTML='<div><span>Статус</span><span>не распознано</span></div>';
+    $("#api").innerHTML='<span class="c2">// команда не распознана, запрос не формируется</span>';
+    return;
+  }
+  var rows="",tot=0,ordTot=0,diffs=[];
+  r.ord.lines.forEach(function(l){
+    var sh=r.short[l.n]||0, got=Math.max(0,l.q-sh);
+    tot+=got*l.pr;ordTot+=l.q*l.pr;
+    if(sh)diffs.push(l.n+" — "+sh+" шт");
+    rows+='<tr'+(sh?' class="diff"':"")+'><td class="nm">'+l.n+"</td><td>"+l.q+"</td><td>"+got+
+      "</td><td>"+(sh?"−"+sh:"—")+"</td><td>"+fmt(got*l.pr)+" ₽</td></tr>";
+  });
+  $("#out").innerHTML='<table><thead><tr><th>Позиция</th><th>Заказано</th><th>Принято</th><th>Расх.</th><th>Сумма</th></tr></thead><tbody>'+
+    rows+"</tbody></table>"+
+    (diffs.length
+      ? '<div class="warnbox"><b>Расхождения: '+diffs.join(", ")+".</b> Агент не проводит приёмку молча — формирует документ с фактическим количеством и ставит задачу на претензию поставщику. Недополучено на "+
+        fmt(ordTot-tot)+" ₽.</div>"
+      : '<div class="warnbox" style="background:var(--ok-s)"><b style="color:var(--ok)">Расхождений нет.</b> Приёмка закрывает заказ полностью, документ готов к проведению.</div>');
+  $("#parsed").innerHTML=
+    "<div><span>Заказ поставщика</span><span>ЗП-"+r.num+"</span></div>"+
+    "<div><span>Поставщик</span><span>"+r.ord.sup+"</span></div>"+
+    "<div><span>Позиций в заказе</span><span>"+r.ord.lines.length+"</span></div>"+
+    "<div><span>Расхождений</span><span>"+(diffs.length||"нет")+"</span></div>"+
+    '<div class="tot"><span>Сумма приёмки</span><span>'+fmt(tot)+" ₽</span></div>";
+  $("#api").innerHTML='<span class="c2">// создание приёмки на основании заказа поставщика</span>\n'+
+   'POST /entity/supply\n{\n  <span class="k">"supplier"</span>: { <span class="k">"meta"</span>: <span class="s">"counterparty/…"</span> },\n'+
+   '  <span class="k">"purchaseOrder"</span>: { <span class="k">"name"</span>: <span class="s">"ЗП-'+r.num+'"</span> },\n'+
+   '  <span class="k">"positions"</span>: [\n'+
+   r.ord.lines.map(function(l){
+     var got=Math.max(0,l.q-(r.short[l.n]||0));
+     return '    { <span class="k">"assortment"</span>: <span class="s">"'+l.n+'"</span>, <span class="k">"quantity"</span>: <span class="n">'+
+       got+'</span>, <span class="k">"price"</span>: <span class="n">'+l.pr*100+"</span> }";
+   }).join(",\n")+"\n  ],\n"+
+   '  <span class="k">"applicable"</span>: <span class="n">'+(diffs.length?"false":"true")+"</span>"+
+   (diffs.length?'  <span class="c2">// черновик: ждём подтверждения по расхождениям</span>':"")+"\n}";
+}
+$("#go").addEventListener("click",function(){renderRec($("#cmd").value||$("#cmd").placeholder)});
+$("#cmd").addEventListener("keydown",function(e){if(e.key==="Enter")$("#go").click()});
+(function(){
+  var b=$("#ex");
+  EX.forEach(function(x){
+    var e=document.createElement("button");e.type="button";e.className="btn-g";e.textContent=x;
+    e.addEventListener("click",function(){$("#cmd").value=x;renderRec(x)});
+    b.appendChild(e);
+  });
+})();
+
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+renderMatch();renderRec(EX[1]);$("#cmd").value=EX[1];
+})();
+</script>
+
+</body>
+</html>
