@@ -1,0 +1,426 @@
+<title>Router, state, system prompt — разбор архитектуры агента</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F9F7F9; --surf:#FFFFFF; --surf2:#F2EFF2; --surf3:#E6E1E6;
+  --ink:#1A171A; --ink2:#555055; --ink3:#878187;
+  --line:#E6E1E6; --line2:#CEC7CE;
+  --acc:#A21CAF; --acc2:#C026D3; --acc-s:#F7E9F8;
+  --ok:#047857; --ok-s:#E3F2EC;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --warn:#B45309; --warn-s:#FAF0E3;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121012; --surf:#1B181B; --surf2:#232023; --surf3:#2F2A2F;
+    --ink:#F2EFF2; --ink2:#ABA4AB; --ink3:#7C757C;
+    --line:#282328; --line2:#3A343A;
+    --acc:#F0ABFC; --acc2:#F5D0FE; --acc-s:#2D1330;
+    --ok:#34D399; --ok-s:#112A20;
+    --bad:#FB7185; --bad-s:#331419;
+    --warn:#E0A63C; --warn-s:#2B2212;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121012; --surf:#1B181B; --surf2:#232023; --surf3:#2F2A2F;
+  --ink:#F2EFF2; --ink2:#ABA4AB; --ink3:#7C757C;
+  --line:#282328; --line2:#3A343A;
+  --acc:#F0ABFC; --acc2:#F5D0FE; --acc-s:#2D1330;
+  --ok:#34D399; --ok-s:#112A20;
+  --bad:#FB7185; --bad-s:#331419;
+  --warn:#E0A63C; --warn-s:#2B2212;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Outfit",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.022em;line-height:1.17;text-wrap:balance}
+h1{font-size:clamp(22px,5.3vw,31px)}
+h2{font-size:clamp(18px,4.3vw,22px)}
+h3{font-size:15px}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"DM Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"DM Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#121012}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:68ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:68ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"DM Mono",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:66ch}
+
+.inp{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.inp input{flex:1;min-width:230px;background:var(--surf);border:1px solid var(--line2);border-radius:11px;
+  padding:12px 14px;font:inherit;font-size:15px;color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 17px;
+  border-radius:11px;font-weight:600;font-size:14.5px;background:var(--acc);color:#fff}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#121012}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2);font-weight:400;min-height:36px;
+  padding:0 11px;font-size:12.5px;border-radius:9px}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+.ex{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+
+.two{display:grid;gap:12px;margin-top:16px}
+@media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.card.old{border-top:3px solid var(--bad)}
+.card.new{border-top:3px solid var(--ok)}
+.card h3{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.verd{border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600}
+.verd.ok{background:var(--ok-s);color:var(--ok)}
+.verd.bad{background:var(--bad-s);color:var(--bad)}
+.verd.warn{background:var(--warn-s);color:var(--warn)}
+.kv{display:grid;gap:6px;margin-top:12px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"DM Mono",monospace;font-size:12.5px;text-align:right;max-width:62%}
+.reply{margin-top:12px;background:var(--surf2);border-radius:11px;padding:11px 13px;font-size:14px;line-height:1.5}
+.reply.err{background:var(--bad-s)}
+.trace{margin-top:11px;display:grid;gap:4px;font-family:"DM Mono",monospace;font-size:11.5px;line-height:1.5;color:var(--ink2)}
+.trace b{color:var(--acc);font-weight:500}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.chip{border-radius:20px;padding:3px 9px;font-size:11px;background:var(--surf3);color:var(--ink2);
+  font-family:"DM Mono",monospace}
+.chip.on{background:var(--acc-s);color:var(--acc)}
+
+/* стек состояния */
+.stack{display:grid;gap:6px;margin-top:11px}
+.frame{border:1px solid var(--line2);border-radius:9px;padding:9px 11px;font-size:12.5px;
+  display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.frame.top{border-color:var(--acc);background:var(--acc-s)}
+.frame span:last-child{font-family:"DM Mono",monospace;font-size:11.5px;color:var(--ink3)}
+
+/* слои */
+.layers{display:grid;gap:8px;margin-top:16px}
+@media(min-width:760px){.layers{grid-template-columns:repeat(2,1fr)}}
+.ly{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:13px;
+  border-left:3px solid var(--acc)}
+.ly h3{font-size:14.5px;display:flex;gap:9px;align-items:baseline}
+.ly h3 em{font-style:normal;font-family:"DM Mono",monospace;font-size:11px;color:var(--ink3)}
+.ly p{margin-top:6px;font-size:13.5px;color:var(--ink2)}
+.ly .bad2{margin-top:7px;font-size:12.5px;color:var(--bad);border-top:1px dashed var(--line);padding-top:7px}
+
+pre{margin:12px 0 0;background:var(--surf2);border:1px solid var(--line);border-radius:11px;padding:13px;
+  overflow-x:auto;font-family:"DM Mono",monospace;font-size:11.5px;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.k{color:var(--acc)} .s{color:var(--ok)} .n{color:var(--warn)} .c2{color:var(--ink3)}
+.tabs{display:flex;gap:5px;margin-top:14px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line2);border-radius:9px;padding:8px 13px;font-size:13px;color:var(--ink2);min-height:40px}
+.tabs button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+:root[data-theme="dark"] .tabs button[aria-pressed="true"],:root:not([data-theme="light"]) .tabs button[aria-pressed="true"]{color:#121012}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .tabs button[aria-pressed="true"]{color:#fff}}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.4 11l7.2-4M8.4 13l7.2 4"/></svg></div>
+      <b>Router · State · System Prompt</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Почему список фраз ломается — и что ставится вместо него</h1>
+    <p>Агент на списке фраз не обобщает не потому, что фраз мало, а потому, что у него нет уровня, на котором смысл отделяется от формулировки. Ниже это видно буквально: одна и та же мысль, сказанная тремя способами, — и два разных агента на ней. Введите свою фразу, в том числе с опечатками и сленгом.</p>
+    <div class="note">В демо роутер работает на нормализации, стеммах и синонимах — детерминированно, чтобы результат воспроизводился. В проде на этом месте вызов LLM с жёстким JSON-контрактом ответа, а слой и его контракт остаются теми же. Архитектура не зависит от того, чем именно распознаётся намерение.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Один ввод — два агента</h2></div>
+    <p class="sdesc">Слева то, что у вас сейчас: сопоставление с заранее записанными фразами. Справа — роутер: нормализация, намерение с уверенностью, слоты, состояние, политика.</p>
+    <div class="inp">
+      <input id="q" autocomplete="off" placeholder="скока будет доставка до Твери?">
+      <button class="btn" id="go" type="button">Прогнать</button>
+    </div>
+    <div class="ex" id="ex"></div>
+    <div class="two">
+      <div class="card old">
+        <h3>Сейчас: список фраз <span class="verd bad" id="v1">—</span></h3>
+        <div class="kv" id="k1"></div>
+        <div class="reply" id="r1"></div>
+        <div class="trace" id="t1"></div>
+      </div>
+      <div class="card new">
+        <h3>Новая архитектура <span class="verd ok" id="v2">—</span></h3>
+        <div class="kv" id="k2"></div>
+        <div class="chips" id="c2"></div>
+        <div class="reply" id="r2"></div>
+        <span class="lbl" style="display:block;margin-top:13px">Стек диалога</span>
+        <div class="stack" id="st2"></div>
+        <div class="trace" id="t2"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Из чего состоит новая система</h2></div>
+    <p class="sdesc">Шесть слоёв, у каждого одна ответственность. Красным — что именно ломается сейчас, когда этого слоя нет.</p>
+    <div class="layers" id="layers"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Production System Prompt</h2></div>
+    <p class="sdesc">Промпт — последний шаг, а не первый: он описывает контракт, который задала архитектура. Ниже фрагмент рабочего промпта и схема ответа, которую он обязан соблюдать.</p>
+    <div class="tabs" id="tabs"></div>
+    <pre class="mono" id="pr"></pre>
+  </section>
+
+  <footer>Разбор архитектуры Telegram-агента. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+
+/* ---------- старый агент: список фраз ---------- */
+var PHRASES=[
+ ["сколько стоит доставка","price"],
+ ["какая цена","price"],
+ ["стоимость доставки","price"],
+ ["где мой заказ","status"],
+ ["статус заказа","status"],
+ ["хочу оформить заказ","order"],
+ ["оформить заказ","order"],
+ ["отменить заказ","cancel"],
+ ["позовите оператора","human"],
+ ["время работы","hours"]
+];
+var OLD_REPLY={price:"Доставка от 350 ₽. Уточните адрес.",status:"Введите номер заказа.",
+ order:"Отлично! Что вы хотите заказать?",cancel:"Назовите номер заказа для отмены.",
+ human:"Передаю оператору.",hours:"Работаем с 9:00 до 21:00 без выходных."};
+
+/* ---------- новый: роутер ---------- */
+var INTENTS={
+ price:{n:"цена/расчёт",kw:["скольк","скока","сколь","цен","стоим","стоит","почём","почем","деньг","прайс",
+   "тариф","дорог","дешев","бюджет","ценник","обойдет","выйдет"]},
+ status:{n:"статус заказа",kw:["где","когда","статус","отслед","трек","приед","придет","придёт","достав",
+   "везут","едет","задерж"]},
+ order:{n:"оформление",kw:["заказ","оформ","хочу","закаж","куп","брать","возьм","нужн","надо","привез"]},
+ cancel:{n:"отмена",kw:["отмен","верн","возврат","передум","не нужн","отказ"]},
+ human:{n:"эскалация",kw:["оператор","человек","менеджер","живой","live","поддержк","саппорт"]},
+ hours:{n:"график",kw:["работа","график","режим","открыт","закрыт","час","воскрес","суббот","выходн"]},
+ complaint:{n:"рекламация",kw:["слома","не работа","брак","разби","жалоб","испорт","плох","ужас","косяк"]}
+};
+var CITY=["твери","тверь","казани","казань","перми","пермь","москве","москва","уфе","уфа","сочи","туле","тула"];
+var SLOTS={order:/\b(\d{4,8})\b/, city:null, date:/(завтра|сегодня|послезавтра|понедельник|вторник|срочно)/i};
+
+function norm(s){return " "+s.toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9 ]/g," ")
+  .replace(/\s+/g," ").trim()+" "}
+function route(q){
+  var t=norm(q), scores={},hits={};
+  for(var k in INTENTS){
+    var s=0,h=[];
+    INTENTS[k].kw.forEach(function(w){
+      if(t.indexOf(" "+w)>=0||t.indexOf(w)>0){s+=w.length>=6?2.2:1.5;h.push(w)}
+    });
+    if(s>0){scores[k]=s;hits[k]=h}
+  }
+  if(/\bне\s+(нужн|надо|хоч)/.test(t)&&scores.order){scores.cancel=(scores.cancel||0)+3;scores.order-=2}
+  var arr=Object.keys(scores).map(function(k){return {k:k,s:scores[k]}}).sort(function(a,b){return b.s-a.s});
+  var best=arr[0],second=arr[1];
+  var conf=best?Math.min(96,Math.round(best.s/(best.s+(second?second.s:0)+1.6)*100+34)):0;
+  var slots={};
+  var mo=q.match(SLOTS.order);if(mo)slots["номер заказа"]=mo[1];
+  CITY.forEach(function(c){if(t.indexOf(" "+c)>=0)slots["город"]=c.charAt(0).toUpperCase()+c.slice(1)});
+  var md=q.match(SLOTS.date);if(md)slots["срок"]=md[1].toLowerCase();
+  return {intent:best?best.k:null,conf:best?conf:0,hits:best?hits[best.k]:[],slots:slots,
+    alt:second?second.k:null,amb:best&&second&&best.s-second.s<1.2};
+}
+
+/* состояние диалога: стек */
+var stack=[{n:"root",d:"свободный диалог"}];
+var REPLY={
+ price:function(s){return s["город"]
+   ? "Доставка до города "+s["город"]+" — 690 ₽, срок 2 дня. Посчитать точнее по весу?"
+   : "Считаю доставку. В какой город?"},
+ status:function(s){return s["номер заказа"]
+   ? "Заказ "+s["номер заказа"]+": передан курьеру, доставка сегодня до 19:00."
+   : "Подскажите номер заказа — он в письме и в чеке."},
+ order:function(){return "Оформляю. Что заказываем и куда везём?"},
+ cancel:function(s){return s["номер заказа"]
+   ? "Отменяю заказ "+s["номер заказа"]+". Деньги вернутся на карту за 3–5 дней. Подтверждаете?"
+   : "Какой заказ отменяем? Назовите номер."},
+ human:function(){return "Зову менеджера, он подключится в этот чат."},
+ hours:function(){return "Пн–Вс, 9:00–21:00. Заявки принимаем круглосуточно."},
+ complaint:function(){return "Жаль, что так вышло. Опишите проблему в двух словах — заведу рекламацию и подключу менеджера."}
+};
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+function run(q){
+  /* старый */
+  var t=norm(q).trim();
+  var exact=null,partial=null;
+  PHRASES.forEach(function(p){
+    if(t===p[0])exact=p;
+    else if(!partial&&t.indexOf(p[0])>=0)partial=p;
+  });
+  var hit=exact||partial;
+  $("#v1").className="verd "+(exact?"ok":partial?"warn":"bad");
+  $("#v1").textContent=exact?"совпало":partial?"частично":"промах";
+  $("#k1").innerHTML=
+    "<div><span>Метод</span><span>сравнение со списком</span></div>"+
+    "<div><span>Фраз в списке</span><span>"+PHRASES.length+"</span></div>"+
+    "<div><span>Найдено</span><span>"+(hit?'"'+hit[0]+'"':"—")+"</span></div>";
+  $("#r1").className="reply"+(hit?"":" err");
+  $("#r1").textContent=hit?OLD_REPLY[hit[1]]:"Извините, я вас не понял. Напишите «оператор», чтобы связаться с менеджером.";
+  $("#t1").innerHTML=hit
+    ? "<div>match(<b>exact</b>) → reply[" + hit[1] + "]</div><div>state: не хранится</div><div>слоты: не извлекаются</div>"
+    : "<div>match(exact) → <b>null</b></div><div>match(substring) → <b>null</b></div><div>fallback → «не понял»</div>";
+
+  /* новый */
+  var r=route(q);
+  $("#v2").className="verd "+(r.intent?(r.amb?"warn":"ok"):"bad");
+  $("#v2").textContent=r.intent?(r.amb?"уточнение":"распознано"):"вне домена";
+  $("#k2").innerHTML=
+    "<div><span>Намерение</span><span>"+(r.intent?INTENTS[r.intent].n:"не определено")+"</span></div>"+
+    "<div><span>Уверенность</span><span>"+r.conf+"%</span></div>"+
+    "<div><span>Слоты</span><span>"+(Object.keys(r.slots).length
+      ? Object.keys(r.slots).map(function(k){return k+": "+r.slots[k]}).join("<br>") : "—")+"</span></div>"+
+    "<div><span>Альтернатива</span><span>"+(r.alt?INTENTS[r.alt].n:"—")+"</span></div>";
+  $("#c2").innerHTML=r.hits.length
+    ? r.hits.slice(0,7).map(function(h){return '<span class="chip on">'+h+"…</span>"}).join("")
+    : '<span class="chip">совпадений по стеммам нет</span>';
+  var txt;
+  if(!r.intent)txt="Это вне того, чем я занимаюсь. Могу помочь с заказом, доставкой и возвратом — или позвать менеджера.";
+  else if(r.amb)txt="Уточню, чтобы не ошибиться: вам про "+INTENTS[r.intent].n+" или про "+INTENTS[r.alt].n+"?";
+  else txt=REPLY[r.intent](r.slots);
+  $("#r2").className="reply";$("#r2").textContent=txt;
+
+  /* стек */
+  var frames=[{n:"root",d:"свободный диалог"}];
+  if(r.intent==="order")frames.push({n:"order.collect",d:"ждём товар и адрес"});
+  if(r.intent==="cancel"&&r.slots["номер заказа"])frames.push({n:"cancel.confirm",d:"ждём подтверждение"});
+  if(r.intent==="price"&&!r.slots["город"])frames.push({n:"price.slot:city",d:"ждём город"});
+  if(r.intent==="status"&&!r.slots["номер заказа"])frames.push({n:"status.slot:order_id",d:"ждём номер"});
+  if(r.intent==="complaint")frames.push({n:"claim.open",d:"собираем описание"});
+  if(r.intent==="human")frames.push({n:"handoff",d:"передача оператору"});
+  $("#st2").innerHTML=frames.map(function(f,i){
+    return '<div class="frame'+(i===frames.length-1&&frames.length>1?" top":"")+'"><span>'+f.n+"</span><span>"+f.d+"</span></div>"
+  }).join("");
+  $("#t2").innerHTML=
+    "<div>normalize → <b>"+esc(norm(q).trim())+"</b></div>"+
+    "<div>route → intent=<b>"+(r.intent||"out_of_domain")+"</b> conf=<b>"+r.conf+"</b></div>"+
+    "<div>slots → <b>"+(Object.keys(r.slots).length?Object.keys(r.slots).join(", "):"∅")+"</b></div>"+
+    "<div>policy → "+(r.amb?"<b>clarify</b> (разрыв уверенности мал)":r.intent?"<b>respond</b>":"<b>out_of_domain</b>")+"</div>";
+}
+
+var EX=["скока будет доставка до Твери?","а по деньгам как выйдет","чё там с моим 48210","верните деньги, передумал",
+  "не работает, разбилось при доставке","вы в воскресенье открыты","хочу оформить заказ","какая погода в Сочи"];
+(function(){
+  var b=$("#ex");
+  EX.forEach(function(x){
+    var e=document.createElement("button");e.type="button";e.className="btn-g";e.textContent=x;
+    e.addEventListener("click",function(){$("#q").value=x;run(x)});
+    b.appendChild(e);
+  });
+})();
+$("#go").addEventListener("click",function(){run($("#q").value||$("#q").placeholder)});
+$("#q").addEventListener("keydown",function(e){if(e.key==="Enter")$("#go").click()});
+
+/* ---------- слои ---------- */
+var LAYERS=[
+ ["Ingress","нормализация входа","Приводит сообщение к канону: регистр, ё/е, опечатки, эмодзи, голос в текст, склейка подряд идущих сообщений.",
+  "Сейчас «Скока стоит?» и «сколько стоит» — два разных мира."],
+ ["Router","намерение + уверенность","Отдаёт намерение, уверенность и альтернативу. Низкая уверенность или малый разрыв между кандидатами — это отдельный исход, а не молчание.",
+  "Сейчас исход всего два: фраза нашлась или «не понял»."],
+ ["Slots","извлечение сущностей","Номер заказа, город, срок, сумма — вытаскиваются из любой формулировки и живут отдельно от текста.",
+  "Сейчас данные из сообщения не достаются вообще."],
+ ["State","состояние и стек","Диалог — это стек. Вопрос посреди оформления кладётся сверху, отвечается и снимается, а заказ продолжается с того же места.",
+  "Сейчас каждое сообщение обрабатывается с нуля."],
+ ["Tools","действия во внешних системах","Поиск заказа, расчёт доставки, отмена, создание рекламации. Вызываются по контракту, а не пересказываются словами.",
+  "Сейчас агент может только отвечать текстом."],
+ ["Policy + Renderer","правила и форма ответа","Когда уточнять, когда звать человека, что запрещено обещать, как выглядит ответ. Тон и формат отделены от логики.",
+  "Сейчас правила размазаны по тексту ответов."]
+];
+$("#layers").innerHTML=LAYERS.map(function(l,i){
+  return '<div class="ly"><h3>'+l[0]+' <em>'+String(i+1).padStart(2,"0")+"</em></h3>"+
+    '<p class="sm mut3" style="margin-top:2px;color:var(--ink3)">'+l[1]+"</p><p>"+l[2]+"</p>"+
+    '<div class="bad2">Без него: '+l[3]+"</div></div>";
+}).join("");
+
+/* ---------- промпт ---------- */
+var PR={
+ sys:'<span class="c2"># РОЛЬ</span>\nТы — агент поддержки интернет-магазина в Telegram. Ты не консультант\nширокого профиля: ты работаешь только с заказами, доставкой, оплатой,\nвозвратами и рекламациями.\n\n'+
+ '<span class="c2"># КОНТРАКТ ОТВЕТА</span>\nНа каждое сообщение возвращай ТОЛЬКО валидный JSON по схеме ниже.\nНикакого текста вне JSON. Если не уверен — это не повод молчать:\nвыбери action="clarify".\n\n'+
+ '<span class="c2"># НАМЕРЕНИЯ</span>\nprice · status · order · cancel · complaint · hours · human · out_of_domain\nНамерение определяется по смыслу, а не по совпадению слов.\n«скока выйдет», «а по деньгам», «ценник какой» — это всё price.\n\n'+
+ '<span class="c2"># УВЕРЕННОСТЬ</span>\nconfidence ≥ 0.75 → отвечай по намерению.\n0.45–0.75 → action="clarify", задай ОДИН короткий уточняющий вопрос.\n&lt; 0.45 → action="handoff" с reason="low_confidence".\nЕсли два намерения близки — всегда clarify, не угадывай.\n\n'+
+ '<span class="c2"># СЛОТЫ</span>\norder_id (4–8 цифр), city, deadline, amount.\nИзвлекай из любой формулировки. Никогда не выдумывай значение,\nкоторого не было в диалоге. Отсутствующий слот — это null, а не догадка.\n\n'+
+ '<span class="c2"># СОСТОЯНИЕ</span>\nТебе передаётся стек диалога в state. Верхний кадр — текущая задача.\nЕсли пользователь спросил о другом, ответь на вопрос и вернись\nк верхнему кадру тем же сообщением. Не теряй начатое оформление.\n\n'+
+ '<span class="c2"># ИНСТРУМЕНТЫ</span>\nget_order(order_id) · calc_delivery(city, weight) · cancel_order(order_id)\nopen_claim(order_id, text) · handoff(reason)\nФакты о заказе бери ТОЛЬКО из инструментов. Не называй сроки,\nсуммы и статусы по памяти — это прямой запрет.\n\n'+
+ '<span class="c2"># ЗАПРЕТЫ</span>\n— Не обещай сроки и компенсации, которых нет в ответе инструмента.\n— Не проводи отмену без явного подтверждения пользователя.\n— Не обсуждай темы вне домена: верни out_of_domain и предложи\n  то, что умеешь.\n— Не извиняйся дважды подряд и не пиши больше 4 предложений.\n\n'+
+ '<span class="c2"># ТОН</span>\nКороткие предложения. Без канцелярита и без восклицаний.\nОдин вопрос за раз. Обращение на «вы».',
+ json:'{\n  <span class="k">"intent"</span>: <span class="s">"price"</span>,\n'+
+  '  <span class="k">"confidence"</span>: <span class="n">0.91</span>,\n'+
+  '  <span class="k">"slots"</span>: { <span class="k">"city"</span>: <span class="s">"Тверь"</span>, '+
+  '<span class="k">"order_id"</span>: <span class="n">null</span>, <span class="k">"deadline"</span>: <span class="n">null</span> },\n'+
+  '  <span class="k">"action"</span>: <span class="s">"call_tool"</span>,\n'+
+  '  <span class="k">"tool"</span>: { <span class="k">"name"</span>: <span class="s">"calc_delivery"</span>, '+
+  '<span class="k">"args"</span>: { <span class="k">"city"</span>: <span class="s">"Тверь"</span> } },\n'+
+  '  <span class="k">"state_op"</span>: <span class="s">"push:price.quote"</span>,\n'+
+  '  <span class="k">"reply"</span>: <span class="s">"Считаю доставку до Твери, секунду."</span>\n}\n\n'+
+  '<span class="c2">// ответ валидируется схемой до отправки в Telegram.\n'+
+  '// невалидный JSON → один ретрай с ошибкой в контексте → потом handoff.</span>',
+ test:'<span class="c2"># ЗОЛОТОЙ НАБОР (фрагмент, 120 кейсов)</span>\n\n'+
+  '<span class="k">price</span>      «скока будет до Твери»            → intent=price,  slots.city=Тверь\n'+
+  '<span class="k">price</span>      «а по деньгам как выйдет»         → intent=price,  action=clarify\n'+
+  '<span class="k">status</span>     «чё там с моим 48210»             → intent=status, slots.order_id=48210\n'+
+  '<span class="k">cancel</span>     «верните деньги, передумал»       → intent=cancel, action=clarify\n'+
+  '<span class="k">complaint</span>  «разбилось при доставке»          → intent=complaint\n'+
+  '<span class="k">out</span>        «какая погода в Сочи»             → out_of_domain\n'+
+  '<span class="k">state</span>      оформление → вопрос о цене → ответ → возврат в оформление\n\n'+
+  '<span class="c2">// набор гоняется на каждом изменении промпта.\n'+
+  '// метрика приёмки: ≥ 95 % совпадений по intent, 0 выдуманных слотов.</span>'
+};
+var tab="sys";
+function tabs(){
+  var names={sys:"System Prompt",json:"Схема ответа",test:"Тесты промпта"};
+  var b=$("#tabs");b.innerHTML="";
+  ["sys","json","test"].forEach(function(k){
+    var e=document.createElement("button");e.type="button";e.textContent=names[k];
+    e.setAttribute("aria-pressed",k===tab?"true":"false");
+    e.addEventListener("click",function(){tab=k;tabs()});
+    b.appendChild(e);
+  });
+  $("#pr").innerHTML=PR[tab];
+}
+
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+tabs();run(EX[0]);$("#q").value=EX[0];
+})();
+</script>
