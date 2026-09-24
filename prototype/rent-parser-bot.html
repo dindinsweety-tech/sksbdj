@@ -1,0 +1,394 @@
+<title>Парсер чатов и бот для посуточной аренды — демо фильтра</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#FAF9F6; --surf:#FFFFFF; --surf2:#F3F1EC; --surf3:#E7E4DC;
+  --ink:#1A1813; --ink2:#55514A; --ink3:#87827A;
+  --line:#E6E3DB; --line2:#CEC9BE;
+  --acc:#854D0E; --acc2:#A16207; --acc-s:#F7EFDF;
+  --ok:#047857; --ok-s:#E3F2EC;
+  --skip:#475569; --skip-s:#ECEEF1;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121110; --surf:#1B1A17; --surf2:#23211E; --surf3:#2E2C27;
+    --ink:#F2F0EB; --ink2:#AAA69E; --ink3:#7B7770;
+    --line:#282621; --line2:#39362F;
+    --acc:#FCD34D; --acc2:#FDE68A; --acc-s:#2B2210;
+    --ok:#34D399; --ok-s:#112A20;
+    --skip:#94A3B8; --skip-s:#1D2229;
+    --bad:#FB7185; --bad-s:#331419;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121110; --surf:#1B1A17; --surf2:#23211E; --surf3:#2E2C27;
+  --ink:#F2F0EB; --ink2:#AAA69E; --ink3:#7B7770;
+  --line:#282621; --line2:#39362F;
+  --acc:#FCD34D; --acc2:#FDE68A; --acc-s:#2B2210;
+  --ok:#34D399; --ok-s:#112A20;
+  --skip:#94A3B8; --skip-s:#1D2229;
+  --bad:#FB7185; --bad-s:#331419;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.02em;line-height:1.17;text-wrap:balance}
+h1{font-size:clamp(22px,5.3vw,31px)}
+h2{font-size:clamp(18px,4.3vw,22px)}
+h3{font-size:15px;font-weight:700}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#121110}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:66ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:66ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:64ch}
+
+.ctl{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px;
+  display:grid;gap:12px}
+@media(min-width:720px){.ctl{grid-template-columns:repeat(2,1fr)}}
+.sw{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink2);cursor:pointer}
+.sw input{width:19px;height:19px;accent-color:var(--acc);flex:none}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}
+@media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px}
+.stat .v{font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:500;margin-top:5px}
+.stat .v.ok{color:var(--ok)} .stat .v.sk{color:var(--skip)}
+
+.msgs{display:grid;gap:7px;margin-top:16px}
+.msg{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px;
+  border-left:3px solid var(--skip)}
+.msg.pass{border-left-color:var(--ok);background:var(--ok-s)}
+.msg.drop{opacity:.66}
+.msg .t{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.msg .who{font-size:12px;color:var(--ink3);font-family:"IBM Plex Mono",monospace}
+.msg .body{font-size:14.5px;margin-top:5px;line-height:1.45}
+.b{border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;white-space:nowrap;flex:none}
+.b.ok{background:var(--ok-s);color:var(--ok)}
+.b.sk{background:var(--skip-s);color:var(--skip)}
+.msg .why{margin-top:8px;font-size:12.5px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:7px}
+.msg .why b{color:var(--ink);font-weight:700}
+.slots{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.chip{border-radius:20px;padding:3px 9px;font-size:11px;background:var(--surf3);color:var(--ink2);
+  font-family:"IBM Plex Mono",monospace}
+.chip.on{background:var(--acc-s);color:var(--acc)}
+.fwd{margin-top:9px;background:var(--surf2);border-radius:9px;padding:10px 12px;font-size:13px;line-height:1.5;
+  white-space:pre-wrap}
+.fwd b{font-weight:700}
+
+/* бот */
+.cols{display:grid;gap:13px;margin-top:16px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,400px);align-items:start}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.inp{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+.inp input{flex:1;min-width:210px;background:var(--surf2);border:1px solid var(--line2);border-radius:10px;
+  padding:11px 13px;font:inherit;font-size:14px;color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;
+  border-radius:10px;font-weight:700;font-size:14px;background:var(--acc);color:#fff}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#121110}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2);font-weight:500;min-height:36px;
+  padding:0 11px;font-size:12.5px;border-radius:9px}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+.ex{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.reply{margin-top:12px;background:var(--surf2);border-radius:12px 12px 12px 4px;padding:12px 13px;font-size:14px;
+  line-height:1.55;white-space:pre-wrap}
+.kb{display:grid;gap:6px;margin-top:9px}
+@media(min-width:520px){.kb{grid-template-columns:1fr 1fr}}
+.kb span{background:var(--surf2);border:1px solid var(--line2);border-radius:9px;padding:9px 11px;
+  font-size:13px;text-align:center;color:var(--ink2)}
+.kb span.hit{border-color:var(--acc);color:var(--acc);font-weight:700}
+.kv{display:grid;gap:6px;margin-top:11px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"IBM Plex Mono",monospace;font-size:12.5px;text-align:right;max-width:60%}
+.risks{display:grid;gap:8px;margin-top:16px}
+@media(min-width:760px){.risks{grid-template-columns:1fr 1fr}}
+.ri{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:13px;border-left:3px solid var(--bad)}
+.ri b{font-size:14.5px;font-weight:700}
+.ri p{margin-top:6px;font-size:13px;color:var(--ink2)}
+.ri .fix{margin-top:7px;font-size:12.5px;color:var(--ok);border-top:1px dashed var(--line);padding-top:7px}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg></div>
+      <b>Парсер чатов + бот · посуточная аренда</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Ключевых слов мало: по «сниму» прилетит в основном мусор</h1>
+    <p>Поиск по словам «сниму», «аренда Минск» даёт лавину: длительная аренда вместо посуточной, объявления таких же хозяев, реклама агентств, один и тот же человек в пяти чатах. Телефон будет звенеть круглосуточно, а толку — на два сообщения из двадцати. Ниже фильтр, который это отсекает, и видно, что именно он выкидывает и почему.</p>
+    <div class="note">Двадцать сообщений из тематических чатов Минска. Включайте и выключайте правила — список пересылки пересчитывается. Каждое отброшенное сообщение показывает причину: фильтр должен быть проверяемым, иначе вы не поймёте, почему пропустили клиента.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Что долетит до вас в личку</h2></div>
+    <p class="sdesc">Слева галочки — правила фильтра. Снимите все, чтобы увидеть, как выглядит поток «по ключевым словам» без обработки.</p>
+    <div class="ctl">
+      <label class="sw"><input type="checkbox" id="r1" checked> Отсекать длительную аренду (нужна посуточная)</label>
+      <label class="sw"><input type="checkbox" id="r2" checked> Отсекать предложения — «сдам», это не клиенты</label>
+      <label class="sw"><input type="checkbox" id="r3" checked> Отсекать агентства, риелторов и спам</label>
+      <label class="sw"><input type="checkbox" id="r4" checked> Схлопывать дубли одного автора в разных чатах</label>
+      <label class="sw"><input type="checkbox" id="r5" checked> Только Минск и пригород</label>
+      <label class="sw"><input type="checkbox" id="r6"> Ночная тишина: копить с 23:00 до 8:00</label>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lbl">Совпало по словам</div><div class="v mono" id="k1">0</div></div>
+      <div class="stat"><div class="lbl">Дойдёт до вас</div><div class="v mono ok" id="k2">0</div></div>
+      <div class="stat"><div class="lbl">Отсеяно</div><div class="v mono sk" id="k3">0</div></div>
+      <div class="stat"><div class="lbl">Точность</div><div class="v mono" id="k4">0%</div></div>
+    </div>
+    <div class="msgs" id="msgs"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Бот: меню и триггеры</h2></div>
+    <p class="sdesc">Напишите фразу как гость — видно, какой триггер сработал, что уйдёт в ответ и получите ли вы уведомление.</p>
+    <div class="cols">
+      <div class="box">
+        <span class="lbl">Сообщение гостя</span>
+        <div class="inp">
+          <input id="q" autocomplete="off" placeholder="а на 5-7 ноября свободно? и сколько выйдет">
+          <button class="btn" id="go" type="button">Проверить</button>
+        </div>
+        <div class="ex" id="ex"></div>
+        <div class="reply" id="reply"></div>
+        <span class="lbl" style="display:block;margin-top:14px">Кнопки меню</span>
+        <div class="kb" id="kb"></div>
+      </div>
+      <div class="box">
+        <span class="lbl">Что происходит</span>
+        <div class="kv" id="dec"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>О чём предупредить сразу</h2></div>
+    <p class="sdesc">Три вещи, которые в таких задачах выясняются уже после оплаты. Лучше на берегу.</p>
+    <div class="risks" id="risks"></div>
+  </section>
+
+  <footer>Демо парсера и бота для посуточной аренды. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+
+/* k: тип — good | long | offer | agency | geo | dup */
+var M=[
+ {ch:"Аренда Минск | Сниму-Сдам",u:"@katya_mnsk",t:"11:42",k:"good",
+  x:"Сниму квартиру посуточно в Минске, 5-7 ноября, двое взрослых, желательно Немига или центр. Бюджет до 120 руб/сутки"},
+ {ch:"Квартиры на сутки Минск",u:"@igor_bel",t:"12:03",k:"long",
+  x:"Сниму 1-комнатную на длительный срок, семья, без животных. Рассмотрю Фрунзенский район"},
+ {ch:"Аренда Минск | Сниму-Сдам",u:"@apartment_agency_by",t:"12:10",k:"agency",
+  x:"Агентство «ДомСервис» подберёт квартиру за 1 день! Более 400 вариантов, комиссия 50%. Пишите в личку"},
+ {ch:"Посуточно РБ",u:"@nastya_trip",t:"12:31",k:"good",
+  x:"Ищу жильё на сутки в Минске на эти выходные, приедем вдвоём после концерта, нужен поздний заезд"},
+ {ch:"Квартиры на сутки Минск",u:"@vladimir_own",t:"12:44",k:"offer",
+  x:"Сдам уютную студию посуточно возле Комаровки, wi-fi, отчётные документы. Фото в личку"},
+ {ch:"Сниму Гродно",u:"@lena_grodno",t:"13:02",k:"geo",
+  x:"Сниму квартиру посуточно в Гродно на 3 ночи, командировка"},
+ {ch:"Посуточно РБ",u:"@katya_mnsk",t:"13:15",k:"dup",
+  x:"Сниму квартиру посуточно в Минске 5-7 ноября, двое, центр, до 120 руб"},
+ {ch:"Аренда Минск | Сниму-Сдам",u:"@max_bsuir",t:"13:38",k:"good",
+  x:"Нужна квартира на сутки в Минске завтра, командировка, один человек, район не важен. Нужны документы для отчёта"},
+ {ch:"Барахолка Минск",u:"@seller_2000",t:"13:50",k:"agency",
+  x:"Сниму деньги без комиссии! Быстрый обмен, лучший курс в Минске"},
+ {ch:"Квартиры на сутки Минск",u:"@olga_family",t:"14:07",k:"good",
+  x:"Здравствуйте! Посуточно, 12-15 декабря, семья с ребёнком, нужна кроватка и парковка. Минск, ближе к вокзалу"},
+ {ch:"Аренда Минск | Сниму-Сдам",u:"@dmitry_rent",t:"14:22",k:"offer",
+  x:"Сдам квартиру в Минске посуточно и на часы, всё включено, звоните"},
+ {ch:"Посуточно РБ",u:"@artem_mogilev",t:"14:41",k:"geo",
+  x:"Аренда на сутки в Могилёве нужна, кто сдаёт?"},
+ {ch:"Квартиры на сутки Минск",u:"@sveta_by",t:"15:04",k:"long",
+  x:"Аренда Минск, сниму на год, работаю в IT, платёжеспособна, залог готова внести"},
+ {ch:"Аренда Минск | Сниму-Сдам",u:"@pavel_trip",t:"15:19",k:"good",
+  x:"Посуточно Минск, нужна квартира с 20 по 23 ноября, трое, бюджет 150 в сутки, центр"},
+ {ch:"Посуточно РБ",u:"@rieltor_minsk",t:"15:33",k:"agency",
+  x:"Риелтор. Подбор посуточных квартир в Минске. Работаю с собственниками. Комиссия минимальная"},
+ {ch:"Квартиры на сутки Минск",u:"@nastya_trip",t:"15:47",k:"dup",
+  x:"Ищу на сутки в Минске на выходные, двое, поздний заезд"},
+ {ch:"Аренда Минск | Сниму-Сдам",u:"@anna_mnsk",t:"22:58",k:"good",night:1,
+  x:"Сниму на сутки сегодня ночью, срочно, двое, Минск, готова платить сразу"},
+ {ch:"Посуточно РБ",u:"@company_trip",t:"16:12",k:"good",
+  x:"Нужны две квартиры посуточно в Минске для сотрудников, 8-11 декабря, с отчётными документами"},
+ {ch:"Квартиры на сутки Минск",u:"@user_88213",t:"16:30",k:"offer",
+  x:"Сдаю посуточно, центр, отличный ремонт, скидка на длительный срок"},
+ {ch:"Аренда Минск | Сниму-Сдам",u:"@roman_mnsk",t:"02:14",k:"good",night:1,
+  x:"Сниму квартиру посуточно в Минске на 2 ночи с пятницы, двое, до 130"}
+];
+var REASON={long:"длительная аренда, а не посуточная",offer:"это предложение («сдам»), а не спрос",
+ agency:"агентство, риелтор или спам",geo:"другой город",dup:"дубль того же автора из другого чата"};
+
+function parseSlots(x){
+  var s={},t=x.toLowerCase();
+  var d=t.match(/(\d{1,2})\s*[-–—]\s*(\d{1,2})\s*(ноя|дек|янв|фев|мар|окт)?/);
+  if(d)s["даты"]=d[0].replace(/\s+/g,"");
+  else if(/сегодня|ночью|срочно/.test(t))s["даты"]="сегодня";
+  else if(/завтра/.test(t))s["даты"]="завтра";
+  else if(/выходн/.test(t))s["даты"]="выходные";
+  var g=t.match(/(двое|трое|один человек|вдвоём|вдвоем|семья|сотрудник)/);
+  if(g)s["гостей"]=g[1];
+  var b=t.match(/(\d{2,4})\s*(руб|в сутки|в сут)/);
+  if(b)s["бюджет"]=b[1]+" руб/сут";
+  else if(/до\s+(\d{2,4})/.test(t))s["бюджет"]="до "+t.match(/до\s+(\d{2,4})/)[1];
+  var r=t.match(/(немиг|центр|комаровк|вокзал|фрунзенск)/);
+  if(r)s["район"]=r[1];
+  if(/отчётн|отчетн|документ/.test(t))s["нужно"]="документы для отчёта";
+  if(/кроватк|ребён|ребен/.test(t))s["нужно"]="детская кроватка";
+  if(/поздний заезд/.test(t))s["нужно"]="поздний заезд";
+  return s;
+}
+function render(){
+  var r={1:$("#r1").checked,2:$("#r2").checked,3:$("#r3").checked,4:$("#r4").checked,
+         5:$("#r5").checked,6:$("#r6").checked};
+  var pass=0,drop=0,html="";
+  M.forEach(function(m){
+    var why=null;
+    if(r[1]&&m.k==="long")why=REASON.long;
+    if(!why&&r[2]&&m.k==="offer")why=REASON.offer;
+    if(!why&&r[3]&&m.k==="agency")why=REASON.agency;
+    if(!why&&r[5]&&m.k==="geo")why=REASON.geo;
+    if(!why&&r[4]&&m.k==="dup")why=REASON.dup;
+    var held=!why&&r[6]&&m.night;
+    if(why)drop++;else pass++;
+    var slots=parseSlots(m.x);
+    html+='<div class="msg '+(why?"drop":"pass")+'">'+
+      '<div class="t"><span class="who">'+m.ch+" · "+m.u+" · "+m.t+"</span>"+
+      '<span class="b '+(why?"sk":"ok")+'">'+(why?"не пересылаем":held?"в утреннюю сводку":"в личку")+"</span></div>"+
+      '<div class="body">'+m.x+"</div>"+
+      (why?'<div class="why">Отсеяно: <b>'+why+"</b></div>"
+         :'<div class="slots">'+Object.keys(slots).map(function(k){
+             return '<span class="chip on">'+k+": "+slots[k]+"</span>"}).join("")+
+          (Object.keys(slots).length?"":'<span class="chip">слоты не распознаны</span>')+"</div>"+
+          '<div class="fwd"><b>🔔 Новый запрос · '+m.ch+"</b>\n"+m.u+" · "+m.t+"\n"+
+            Object.keys(slots).map(function(k){return k+": "+slots[k]}).join(" · ")+
+            "\n\n<b>Ответить →</b> t.me/"+m.u.slice(1)+"</div>")+
+      "</div>";
+  });
+  $("#msgs").innerHTML=html;
+  $("#k1").textContent=M.length;$("#k2").textContent=pass;$("#k3").textContent=drop;
+  $("#k4").textContent=Math.round(pass/M.length*100)+"%";
+}
+["r1","r2","r3","r4","r5","r6"].forEach(function(id){$("#"+id).addEventListener("change",render)});
+
+/* ---------- бот ---------- */
+var BTN=["📅 Свободные даты и бронь","📷 Фото и адрес","📋 Правила проживания","💬 Связаться с хозяином"];
+var TRIG=[
+ {k:"price",w:["цена","цену","стоим","скольк","скока","почём","почем","сутки стоит","выйдет"],btn:0,
+  r:"Стоимость зависит от дат и числа гостей. Актуальные цены и свободные даты — на площадках:\n\n• Кварти́ра.by — ваша ссылка\n• Airbnb — ваша ссылка\n• Booking — ваша ссылка\n\nТам же можно сразу забронировать."},
+ {k:"free",w:["свободн","занят","есть места","доступн","дат"],btn:0,
+  r:"Календарь свободных дат всегда актуален на площадках:\n\n• Кварти́ра.by — ваша ссылка\n• Airbnb — ваша ссылка\n\nЕсли дата занята, напишите — подскажу ближайшие свободные."},
+ {k:"book",w:["заброн","бронь","хочу снять","беру","оформ"],btn:0,
+  r:"Забронировать можно по прямым ссылкам:\n\n• Кварти́ра.by — ваша ссылка\n• Airbnb — ваша ссылка\n\nПосле брони я напишу вам с деталями заезда."},
+ {k:"photo",w:["фото","адрес","где наход","как добрат","район","метро"],btn:1,
+  r:"Фото квартиры и точный адрес — в разделе «Фото и адрес». Квартира в центре Минска, 7 минут пешком от метро."},
+ {k:"rules",w:["правил","можно с живот","курит","залог","заезд","выезд","документ"],btn:2,
+  r:"Правила проживания: заезд с 14:00, выезд до 12:00, без вечеринок и курения в квартире. Отчётные документы предоставляю. Подробнее — в разделе «Правила проживания»."}
+];
+var EX=["а на 5-7 ноября свободно? и сколько выйдет","можно с собакой?","хочу забронировать на выходные",
+  "скиньте фото и адрес","а у вас есть фен и утюг?","добрый день"];
+function check(q){
+  var t=" "+q.toLowerCase().replace(/ё/g,"е")+" ";
+  var hits=[];
+  TRIG.forEach(function(tr){
+    var w=tr.w.filter(function(x){return t.indexOf(x)>=0});
+    if(w.length)hits.push({tr:tr,w:w});
+  });
+  var kb=BTN.map(function(b,i){
+    var on=hits.some(function(h){return h.tr.btn===i});
+    return '<span class="'+(on?"hit":"")+'">'+b+"</span>";
+  }).join("");
+  $("#kb").innerHTML=kb;
+  if(!hits.length){
+    $("#reply").textContent="Здравствуйте! Я передал ваше сообщение хозяину — он ответит лично в ближайшее время. А пока можете посмотреть меню ниже.";
+    $("#dec").innerHTML=
+      "<div><span>Триггер</span><span>не сработал</span></div>"+
+      "<div><span>Ответ гостю</span><span>заглушка + меню</span></div>"+
+      "<div><span>Уведомление хозяину</span><span>да, с текстом</span></div>"+
+      "<div><span>Почему</span><span>нестандартный вопрос</span></div>";
+    return;
+  }
+  hits.sort(function(a,b){return b.w.length-a.w.length});
+  var main=hits[0];
+  $("#reply").textContent=main.tr.r;
+  $("#dec").innerHTML=
+    "<div><span>Сработало триггеров</span><span>"+hits.length+"</span></div>"+
+    "<div><span>Основной</span><span>"+main.tr.k+"</span></div>"+
+    "<div><span>По словам</span><span>"+main.w.join(", ")+"</span></div>"+
+    "<div><span>Кнопка меню</span><span>"+BTN[main.tr.btn].replace(/^\S+\s/,"")+"</span></div>"+
+    "<div><span>Уведомление хозяину</span><span>"+(main.tr.k==="book"?"да, горячий":"нет, ответил сам")+"</span></div>";
+}
+$("#go").addEventListener("click",function(){check($("#q").value||$("#q").placeholder)});
+$("#q").addEventListener("keydown",function(e){if(e.key==="Enter")$("#go").click()});
+(function(){
+  var b=$("#ex");
+  EX.forEach(function(x){
+    var e=document.createElement("button");e.type="button";e.className="btn-g";e.textContent=x;
+    e.addEventListener("click",function(){$("#q").value=x;check(x)});
+    b.appendChild(e);
+  });
+})();
+
+/* риски */
+var RISK=[
+ ["Чужие чаты бот читать не может","Telegram-бот видит сообщения только там, где он добавлен и назначен администратором. Чтобы мониторить чужие чаты, нужен обычный пользовательский аккаунт с MTProto-клиентом — то есть ваш или отдельный номер.",
+  "Решение: завести отдельный номер, только чтение, без рассылок и без вступления в сотни чатов за день."],
+ ["Аккаунт можно потерять","Автоматизация пользовательского аккаунта нарушает правила Telegram. Риск не нулевой: при агрессивном поведении номер блокируют, и вы теряете доступ к чатам.",
+  "Решение: человеческие паузы, лимит на число чатов, никакой автоотправки от вашего имени — только пересылка вам."],
+ ["Конструктор не потянет всё","Кнопки, тексты и простые триггеры конструктор закроет. Но синхронизация календарей площадок, оплата и умные ответы туда не встанут.",
+  "Решение: начать на конструкторе, а если упрётесь — перенести на свой код. Логику сразу описываю так, чтобы перенос не был переписыванием."],
+ ["Вы устанете от уведомлений","Даже после фильтра поток идёт круглосуточно. Ночные запросы в 2:14 — это реальность посуточной аренды.",
+  "Решение: ночной режим с утренней сводкой, приоритет для «срочно сегодня», отдельный чат вместо лички."]
+];
+$("#risks").innerHTML=RISK.map(function(r){
+  return '<div class="ri"><b>'+r[0]+"</b><p>"+r[1]+'</p><div class="fix">'+r[2]+"</div></div>"}).join("");
+
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+render();check(EX[0]);$("#q").value=EX[0];
+})();
+</script>
