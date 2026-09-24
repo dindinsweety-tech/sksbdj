@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демо ассистента водителя: расчёт чистой ставки по зонам с учётом подачи, топлива и комиссии парка, и парковый бот с завершением заказа через API.">
+<title>Ассистент водителя и парковый бот — демо механик</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#F8F8F6; --surf:#FFFFFF; --surf2:#F1F1EE; --surf3:#E5E5E1;
+  --ink:#191A18; --ink2:#53554F; --ink3:#85877F;
+  --line:#E3E3DE; --line2:#CBCCC5;
+  --acc:#0F766E; --acc2:#0D9488; --acc-s:#E4F1EF;
+  --ok:#047857; --ok-s:#E4F2ED;
+  --warn:#B45309; --warn-s:#FAF0E3;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --h1:#E8F2F0; --h2:#C4DFDA; --h3:#8FC3BB; --h4:#4A9E94; --h5:#0F766E;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111211; --surf:#1A1B1A; --surf2:#222322; --surf3:#2D2F2D;
+    --ink:#F1F1EE; --ink2:#A9ABA5; --ink3:#7A7C76;
+    --line:#282A28; --line2:#393B39;
+    --acc:#2DD4BF; --acc2:#5EEAD4; --acc-s:#132A28;
+    --ok:#34D399; --ok-s:#122A20;
+    --warn:#E0A63C; --warn-s:#2B2212;
+    --bad:#FB7185; --bad-s:#331419;
+    --h1:#1A2B2A; --h2:#1E4A45; --h3:#2A6D64; --h4:#2E9488; --h5:#5EEAD4;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111211; --surf:#1A1B1A; --surf2:#222322; --surf3:#2D2F2D;
+  --ink:#F1F1EE; --ink2:#A9ABA5; --ink3:#7A7C76;
+  --line:#282A28; --line2:#393B39;
+  --acc:#2DD4BF; --acc2:#5EEAD4; --acc-s:#132A28;
+  --ok:#34D399; --ok-s:#122A20;
+  --warn:#E0A63C; --warn-s:#2B2212;
+  --bad:#FB7185; --bad-s:#331419;
+  --h1:#1A2B2A; --h2:#1E4A45; --h3:#2A6D64; --h4:#2E9488; --h5:#5EEAD4;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Rubik",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.02em;line-height:1.16;text-wrap:balance}
+h1{font-size:clamp(22px,5.4vw,32px)}
+h2{font-size:clamp(18px,4.4vw,23px)}
+h3{font-size:15.5px}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"Space Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1100px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#111211}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:17px;height:17px;display:block}
+.brand b{font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:66ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:66ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"Space Mono",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:64ch}
+
+.ctl{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px;
+  display:grid;gap:14px}
+@media(min-width:720px){.ctl{grid-template-columns:repeat(2,1fr)}}
+.f{min-width:0}
+.f .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.f .v{font-family:"Space Mono",monospace;font-size:13px;font-weight:700}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--acc);height:22px}
+.seg{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line2);border-radius:8px;padding:7px 11px;font-size:12.5px;color:var(--ink2);
+  min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:500}
+:root[data-theme="dark"] .seg button[aria-pressed="true"],:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#111211}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .seg button[aria-pressed="true"]{color:#fff}}
+
+/* рекомендации */
+.recs{display:grid;gap:8px;margin-top:16px}
+.rec{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:13px 14px;border-left:3px solid var(--line2)}
+.rec.best{border-left-color:var(--acc);background:var(--acc-s)}
+.rec.stay{border-left-color:var(--warn)}
+.rec .t{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.rec .z{font-weight:600;font-size:16px}
+.rec .g{font-family:"Space Mono",monospace;font-weight:700;font-size:15px;color:var(--ok)}
+.rec .g.neg{color:var(--bad)}
+.rec .m{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:7px;font-size:12.5px;color:var(--ink2)}
+.rec .m b{font-family:"Space Mono",monospace;font-weight:700;color:var(--ink);font-size:12px}
+.rec .why{margin-top:8px;font-size:13px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px}
+
+/* heatmap */
+.hmwrap{margin-top:18px;border:1px solid var(--line);border-radius:var(--r);background:var(--surf);overflow:hidden}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hm{min-width:660px;display:grid;grid-template-columns:106px repeat(9,1fr)}
+.hm .hd{background:var(--surf2);border-bottom:1px solid var(--line);padding:8px 4px;text-align:center;
+  font-family:"Space Mono",monospace;font-size:11px;color:var(--ink3)}
+.hm .hd.z{text-align:left;padding-left:11px}
+.hm .z{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:9px 11px;font-size:12.5px;
+  display:flex;align-items:center;background:var(--surf)}
+.hm .c{border-bottom:1px solid var(--line);border-right:1px solid var(--line);min-height:44px;
+  display:grid;place-items:center;font-family:"Space Mono",monospace;font-size:11.5px;position:relative}
+.hm .c.now{outline:2px solid var(--ink);outline-offset:-2px;z-index:1}
+.hm .c span{position:relative}
+.ramp{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;font-size:12px;color:var(--ink2)}
+.ramp i{width:26px;height:11px;display:block;border-radius:2px}
+
+/* бот парка */
+.cols{display:grid;gap:14px;margin-top:18px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,340px) minmax(0,1fr);align-items:start}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.drv{display:flex;gap:11px;align-items:center}
+.ava{width:44px;height:44px;border-radius:50%;background:var(--surf3);display:grid;place-items:center;
+  font-weight:600;font-size:15px;flex:none}
+.drv b{font-size:15px;font-weight:600;display:block}
+.drv span{font-size:12.5px;color:var(--ok)}
+.kv{display:grid;gap:6px;margin-top:13px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"Space Mono",monospace;font-size:12.5px;text-align:right}
+.ord{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:8px;
+  border-left:3px solid var(--line2)}
+.ord.act{border-left-color:var(--acc)}
+.ord.done{border-left-color:var(--ok);opacity:.72}
+.ord.pre{border-left-color:var(--warn)}
+.ord .t{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.ord .rt{font-weight:500;font-size:14px}
+.tag{border-radius:20px;padding:3px 9px;font-size:11px;font-weight:500;white-space:nowrap}
+.tag.act{background:var(--acc-s);color:var(--acc)}
+.tag.done{background:var(--ok-s);color:var(--ok)}
+.tag.pre{background:var(--warn-s);color:var(--warn)}
+.ord .m{display:flex;flex-wrap:wrap;gap:3px 13px;margin-top:6px;font-size:12.5px;color:var(--ink2)}
+.ord .m b{font-family:"Space Mono",monospace;font-weight:700;color:var(--ink);font-size:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 15px;
+  border-radius:10px;font-weight:500;font-size:14px;background:var(--acc);color:#fff;margin-top:10px}
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#111211}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn{color:#fff}}
+.btn-g{background:none;border:1px solid var(--line2);color:var(--ink2)}
+.btn-g:hover{border-color:var(--acc);color:var(--acc)}
+pre{margin:10px 0 0;background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px;
+  overflow-x:auto;font-family:"Space Mono",monospace;font-size:11.5px;line-height:1.6}
+.k{color:var(--acc)} .s{color:var(--ok)} .n{color:var(--warn)} .c2{color:var(--ink3)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l1.5-6h9L18 17M7 11l1-4h8l1 4"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/></svg></div>
+      <b>Ассистент водителя · демо механик</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Куда ехать и сколько это даст — с учётом подачи, топлива и комиссии парка</h1>
+    <p>Радар коэффициентов показывает множитель. Водителю же важен другой вопрос: что останется в кармане через час, если он сейчас поедет в другую зону — и окупится ли дорога. Ниже это считается на настоящей модели, а не подставляется из таблицы.</p>
+    <div class="note">Данные о спросе условные. Модель настоящая: ₽/час = поездки × средний чек × коэффициент, минус комиссия парка и топливо; переезд в другую зону вычитает время и бензин и окупается только если разница ставок перекроет их до конца смены.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Куда ехать сейчас</h2></div>
+    <p class="sdesc">Поставьте свои параметры — смена, тариф, комиссия, расход. Рекомендации пересчитываются мгновенно.</p>
+
+    <div class="ctl">
+      <div class="f">
+        <div class="top"><span class="lbl">Сейчас</span><span class="v" id="vHour"></span></div>
+        <input type="range" id="hour" min="0" max="8" step="1" value="6">
+      </div>
+      <div class="f">
+        <div class="top"><span class="lbl">До конца смены</span><span class="v" id="vRem"></span></div>
+        <input type="range" id="rem" min="1" max="10" step="1" value="5">
+      </div>
+      <div class="f">
+        <div class="top"><span class="lbl">Комиссия парка</span><span class="v" id="vCom"></span></div>
+        <input type="range" id="com" min="0" max="20" step="1" value="7">
+      </div>
+      <div class="f">
+        <div class="top"><span class="lbl">Топливо, ₽ / км</span><span class="v" id="vFuel"></span></div>
+        <input type="range" id="fuel" min="3" max="14" step="0.5" value="6.5">
+      </div>
+      <div class="f">
+        <span class="lbl">Тариф</span>
+        <div class="seg" id="tar"></div>
+      </div>
+      <div class="f">
+        <span class="lbl">Я сейчас в зоне</span>
+        <div class="seg" id="zone"></div>
+      </div>
+    </div>
+
+    <div class="recs" id="recs"></div>
+
+    <div class="hmwrap"><div class="scroll"><div class="hm" id="hm"></div></div></div>
+    <div class="ramp">
+      <span>Чистыми, ₽/час:</span>
+      <i style="background:var(--h1)"></i><i style="background:var(--h2)"></i>
+      <i style="background:var(--h3)"></i><i style="background:var(--h4)"></i><i style="background:var(--h5)"></i>
+      <span class="mut3" id="rampTxt"></span>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Парковый бот</h2></div>
+    <p class="sdesc">Профиль водителя и заказы смены подтягиваются из диспетчерского API парка. Завершение заказа — тот же официальный метод, которым пользуется диспетчер, просто вызванный из чата.</p>
+    <div class="cols">
+      <div class="card">
+        <div class="drv">
+          <div class="ava">ТС</div>
+          <div><b>Титов С. В.</b><span id="drvSt">на линии · Лада Веста, м412но</span></div>
+        </div>
+        <div class="kv" id="drvKv"></div>
+      </div>
+      <div>
+        <div id="orders"></div>
+        <pre class="mono" id="api"><span class="c2">// нажмите «Завершить заказ» — здесь появится вызов API</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <footer>Демо механик для таксопарка. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+
+var HOURS=["06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00"];
+var Z=[
+ {k:"centr",n:"Центр",xy:[0,0],trips:2.8,avg:480,coef:[1.4,1.8,1.2,1.1,1.1,1.3,1.9,1.6,1.3]},
+ {k:"citi", n:"Москва-Сити",xy:[-6,2],trips:2.4,avg:560,coef:[1.3,2.0,1.3,1.2,1.2,1.4,2.1,1.5,1.2]},
+ {k:"him",  n:"Химки",xy:[-8,18],trips:2.0,avg:620,coef:[1.6,1.7,1.1,1.0,1.0,1.2,1.7,1.4,1.5]},
+ {k:"myt",  n:"Мытищи",xy:[4,18],trips:2.0,avg:590,coef:[1.5,1.6,1.1,1.0,1.0,1.2,1.6,1.3,1.4]},
+ {k:"odin", n:"Одинцово",xy:[-22,2],trips:1.8,avg:640,coef:[1.7,1.5,1.0,1.0,1.0,1.1,1.5,1.3,1.6]},
+ {k:"dme",  n:"Домодедово",xy:[6,-35],trips:1.1,avg:1650,coef:[2.1,1.4,1.2,1.3,1.5,1.8,2.2,2.4,2.0]}
+];
+var TAR=[{k:"eco",n:"Эконом",am:1,tm:1},{k:"com",n:"Комфорт",am:1.25,tm:.9},{k:"cp",n:"Комфорт+",am:1.6,tm:.72}];
+var tar="eco", myZone="centr";
+
+function P(){return {h:+$("#hour").value,rem:+$("#rem").value,com:+$("#com").value/100,fuel:+$("#fuel").value}}
+function tarObj(){for(var i=0;i<TAR.length;i++)if(TAR[i].k===tar)return TAR[i];return TAR[0]}
+function netHour(z,hi,p){
+  if(hi>HOURS.length-1)hi=HOURS.length-1;
+  var t=tarObj();
+  var trips=z.trips*t.tm;
+  var gross=trips*(z.avg*t.am)*z.coef[hi];
+  var km=trips*12;                            /* поездка + подача, км */
+  return gross*(1-p.com)-km*p.fuel;
+}
+function avgNet(z,from,hrs,p){
+  var s=0,n=0;
+  for(var i=0;i<hrs;i++){s+=netHour(z,Math.min(from+i,HOURS.length-1),p);n++}
+  return n?s/n:0;
+}
+function dist(a,b){return Math.sqrt(Math.pow(a[0]-b[0],2)+Math.pow(a[1]-b[1],2))}
+function zoneBy(k){for(var i=0;i<Z.length;i++)if(Z[i].k===k)return Z[i];return Z[0]}
+
+function render(){
+  var p=P();
+  $("#vHour").textContent=HOURS[p.h];
+  $("#vRem").textContent=p.rem+" ч";
+  $("#vCom").textContent=p.com*100+"%";
+  $("#vFuel").textContent=(+$("#fuel").value).toFixed(1);
+
+  var here=zoneBy(myZone);
+  var stay=avgNet(here,p.h,p.rem,p)*p.rem;
+  var rows=[];
+  Z.forEach(function(z){
+    if(z.k===myZone)return;
+    var km=dist(here.xy,z.xy);
+    var tMin=Math.round(km/35*60)+8;
+    var tH=tMin/60;
+    var cost=km*p.fuel;
+    if(tH>=p.rem){rows.push({z:z,km:km,tMin:tMin,gain:-1e9,late:true});return}
+    var work=p.rem-tH;
+    var total=avgNet(z,p.h+Math.round(tH),work,p)*work-cost;
+    var diff=avgNet(z,p.h+Math.round(tH),work,p)-avgNet(here,p.h,p.rem,p);
+    rows.push({z:z,km:km,tMin:tMin,cost:cost,gain:total-stay,rate:avgNet(z,p.h+Math.round(tH),work,p),
+      payback:diff>0?Math.round(cost/diff*60):null});
+  });
+  rows.sort(function(a,b){return b.gain-a.gain});
+
+  var h='<div class="rec stay"><div class="t"><span class="z">Остаться: '+here.n+'</span>'+
+    '<span class="g mono">'+fmt(stay)+" ₽ за "+p.rem+" ч</span></div>"+
+    '<div class="m"><span>ставка <b>'+fmt(avgNet(here,p.h,p.rem,p))+' ₽/ч</b></span>'+
+    "<span>коэффициент сейчас <b>×"+here.coef[p.h].toFixed(1)+"</b></span>"+
+    "<span>без переезда <b>0 ₽ на бензин</b></span></div>"+
+    '<div class="why">База для сравнения: сколько выйдет, если никуда не ехать.</div></div>';
+
+  rows.slice(0,3).forEach(function(r,i){
+    if(r.late){
+      h+='<div class="rec"><div class="t"><span class="z">'+r.z.n+'</span><span class="g neg mono">не успеть</span></div>'+
+        '<div class="why">Дорога '+r.tMin+" мин — больше, чем осталось до конца смены.</div></div>";
+      return;
+    }
+    h+='<div class="rec'+(i===0&&r.gain>0?" best":"")+'"><div class="t"><span class="z">'+r.z.n+"</span>"+
+      '<span class="g mono'+(r.gain>0?"":" neg")+'">'+(r.gain>0?"+":"")+fmt(r.gain)+" ₽</span></div>"+
+      '<div class="m"><span>ставка там <b>'+fmt(r.rate)+" ₽/ч</b></span>"+
+      "<span>дорога <b>"+r.tMin+" мин · "+Math.round(r.km)+" км</b></span>"+
+      "<span>бензин <b>"+fmt(r.cost)+" ₽</b></span>"+
+      (r.payback?"<span>окупится за <b>"+r.payback+" мин</b></span>":"")+"</div>"+
+      '<div class="why">'+(r.gain>0
+        ? "Разница ставок перекрывает "+r.tMin+" мин простоя и "+fmt(r.cost)+" ₽ бензина — за остаток смены выйдет на "+fmt(r.gain)+" ₽ больше, чем остаться."
+        : "Ставка выше, но переезд съедает больше, чем добавляет. При такой длине смены ехать невыгодно.")+
+      "</div></div>";
+  });
+  $("#recs").innerHTML=h;
+  renderHm(p);
+}
+
+function renderHm(p){
+  var vals=[];
+  Z.forEach(function(z){HOURS.forEach(function(_,i){vals.push(netHour(z,i,p))})});
+  var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
+  var ramp=["var(--h1)","var(--h2)","var(--h3)","var(--h4)","var(--h5)"];
+  var g='<div class="hd z">Зона</div>';
+  HOURS.forEach(function(x){g+='<div class="hd">'+x.slice(0,2)+"</div>"});
+  Z.forEach(function(z){
+    g+='<div class="z">'+z.n+"</div>";
+    HOURS.forEach(function(_,i){
+      var v=netHour(z,i,p);
+      var t=mx>mn?(v-mn)/(mx-mn):0;
+      var idx=Math.min(4,Math.floor(t*5));
+      var dark=idx>=3;
+      g+='<div class="c'+(i===p.h&&z.k===myZone?" now":"")+'" style="background:'+ramp[idx]+
+         ';color:'+(dark?"var(--surf)":"var(--ink2)")+'"><span>'+fmt(v)+"</span></div>";
+    });
+  });
+  $("#hm").innerHTML=g;
+  $("#rampTxt").textContent="от "+fmt(mn)+" до "+fmt(mx)+" ₽/ч при текущих настройках";
+}
+
+/* сегменты */
+function segs(){
+  var t=$("#tar");t.innerHTML="";
+  TAR.forEach(function(x){
+    var b=document.createElement("button");b.type="button";b.textContent=x.n;
+    b.setAttribute("aria-pressed",x.k===tar?"true":"false");
+    b.addEventListener("click",function(){tar=x.k;segs();render()});
+    t.appendChild(b);
+  });
+  var z=$("#zone");z.innerHTML="";
+  Z.forEach(function(x){
+    var b=document.createElement("button");b.type="button";b.textContent=x.n;
+    b.setAttribute("aria-pressed",x.k===myZone?"true":"false");
+    b.addEventListener("click",function(){myZone=x.k;segs();render()});
+    z.appendChild(b);
+  });
+}
+["hour","rem","com","fuel"].forEach(function(id){$("#"+id).addEventListener("input",render)});
+
+/* ---------- парковый бот ---------- */
+var ORD=[
+ {id:"a1f2",st:"done",from:"Ленинский пр-т, 45",to:"Павелецкий вокзал",price:640,tar:"Эконом",t:"14:12"},
+ {id:"b7c3",st:"done",from:"ул. Госпитальная, 4",to:"ТЦ «Авиапарк»",price:520,tar:"Эконом",t:"15:40"},
+ {id:"c9d1",st:"act",from:"Кутузовский пр-т, 12",to:"Аэропорт Внуково",price:1980,tar:"Комфорт",t:"18:05"},
+ {id:"e4f8",st:"pre",from:"Аэропорт Внуково",to:"Одинцово, ул. Говорова",price:1240,tar:"Комфорт",t:"20:30"}
+];
+var shift={orders:2,gross:1160,active:84};
+function renderBot(){
+  $("#drvKv").innerHTML=
+    "<div><span>Статус</span><span>на линии</span></div>"+
+    "<div><span>Активность</span><span>"+shift.active+" / 100</span></div>"+
+    "<div><span>Рейтинг</span><span>4.92</span></div>"+
+    "<div><span>Заказов за смену</span><span>"+shift.orders+"</span></div>"+
+    "<div><span>Выручка за смену</span><span>"+fmt(shift.gross)+" ₽</span></div>"+
+    "<div><span>Баланс в парке</span><span>"+fmt(3420+shift.gross*0.93)+" ₽</span></div>";
+  var h="";
+  ORD.forEach(function(o){
+    var name=o.st==="done"?"завершён":o.st==="act"?"выполняется":"предзаказ";
+    h+='<div class="ord '+o.st+'"><div class="t"><span class="rt">'+o.from+" → "+o.to+"</span>"+
+      '<span class="tag '+o.st+'">'+name+"</span></div>"+
+      '<div class="m"><span>'+o.t+"</span><span>тариф <b>"+o.tar+"</b></span>"+
+      "<span>стоимость <b>"+fmt(o.price)+" ₽</b></span><span>id <b>"+o.id+"</b></span></div>"+
+      (o.st==="act"?'<button class="btn" type="button" data-id="'+o.id+'">Завершить заказ</button>':"")+
+      "</div>";
+  });
+  $("#orders").innerHTML=h;
+  Array.prototype.forEach.call($("#orders").querySelectorAll("button[data-id]"),function(b){
+    b.addEventListener("click",function(){complete(b.dataset.id)});
+  });
+}
+function complete(id){
+  var o=null;ORD.forEach(function(x){if(x.id===id)o=x});
+  if(!o)return;
+  o.st="done";shift.orders++;shift.gross+=o.price;
+  ORD.forEach(function(x){if(x.st==="pre"){x.st="act"}});
+  renderBot();
+  $("#api").innerHTML='<span class="c2">// официальный метод диспетчерского API парка</span>\n'+
+   'POST /v1/parks/orders/complete\n'+
+   '<span class="k">X-Park-Id</span>: <span class="s">"7f30c1…"</span>\n\n{\n'+
+   '  <span class="k">"order_id"</span>: <span class="s">"'+o.id+'"</span>,\n'+
+   '  <span class="k">"driver_profile_id"</span>: <span class="s">"d_88214"</span>,\n'+
+   '  <span class="k">"status"</span>: <span class="s">"complete"</span>,\n'+
+   '  <span class="k">"final_price"</span>: <span class="n">'+o.price+"</span>,\n"+
+   '  <span class="k">"completed_at"</span>: <span class="s">"2026-09-24T18:41:00+03:00"</span>,\n'+
+   '  <span class="k">"initiator"</span>: <span class="s">"park_bot"</span>\n}\n\n'+
+   '<span class="c2">← 200 OK · заказ закрыт, следующий предзаказ стал активным</span>';
+}
+
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+
+segs();render();renderBot();
+})();
+</script>
+
+</body>
+</html>
