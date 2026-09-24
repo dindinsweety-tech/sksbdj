@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Разбор архитектуры крипто-эквайринга: экономика сбора средств с депозитных адресов, неудобные случаи жизненного цикла платежа и контракт адаптера сети.">
+<title>Приём платежей в крипте — экономика сбора и контракт сети</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&family=Azeret+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#F7F8F7; --surf:#FFFFFF; --surf2:#EFF1EF; --surf3:#E3E6E3;
+  --ink:#171A17; --ink2:#4F544F; --ink3:#828782;
+  --line:#E2E5E2; --line2:#C9CEC9;
+  --acc:#166534; --acc2:#15803D; --acc-s:#E5F0E9;
+  --wait:#B45309; --wait-s:#FAF0E3;
+  --dust:#475569; --dust-s:#ECEEF1;
+  --bad:#BE123C; --bad-s:#FBE9ED;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F110F; --surf:#181B18; --surf2:#202420; --surf3:#2B2F2B;
+    --ink:#F0F2F0; --ink2:#A5AAA5; --ink3:#767B76;
+    --line:#252925; --line2:#363B36;
+    --acc:#4ADE80; --acc2:#86EFAC; --acc-s:#12291C;
+    --wait:#E0A63C; --wait-s:#2B2212;
+    --dust:#94A3B8; --dust-s:#1D2229;
+    --bad:#FB7185; --bad-s:#331419;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F110F; --surf:#181B18; --surf2:#202420; --surf3:#2B2F2B;
+  --ink:#F0F2F0; --ink2:#A5AAA5; --ink3:#767B76;
+  --line:#252925; --line2:#363B36;
+  --acc:#4ADE80; --acc2:#86EFAC; --acc-s:#12291C;
+  --wait:#E0A63C; --wait-s:#2B2212;
+  --dust:#94A3B8; --dust-s:#1D2229;
+  --bad:#FB7185; --bad-s:#331419;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Commissioner",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.022em;line-height:1.17;text-wrap:balance}
+h1{font-size:clamp(21px,5.2vw,30px)}
+h2{font-size:clamp(18px,4.3vw,22px)}
+h3{font-size:15px}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"Azeret Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1140px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"Azeret Mono",monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#0F110F}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:68ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:68ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"Azeret Mono",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:66ch}
+
+.ctl{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px;
+  display:grid;gap:14px}
+@media(min-width:760px){.ctl{grid-template-columns:repeat(4,1fr)}}
+.f .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.f .v{font-family:"Azeret Mono",monospace;font-size:13px;font-weight:500}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--acc);height:22px}
+
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px}
+.stat .v{font-family:"Azeret Mono",monospace;font-size:19px;font-weight:500;margin-top:5px}
+.stat .v.ok{color:var(--acc)} .stat .v.w{color:var(--wait)} .stat .v.d{color:var(--dust)}
+
+.tblwrap{margin-top:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surf);overflow:hidden}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;min-width:880px;width:100%;font-size:13px}
+th{background:var(--surf2);text-align:right;padding:9px 11px;font-weight:600;font-size:11px;color:var(--ink2);
+  border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 11px;text-align:right;border-bottom:1px solid var(--line);
+  font-family:"Azeret Mono",monospace;font-size:12px;white-space:nowrap}
+td.nm{font-family:"Commissioner",sans-serif;font-size:13px}
+td.nm span{display:block;font-family:"Azeret Mono",monospace;font-size:10.5px;color:var(--ink3);margin-top:2px}
+tr.go td:first-child{box-shadow:inset 3px 0 0 var(--acc)}
+tr.wait td:first-child{box-shadow:inset 3px 0 0 var(--wait)}
+tr.dust td:first-child{box-shadow:inset 3px 0 0 var(--dust)}
+.b{display:inline-block;border-radius:20px;padding:2px 9px;font-size:10.5px;font-weight:600;
+  font-family:"Commissioner",sans-serif}
+.b.go{background:var(--acc-s);color:var(--acc)}
+.b.wait{background:var(--wait-s);color:var(--wait)}
+.b.dust{background:var(--dust-s);color:var(--dust)}
+.b.bad{background:var(--bad-s);color:var(--bad)}
+
+.notes{display:grid;gap:7px;margin-top:14px}
+.n1{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:13.5px;
+  color:var(--ink2);border-left:3px solid var(--wait)}
+.n1 b{color:var(--ink);font-weight:600}
+.n1.crit{border-left-color:var(--bad)}
+
+/* сценарии */
+.scn{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.scn button{border:1px solid var(--line2);border-radius:9px;padding:8px 12px;font-size:12.5px;color:var(--ink2);min-height:40px}
+.scn button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+:root[data-theme="dark"] .scn button[aria-pressed="true"],:root:not([data-theme="light"]) .scn button[aria-pressed="true"]{color:#0F110F}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .scn button[aria-pressed="true"]{color:#fff}}
+.cols{display:grid;gap:13px;margin-top:14px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,420px);align-items:start}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.steps{display:grid;gap:0;margin-top:11px}
+.step{display:grid;grid-template-columns:18px 1fr;gap:11px;padding-bottom:13px;position:relative}
+.step:not(:last-child)::before{content:"";position:absolute;left:8px;top:17px;bottom:0;width:2px;background:var(--line)}
+.dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line2);background:var(--surf);z-index:1;
+  display:grid;place-items:center;font-size:9px;color:var(--ink3)}
+.dot.on{border-color:var(--acc);background:var(--acc-s);color:var(--acc)}
+.dot.no{border-color:var(--bad);background:var(--bad-s);color:var(--bad)}
+.step b{font-size:14px;font-weight:600;display:block}
+.step p{font-size:13px;color:var(--ink2);margin-top:3px}
+.step .st{font-family:"Azeret Mono",monospace;font-size:10.5px;color:var(--ink3);margin-top:2px;display:block}
+.kv{display:grid;gap:6px;margin-top:11px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"Azeret Mono",monospace;font-size:12px;text-align:right;max-width:60%}
+pre{margin:11px 0 0;background:var(--surf2);border:1px solid var(--line);border-radius:11px;padding:12px;
+  overflow-x:auto;font-family:"Azeret Mono",monospace;font-size:11px;line-height:1.65}
+.k{color:var(--acc)} .s{color:var(--wait)} .c2{color:var(--ink3)}
+.chk{display:grid;gap:8px;margin-top:14px}
+@media(min-width:760px){.chk{grid-template-columns:1fr 1fr}}
+.ci{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px;
+  border-left:3px solid var(--acc)}
+.ci b{font-size:14px;font-weight:600}
+.ci p{margin-top:5px;font-size:13px;color:var(--ink2)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><path d="M2.5 10h19M16 15h2"/></svg></div>
+      <b>Крипто-эквайринг · экономика сбора</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Платформа ломается не на приёме платежа, а на сборе средств</h1>
+    <p>Приём и отслеживание — понятная часть. Реальные деньги теряются там, где о них думают в последнюю очередь: на sweep. Токен на EVM-адресе нельзя забрать, не отправив туда сначала нативную монету на газ — это две транзакции вместо одной. В UTXO-сети каждый вход стоит денег. А при скачке комиссии половина адресов становится нерентабельной прямо посреди дня. Ниже это считается.</p>
+    <div class="note">Курсы и параметры газа — условные, формулы настоящие. Модель специально показывает то, что редко попадает в ТЗ: двойной расход на gas funding, пыль, батчинг входов и порог, ниже которого адрес трогать дороже, чем оставить.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Сбор средств: что заберём, а что съест газ</h2></div>
+    <p class="sdesc">12 депозитных адресов в четырёх сетях. Двигайте газ и пороги — решение по каждому адресу пересчитывается.</p>
+    <div class="ctl">
+      <div class="f"><div class="top"><span class="lbl">Газ Ethereum</span><span class="v" id="vG"></span></div>
+        <input type="range" id="g" min="3" max="120" step="1" value="18"></div>
+      <div class="f"><div class="top"><span class="lbl">Комиссия Bitcoin</span><span class="v" id="vB"></span></div>
+        <input type="range" id="b" min="2" max="150" step="2" value="14"></div>
+      <div class="f"><div class="top"><span class="lbl">Потолок расхода</span><span class="v" id="vR"></span></div>
+        <input type="range" id="r" min="1" max="25" step="1" value="8"></div>
+      <div class="f"><div class="top"><span class="lbl">Минимум к сбору</span><span class="v" id="vM"></span></div>
+        <input type="range" id="m" min="1" max="120" step="1" value="15"></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lbl">Адресов</div><div class="v mono" id="k1">12</div></div>
+      <div class="stat"><div class="lbl">Собираем сейчас</div><div class="v mono ok" id="k2">0</div></div>
+      <div class="stat"><div class="lbl">Ждут накопления</div><div class="v mono w" id="k3">0</div></div>
+      <div class="stat"><div class="lbl">Заперто в пыли</div><div class="v mono d" id="k4">0</div></div>
+    </div>
+    <div class="tblwrap"><div class="scroll"><table id="tbl"></table></div></div>
+    <div class="notes" id="notes"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Жизненный цикл платежа: неудобные случаи</h2></div>
+    <p class="sdesc">Счёт «оплачен ровно и вовремя» умеет кто угодно. Платформа определяется тем, что происходит в остальных семи случаях.</p>
+    <div class="scn" id="scn"></div>
+    <div class="cols">
+      <div class="box"><span class="lbl">Что происходит</span><div class="steps" id="steps"></div></div>
+      <div>
+        <div class="box"><span class="lbl">Решение системы</span><div class="kv" id="dec"></div></div>
+        <div class="box" style="margin-top:13px"><span class="lbl">Ключ идемпотентности</span><pre class="mono" id="idem"></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Новая сеть = один модуль</h2></div>
+    <p class="sdesc">Ядро знает только этот интерфейс. Добавление сети — реализация восьми методов и строка в реестре; ни бот, ни счета, ни балансы не трогаются.</p>
+    <pre class="mono" id="iface"></pre>
+    <div class="chk" id="chk"></div>
+  </section>
+
+  <footer>Разбор архитектуры крипто-эквайринга. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var f2=function(n){return (Math.round(n*100)/100).toFixed(2)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+
+var PRICE={ETH:3100,BTC:92000,TRX:0.24,BNB:780};
+/* addr: сеть, актив, сумма USD, нужен ли газ-фандинг, число входов (UTXO) */
+var ADDR=[
+ {a:"0x7c4f…a921",ch:"ETH",as:"USDT",amt:820,fund:1},
+ {a:"0x91b2…4de0",ch:"ETH",as:"USDT",amt:46,fund:1},
+ {a:"0x3ad8…77c1",ch:"ETH",as:"USDT",amt:9.4,fund:1},
+ {a:"0xbb01…19fa",ch:"ETH",as:"ETH",amt:310,fund:0},
+ {a:"TJ9k…mQ2v",ch:"TRX",as:"USDT",amt:275,fund:1},
+ {a:"TWr4…8Lpd",ch:"TRX",as:"USDT",amt:31,fund:1},
+ {a:"TZa7…c0Nu",ch:"TRX",as:"USDT",amt:6.2,fund:1},
+ {a:"bc1q…k4m8",ch:"BTC",as:"BTC",amt:1480,in:1},
+ {a:"bc1q…9xz2",ch:"BTC",as:"BTC",amt:64,in:3},
+ {a:"bc1q…p7t0",ch:"BTC",as:"BTC",amt:11,in:5},
+ {a:"0x5fe9…0b3c",ch:"BSC",as:"USDT",amt:190,fund:1},
+ {a:"0xc8d1…52ae",ch:"BSC",as:"USDT",amt:14,fund:1}
+];
+function P(){return {g:+$("#g").value,b:+$("#b").value,r:+$("#r").value/100,m:+$("#m").value}}
+
+function cost(x,p){
+  if(x.ch==="ETH"){
+    var sweep=65000*p.g*1e-9*PRICE.ETH;
+    var fund=x.fund?21000*p.g*1e-9*PRICE.ETH:0;
+    return {c:sweep+fund,txs:x.fund?2:1,
+      d:x.fund?"перевод токена "+f2(sweep)+" $ + заправка газом "+f2(fund)+" $":"обычный перевод"};
+  }
+  if(x.ch==="BSC"){
+    var s2=65000*1*1e-9*PRICE.BNB, f3=x.fund?21000*1*1e-9*PRICE.BNB:0;
+    return {c:s2+f3,txs:2,d:"дёшево, но две транзакции всё равно нужны"};
+  }
+  if(x.ch==="TRX"){
+    var burn=27*PRICE.TRX, act=1*PRICE.TRX, fnd=x.fund?1.2*PRICE.TRX:0;
+    return {c:burn+act+fnd,txs:2,d:"без арендованной энергии сжигается ~27 TRX + активация адреса"};
+  }
+  var vb=10+148*(x.in||1)+34;
+  return {c:vb*p.b*1e-8*PRICE.BTC,txs:1,d:(x.in||1)+" вход(а) × 148 vB, комиссия "+p.b+" sat/vB"};
+}
+
+function render(){
+  var p=P();
+  $("#vG").textContent=p.g+" gwei";
+  $("#vB").textContent=p.b+" sat/vB";
+  $("#vR").textContent=(p.r*100)+"%";
+  $("#vM").textContent=p.m+" $";
+  var rows='<thead><tr><th>Адрес</th><th>Сеть</th><th>Актив</th><th>Баланс</th><th>Стоимость сбора</th><th>Доля</th><th>Чистыми</th><th>Решение</th></tr></thead><tbody>';
+  var n={go:0,wait:0,dust:0},net=0,spend=0,stuck=0;
+  ADDR.forEach(function(x){
+    var c=cost(x,p);
+    var ratio=c.c/x.amt;
+    var v;
+    if(x.amt<p.m&&ratio>p.r)v="dust";
+    else if(ratio>p.r)v="wait";
+    else v="go";
+    if(v==="go"){n.go++;net+=x.amt-c.c;spend+=c.c}
+    else if(v==="wait")n.wait++;
+    else {n.dust++;stuck+=x.amt}
+    rows+='<tr class="'+v+'"><td class="nm">'+x.a+"<span>"+(x.fund?"нет газа на адресе":x.in?x.in+" UTXO":"есть нативка")+"</span></td>"+
+      "<td>"+x.ch+"</td><td>"+x.as+"</td><td>"+f2(x.amt)+" $</td>"+
+      "<td>"+f2(c.c)+" $ · "+c.txs+" tx</td>"+
+      '<td style="color:'+(ratio>p.r?"var(--bad)":"var(--ink2)")+'">'+(ratio*100).toFixed(1)+"%</td>"+
+      "<td>"+(x.amt-c.c>0?f2(x.amt-c.c):"−"+f2(c.c-x.amt))+" $</td>"+
+      '<td><span class="b '+v+'">'+({go:"собираем",wait:"ждём",dust:"пыль"}[v])+"</span></td></tr>";
+  });
+  $("#tbl").innerHTML=rows+"</tbody>";
+  $("#k2").textContent=n.go+" · "+fmt(net)+" $";
+  $("#k3").textContent=n.wait;
+  $("#k4").textContent=n.dust+" · "+f2(stuck)+" $";
+  var btc=ADDR.filter(function(x){return x.ch==="BTC"});
+  var sep=btc.reduce(function(s,x){return s+cost(x,p).c},0);
+  var ins=btc.reduce(function(s,x){return s+(x.in||1)},0);
+  var batch=(10+148*ins+34)*p.b*1e-8*PRICE.BTC;
+  $("#notes").innerHTML=
+    '<div class="n1"><b>Батчинг входов.</b> Три Bitcoin-адреса по отдельности — '+f2(sep)+
+      " $. Одной транзакцией со всеми "+ins+" входами — "+f2(batch)+" $. Экономия "+f2(sep-batch)+
+      " $ на цикле, и это при комиссии "+p.b+" sat/vB.</div>"+
+    '<div class="n1"><b>Двойной расход на EVM.</b> Токен нельзя вывести с адреса, где нет нативной монеты. '+
+      "Сначала заправка газом, потом перевод — две транзакции и два риска зависнуть. Отдельный кошелёк-заправщик с очередью и контролем nonce обязателен.</div>"+
+    '<div class="n1 crit"><b>Чего обычно нет в ТЗ.</b> Порог рентабельности плавает вместе с газом: при '+
+      p.g+" gwei нерентабельны "+(n.wait+n.dust)+" адресов из "+ADDR.length+
+      ". Сбор по расписанию вслепую сжигает деньги — нужен триггер по цене газа и накопленной сумме, а не cron раз в час.</div>"+
+    '<div class="n1 crit"><b>Пыль необратима.</b> '+f2(stuck)+
+      " $ на адресах, где комиссия больше остатка. Эти деньги не вернутся никогда — значит, минимальную сумму счёта надо задавать на входе, а не разгребать на выходе.</div>";
+}
+["g","b","r","m"].forEach(function(id){$("#"+id).addEventListener("input",render)});
+
+/* ---------- сценарии ---------- */
+var SC=[
+ {n:"Оплачено ровно",steps:[
+   ["on","Транзакция замечена","mempool, 0 подтверждений","Счёт переводится в pending, клиент видит «платёж найден»."],
+   ["on","Достигнута финальность","3 подтверждения","Порог подтверждений — параметр сети, а не константа в ядре."],
+   ["on","Сумма сверена","1 000.00 = 1 000.00 USDT","Совпала в пределах допуска 0,5 %."],
+   ["on","Баланс зачислен","ledger entry #88214","Запись в журнале, откуда считается баланс. Баланс не хранится числом."]],
+  dec:[["Статус","paid"],["Зачислено","1 000.00 USDT"],["Уведомление","клиент + мерчант"]],
+  idem:"tx:0x9f2c…d41a:0"},
+ {n:"Недоплата 3 %",steps:[
+   ["on","Транзакция замечена","970 USDT из 1 000",""],
+   ["no","Сумма не сошлась","недобор 30 USDT","Допуск 0,5 % не покрывает. Автозачёт запрещён."],
+   ["on","Счёт частично оплачен","partially_paid","Клиенту предложено доплатить на тот же адрес, таймер продлён."],
+   ["on","Решение мерчанта","правило из настроек","Принять, вернуть или ждать доплату — политика, а не хардкод."]],
+  dec:[["Статус","partially_paid"],["Зачислено","0 (до решения)"],["Действие","запрос доплаты"]],
+  idem:"tx:0x41ba…77e2:0"},
+ {n:"Переплата",steps:[
+   ["on","Пришло 1 250 из 1 000","излишек 250 USDT",""],
+   ["on","Счёт закрыт","paid",""],
+   ["on","Излишек на внутренний баланс","ledger entry #88215","Не возврат по умолчанию: возврат — это ещё одна комиссия и ещё один риск."]],
+  dec:[["Статус","paid + overpay"],["Зачислено","1 000 + 250 на баланс"],["Уведомление","клиент"]],
+  idem:"tx:0x12de…9a04:0"},
+ {n:"Оплата после таймера",steps:[
+   ["on","Счёт истёк","expired, адрес не переиспользуется",""],
+   ["on","Через 40 минут пришли деньги","1 000 USDT","Адрес всё ещё слушается — отключать мониторинг по таймеру нельзя."],
+   ["on","Деньги не теряются","на внутренний баланс","Счёт не воскрешаем: курс изменился. Клиент получает средства на баланс и может оплатить заново."]],
+  dec:[["Статус счёта","expired"],["Зачислено","на баланс пользователя"],["Действие","предложить новый счёт"]],
+  idem:"tx:0x77c1…20bb:0"},
+ {n:"Две транзакции на счёт",steps:[
+   ["on","Первая: 400 USDT","partially_paid",""],
+   ["on","Вторая: 600 USDT","сумма накопилась","Счёт считает сумму по адресу, а не по одной транзакции."],
+   ["on","Итог 1 000","paid","Иначе клиент, разбивший платёж, остаётся без товара и пишет в поддержку."]],
+  dec:[["Статус","paid"],["Транзакций","2"],["Зачислено","1 000 USDT"]],
+  idem:"tx:0xaa10…4c7d:0 + tx:0xbe93…1f08:0"},
+ {n:"Реорг сети",steps:[
+   ["on","Зачислено на 3 подтверждениях","paid",""],
+   ["no","Реорг глубиной 4 блока","транзакция исчезла","Единственная защита — порог подтверждений выше глубины реорга и обратимая проводка."],
+   ["on","Сторнирующая запись","ledger entry #88216 (reversal)","Журнал не редактируется, ошибка исправляется обратной записью."],
+   ["on","Счёт возвращён в ожидание","pending","Мерчанту уходит уведомление до отгрузки, а не после."]],
+  dec:[["Статус","pending (был paid)"],["Проводка","сторно"],["Вывод","порог подтверждений поднять"]],
+  idem:"tx:0x5b2f…e910:0 · reorg_seq=2"},
+ {n:"Дубль вебхука",steps:[
+   ["on","Провайдер прислал событие","tx 0x9f2c…, подпись валидна",""],
+   ["on","Через 2 секунды — то же событие","повтор при ретрае провайдера",""],
+   ["no","Вставка отклонена","unique violation на ключе","Идемпотентность — уникальный индекс в БД, а не проверка «а было ли уже» в коде."],
+   ["on","Баланс не изменился","дубль отброшен","Это единственная защита, которая работает при гонке двух воркеров."]],
+  dec:[["Событий получено","2"],["Проведено","1"],["Защита","unique(tx_hash, vout, direction)"]],
+  idem:"tx:0x9f2c…d41a:0 — конфликт по уникальному ключу"},
+ {n:"Неверная подпись",steps:[
+   ["no","Вебхук с чужой подписью","HMAC не сошёлся","Отклоняем до разбора тела запроса."],
+   ["on","Записан инцидент","security log","Всплеск таких — сигнал, что эндпоинт нашли."],
+   ["on","Состояние не изменилось","—","Источник правды — не вебхук, а собственный поллинг блокчейна. Вебхук лишь ускоряет реакцию."]],
+  dec:[["Ответ","401"],["Проведено","нет"],["Принцип","вебхук не источник правды"]],
+  idem:"—"}
+];
+var sc=0;
+function renderSc(){
+  var b=$("#scn");b.innerHTML="";
+  SC.forEach(function(x,i){
+    var e=document.createElement("button");e.type="button";e.textContent=x.n;
+    e.setAttribute("aria-pressed",i===sc?"true":"false");
+    e.addEventListener("click",function(){sc=i;renderSc()});
+    b.appendChild(e);
+  });
+  var s=SC[sc];
+  $("#steps").innerHTML=s.steps.map(function(st){
+    return '<div class="step"><div class="dot '+st[0]+'">'+(st[0]==="no"?"✕":"✓")+"</div>"+
+      "<div><b>"+st[1]+'</b><span class="st">'+st[2]+"</span>"+(st[3]?"<p>"+st[3]+"</p>":"")+"</div></div>";
+  }).join("");
+  $("#dec").innerHTML=s.dec.map(function(d){
+    return "<div><span>"+d[0]+"</span><span>"+d[1]+"</span></div>"}).join("");
+  $("#idem").innerHTML='<span class="c2">// ключ, по которому событие проводится ровно один раз</span>\n'+s.idem;
+}
+
+/* ---------- интерфейс сети ---------- */
+$("#iface").innerHTML=
+ '<span class="c2"># ядро зависит только от этого протокола</span>\n\n'+
+ '<span class="k">class</span> ChainAdapter(Protocol):\n'+
+ '    name: str                 <span class="c2"># "tron" | "ethereum" | "bitcoin"</span>\n'+
+ '    confirmations: int        <span class="c2"># порог финальности этой сети</span>\n'+
+ '    dust_limit: Decimal       <span class="c2"># ниже — не принимаем и не собираем</span>\n\n'+
+ '    <span class="k">def</span> derive_address(self, account_id: int, index: int) -&gt; Address: ...\n'+
+ '    <span class="k">def</span> watch(self, addresses: list[Address]) -&gt; Iterator[Deposit]: ...\n'+
+ '    <span class="k">def</span> get_balance(self, address: Address, asset: Asset) -&gt; Decimal: ...\n'+
+ '    <span class="k">def</span> estimate_sweep(self, address: Address, asset: Asset) -&gt; FeeQuote: ...\n'+
+ '    <span class="k">def</span> fund_gas(self, address: Address) -&gt; TxRef | None: ...\n'+
+ '    <span class="k">def</span> sweep(self, address: Address, asset: Asset, to: Address) -&gt; TxRef: ...\n'+
+ '    <span class="k">def</span> withdraw(self, to: Address, asset: Asset, amount: Decimal) -&gt; TxRef: ...\n'+
+ '    <span class="k">def</span> tx_status(self, ref: TxRef) -&gt; TxStatus: ...\n\n'+
+ '<span class="c2"># реестр — единственное место, где ядро узнаёт о новой сети</span>\n'+
+ 'CHAINS = { <span class="s">"tron"</span>: TronAdapter, <span class="s">"ethereum"</span>: EvmAdapter(chain_id=1),\n'+
+ '           <span class="s">"bsc"</span>: EvmAdapter(chain_id=56), <span class="s">"bitcoin"</span>: BitcoinAdapter }\n\n'+
+ '<span class="c2"># фиат подключается тем же протоколом: derive_address → реквизиты,\n'+
+ '# watch → выписка банка, sweep → внутренний перевод. Ядро не меняется.</span>';
+
+var CHK=[
+ ["Глубина реорга","У каждой сети своя. Порог подтверждений — поле адаптера, а не константа ядра. Ошибка здесь стоит реальных денег."],
+ ["Модель комиссии","UTXO платит за входы, EVM — за газ, TRON — энергией и сожжённым TRX. Общей формулы нет, есть estimate_sweep у адаптера."],
+ ["Memo и tag","В части сетей адрес общий, а платёж различается по memo. Если ядро умеет только «уникальный адрес» — такую сеть не подключить без переписывания."],
+ ["Decimals","6 у USDT в TRON, 18 у токенов в EVM. Все суммы — в минимальных единицах и Decimal. Float в деньгах запрещён."],
+ ["Лимиты API провайдера","Мониторинг сотен адресов упирается в rate limit. Нужен свой пул и очередь, иначе платежи начнут опаздывать на пике."],
+ ["Заправка газом","Для токенов нужен кошелёк-заправщик с контролем nonce и очередью. Это отдельный сервис, а не функция в sweep."]
+];
+$("#chk").innerHTML=CHK.map(function(c){
+  return '<div class="ci"><b>'+c[0]+"</b><p>"+c[1]+"</p></div>"}).join("");
+
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+render();renderSc();
+})();
+</script>
+
+</body>
+</html>
