@@ -1,0 +1,340 @@
+<title>Лидогенерация из открытых источников — движок сигналов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Anonymous+Pro:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#F9F7F8; --surf:#FFFFFF; --surf2:#F2EFF0; --surf3:#E6E1E3;
+  --ink:#191617; --ink2:#545052; --ink3:#868082;
+  --line:#E6E2E3; --line2:#CEC8CA;
+  --acc:#9F1239; --acc2:#BE123C; --acc-s:#F8E9EC;
+  --warm:#B45309; --warm-s:#FAF0E3;
+  --cold:#475569; --cold-s:#ECEEF1;
+  --ok:#047857; --ok-s:#E3F2EC;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111011; --surf:#1A181A; --surf2:#222022; --surf3:#2D2A2C;
+    --ink:#F1EFF0; --ink2:#A9A4A6; --ink3:#7A7577;
+    --line:#272325; --line2:#383336;
+    --acc:#FB7185; --acc2:#FDA4AF; --acc-s:#2E1219;
+    --warm:#E0A63C; --warm-s:#2B2212;
+    --cold:#94A3B8; --cold-s:#1D2229;
+    --ok:#34D399; --ok-s:#112A20;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111011; --surf:#1A181A; --surf2:#222022; --surf3:#2D2A2C;
+  --ink:#F1EFF0; --ink2:#A9A4A6; --ink3:#7A7577;
+  --line:#272325; --line2:#383336;
+  --acc:#FB7185; --acc2:#FDA4AF; --acc-s:#2E1219;
+  --warm:#E0A63C; --warm-s:#2B2212;
+  --cold:#94A3B8; --cold-s:#1D2229;
+  --ok:#34D399; --ok-s:#112A20;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Inter Tight",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.022em;line-height:1.17;text-wrap:balance}
+h1{font-size:clamp(22px,5.3vw,31px)}
+h2{font-size:clamp(18px,4.3vw,22px)}
+h3{font-size:15px}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"Anonymous Pro",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.xs{font-size:11.5px;line-height:1.4}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"Anonymous Pro",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#111011}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:68ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:68ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"Anonymous Pro",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:66ch}
+
+.ctl{margin-top:18px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px;
+  display:grid;gap:14px}
+@media(min-width:760px){.ctl{grid-template-columns:repeat(4,1fr)}}
+.f .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.f .v{font-family:"Anonymous Pro",monospace;font-size:13px;font-weight:700}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--acc);height:22px}
+
+.leads{display:grid;gap:9px;margin-top:16px}
+.lead{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px;border-left:3px solid var(--cold)}
+.lead.hot{border-left-color:var(--acc);background:var(--acc-s)}
+.lead.warm{border-left-color:var(--warm)}
+.lead .t{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.lead .co{font-weight:600;font-size:16px}
+.lead .co i{font-style:normal;display:block;font-size:12.5px;color:var(--ink3);font-weight:400;margin-top:2px}
+.sc{text-align:right;flex:none}
+.sc b{font-family:"Anonymous Pro",monospace;font-size:22px;font-weight:700;display:block;line-height:1}
+.sc span{font-size:10.5px;color:var(--ink3);font-family:"Anonymous Pro",monospace}
+.sigs{display:grid;gap:5px;margin-top:11px}
+.sig{display:flex;gap:9px;align-items:baseline;font-size:13px;color:var(--ink2)}
+.sig em{font-style:normal;font-family:"Anonymous Pro",monospace;font-size:10.5px;color:var(--ink3);flex:none;
+  border:1px solid var(--line2);border-radius:5px;padding:1px 5px}
+.lead .out{margin-top:11px;border-top:1px dashed var(--line);padding-top:10px;font-size:13.5px;color:var(--ink2)}
+.lead .out b{color:var(--ink);font-weight:600}
+.act{margin-top:9px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{border-radius:20px;padding:3px 10px;font-size:11.5px;font-weight:600}
+.pill.hot{background:var(--acc);color:#fff}
+:root[data-theme="dark"] .pill.hot,:root:not([data-theme="light"]) .pill.hot{color:#111011}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .pill.hot{color:#fff}}
+.pill.warm{background:var(--warm-s);color:var(--warm)}
+.pill.cold{background:var(--cold-s);color:var(--cold)}
+.pill.ch{background:var(--surf3);color:var(--ink2);font-weight:400;font-family:"Anonymous Pro",monospace;font-size:11px}
+
+.src{display:grid;gap:8px;margin-top:16px}
+@media(min-width:760px){.src{grid-template-columns:1fr 1fr}}
+.si{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:13px;border-left:3px solid var(--acc)}
+.si b{font-size:14.5px;font-weight:600}
+.si .m{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.si p{margin-top:7px;font-size:13px;color:var(--ink2)}
+
+.fun{display:grid;gap:13px;margin-top:16px}
+@media(min-width:900px){.fun{grid-template-columns:minmax(0,1fr) minmax(0,380px);align-items:start}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.step{display:grid;grid-template-columns:150px 1fr 96px;gap:10px;align-items:center;font-size:13px;margin-top:8px}
+.sbar{height:24px;border-radius:6px;background:var(--surf3);overflow:hidden}
+.sbar i{display:block;height:100%;background:var(--acc);border-radius:6px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.kv{display:grid;gap:6px;margin-top:11px}
+.kv div{display:flex;gap:12px;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:6px;font-size:13.5px}
+.kv span:first-child{color:var(--ink2)}
+.kv span:last-child{font-family:"Anonymous Pro",monospace;font-size:12.5px;text-align:right}
+.kv .tot span:last-child{font-weight:700;color:var(--acc);font-size:14px}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v7l-4 2v-9z"/></svg></div>
+      <b>Лидогенерация · движок сигналов</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>B2B-лид в инжиниринге появляется до тендера, а не после</h1>
+    <p>Когда закупка опубликована, ТЗ уже написано — часто под конкретного подрядчика. Поэтому система должна ловить не тендеры, а то, что происходит за два-три месяца до них: наём главного инженера, покупка площадки, новость об инвестпроекте, продление лицензии, смена директора по развитию. Ниже эти сигналы собираются по компаниям и превращаются в очередь на обзвон с обоснованием.</p>
+    <div class="note">Данные условные, источники и логика настоящие. Все источники ниже — открытые и легальные: ЕИС, ЕГРЮЛ, сайты вакансий, отраслевые СМИ, реестры лицензий. Персональные данные из них не выгружаются: система работает с юрлицами и публичными фактами.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Очередь на проработку</h2></div>
+    <p class="sdesc">Вес каждого фактора настраивается под вашу стратегию: кто-то охотится за ранней стадией, кто-то — за крупным бюджетом. Порядок компаний пересчитывается сразу.</p>
+    <div class="ctl">
+      <div class="f"><div class="top"><span class="lbl">Ранняя стадия</span><span class="v" id="vS"></span></div>
+        <input type="range" id="ws" min="0" max="100" step="5" value="70"></div>
+      <div class="f"><div class="top"><span class="lbl">Размер бюджета</span><span class="v" id="vB"></span></div>
+        <input type="range" id="wb" min="0" max="100" step="5" value="55"></div>
+      <div class="f"><div class="top"><span class="lbl">Свежесть</span><span class="v" id="vF"></span></div>
+        <input type="range" id="wf" min="0" max="100" step="5" value="60"></div>
+      <div class="f"><div class="top"><span class="lbl">Профильность</span><span class="v" id="vP"></span></div>
+        <input type="range" id="wp" min="0" max="100" step="5" value="85"></div>
+    </div>
+    <div class="leads" id="leads"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Откуда берутся сигналы</h2></div>
+    <p class="sdesc">Шесть источников, каждый со своим ритмом и своей ценностью. Половина системы — это дисциплина обхода и дедупликации, а не ИИ.</p>
+    <div class="src" id="src"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Экономика: сколько сигналов на одну сделку</h2></div>
+    <p class="sdesc">Крутите конверсии под свою реальность — видно, сколько сигналов нужно в месяц, чтобы получить нужное число договоров, и сколько стоит лид.</p>
+    <div class="fun">
+      <div class="box">
+        <div id="funnel"></div>
+        <div class="ctl" style="margin-top:14px;border:0;padding:0;background:none">
+          <div class="f"><div class="top"><span class="lbl">Сигнал → компания в работе</span><span class="v" id="vc1"></span></div>
+            <input type="range" id="c1" min="5" max="60" step="1" value="22"></div>
+          <div class="f"><div class="top"><span class="lbl">Контакт → разговор</span><span class="v" id="vc2"></span></div>
+            <input type="range" id="c2" min="5" max="60" step="1" value="28"></div>
+          <div class="f"><div class="top"><span class="lbl">Разговор → встреча</span><span class="v" id="vc3"></span></div>
+            <input type="range" id="c3" min="5" max="60" step="1" value="35"></div>
+          <div class="f"><div class="top"><span class="lbl">Встреча → договор</span><span class="v" id="vc4"></span></div>
+            <input type="range" id="c4" min="3" max="50" step="1" value="18"></div>
+        </div>
+      </div>
+      <div class="box">
+        <span class="lbl">Чтобы получить 3 договора в месяц</span>
+        <div class="kv" id="econ"></div>
+        <p class="sm mut" style="margin-top:12px">Средний чек в инжиниринге высокий, поэтому даже дорогой лид окупается. Но объём входа считать надо заранее: если источники не дают нужного числа сигналов, воронка не поедет, сколько ни улучшай скрипты.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Демо системы лидогенерации для инжиниринга. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+
+/* stage: 1 — до тендера, .55 — тендер опубликован, .2 — тендер уже разыгран */
+var CO=[
+ {n:"ООО «Сибур-Полимер Тобольск»",ind:"нефтехимия · Тюменская обл.",ch:"партнёр: поставщик КИПиА",
+  sig:[
+   {t:"Вакансия",d:4,fit:.95,st:1,bud:0,x:"Ищут ведущего инженера АСУ ТП и двух КИПиА, вахта, старт в ноябре"},
+   {t:"Новость",d:11,fit:.85,st:1,bud:1400,x:"Совет директоров одобрил модернизацию установки пиролиза, 1,4 млрд ₽"},
+   {t:"ЕГРЮЛ",d:19,fit:.5,st:1,bud:0,x:"Добавлен ОКВЭД 71.12 — проектирование инженерных систем"}]},
+ {n:"АО «Уралкалий-Ремонт»",ind:"горная добыча · Пермский край",ch:"прямой выход, есть контакт",
+  sig:[
+   {t:"Закупка",d:2,fit:.9,st:.55,bud:340,x:"Опубликован конкурс на проектирование вентиляции рудника, 340 млн ₽"},
+   {t:"Вакансия",d:26,fit:.6,st:1,bud:0,x:"Главный энергетик, требование — опыт энергоаудита"}]},
+ {n:"ООО «Агрокомплекс Ставрополье»",ind:"АПК · Ставропольский край",ch:"контент: кейс по холодоснабжению",
+  sig:[
+   {t:"Новость",d:7,fit:.8,st:1,bud:820,x:"Соглашение с регионом: тепличный комплекс 18 га, ввод 2028"},
+   {t:"Разрешение",d:15,fit:.75,st:1,bud:0,x:"Выдано разрешение на строительство первой очереди"},
+   {t:"Вакансия",d:9,fit:.7,st:1,bud:0,x:"Инженер-теплотехник и энергетик в новый проект"}]},
+ {n:"ТОО «КазМунайСервис»",ind:"нефтесервис · Казахстан, Атырау",ch:"партнёр: местный интегратор",
+  sig:[
+   {t:"Тендер",d:5,fit:.85,st:.55,bud:210,x:"Тендер на систему пожаротушения резервуарного парка"},
+   {t:"Новость",d:31,fit:.6,st:1,bud:0,x:"Открыт филиал в Актау, набор технического персонала"}]},
+ {n:"ПАО «Северсталь-Метиз»",ind:"металлургия · Череповец",ch:"прямой выход",
+  sig:[
+   {t:"Закупка",d:48,fit:.8,st:.2,bud:520,x:"Конкурс на АСУ ТП прокатного стана завершён, подрядчик выбран"},
+   {t:"Новость",d:38,fit:.55,st:1,bud:0,x:"Заявлена программа энергоэффективности до 2029 года"}]},
+ {n:"ООО «Балтийский Судоремонт»",ind:"судостроение · Калининград",ch:"контент + отраслевая выставка",
+  sig:[
+   {t:"Вакансия",d:1,fit:.9,st:1,bud:0,x:"Срочно: руководитель проектов по инженерным системам дока"},
+   {t:"Лицензия",d:22,fit:.7,st:1,bud:0,x:"Продлена лицензия на работы с опасными объектами"},
+   {t:"Новость",d:13,fit:.8,st:1,bud:640,x:"Реконструкция сухого дока, финансирование подтверждено"}]},
+ {n:"ООО «ТехноПарк Минск»",ind:"девелопмент · Беларусь",ch:"партнёр: генподрядчик",
+  sig:[
+   {t:"Новость",d:44,fit:.5,st:1,bud:180,x:"Анонсирован корпус лабораторий, проектирование в 2027"}]}
+];
+function P(){return {s:+$("#ws").value/100,b:+$("#wb").value/100,f:+$("#wf").value/100,p:+$("#wp").value/100}}
+
+function score(c,p){
+  var tot=0,bud=0,early=1,fresh=0;
+  c.sig.forEach(function(s){
+    var fr=Math.exp(-s.d/28);
+    var v=s.fit*p.p*40 + s.st*p.s*26 + fr*p.f*20 + (s.bud?Math.log10(s.bud)/3.2*p.b*26:0);
+    tot+=v;bud=Math.max(bud,s.bud);early=Math.min(early,s.st);fresh=Math.max(fresh,fr);
+    s._fr=fr;
+  });
+  tot=tot/Math.pow(c.sig.length,.45);
+  return {v:Math.min(99,Math.round(tot)),bud:bud,early:early,fresh:fresh};
+}
+function verdict(c,r){
+  var minD=Math.min.apply(null,c.sig.map(function(s){return s.d}));
+  var hasVac=c.sig.some(function(s){return s.t==="Вакансия"});
+  var hasMoney=c.sig.some(function(s){return s.bud>0});
+  var late=c.sig.some(function(s){return s.st===.2});
+  if(late)return "Закупка уже разыграна — в этом цикле поздно. <b>Ставим в долгий контакт:</b> выйти на технического заказчика сейчас, чтобы попасть в короткий список следующей закупки. Программа энергоэффективности говорит, что она будет.";
+  if(hasVac&&hasMoney)return "Нанимают профильных инженеров <b>и</b> подтвердили финансирование — проект в стадии подготовки, ТЗ ещё не написано. <b>Это лучшее окно:</b> зайти сейчас и повлиять на требования, пока их формулируют.";
+  if(r.early<1)return "Закупка уже опубликована — ТЗ написано, вероятно, под кого-то. <b>Идти можно</b>, но реалистично как второй участник или субподряд; параллельно заходить на следующий объект.";
+  if(hasVac)return "Пока только кадровый сигнал: набирают профильных людей, денег в открытых источниках не видно. <b>Разведка:</b> короткое письмо техническому специалисту, без коммерческого давления.";
+  return "Один ранний сигнал, стадия неясная. <b>В фоновый прогрев:</b> добавить в рассылку отраслевых кейсов и вернуться через месяц.";
+}
+
+function render(){
+  var p=P();
+  $("#vS").textContent=Math.round(p.s*100);
+  $("#vB").textContent=Math.round(p.b*100);
+  $("#vF").textContent=Math.round(p.f*100);
+  $("#vP").textContent=Math.round(p.p*100);
+  var list=CO.map(function(c){return {c:c,r:score(c,p)}}).sort(function(a,b){return b.r.v-a.r.v});
+  $("#leads").innerHTML=list.map(function(o,i){
+    var cls=o.r.v>=62?"hot":o.r.v>=45?"warm":"cold";
+    var lbl=cls==="hot"?"в работу сейчас":cls==="warm"?"проработать на неделе":"в прогрев";
+    return '<div class="lead '+cls+'"><div class="t"><div class="co">'+o.c.n+"<i>"+o.c.ind+"</i></div>"+
+      '<div class="sc"><b>'+o.r.v+"</b><span>score</span></div></div>"+
+      '<div class="sigs">'+o.c.sig.map(function(s){
+        return '<div class="sig"><em>'+s.t+"</em><span>"+s.x+
+          ' <span class="mut3">· '+s.d+" дн назад"+(s.bud?" · "+fmt(s.bud)+" млн ₽":"")+"</span></span></div>";
+      }).join("")+"</div>"+
+      '<div class="out">'+verdict(o.c,o.r)+"</div>"+
+      '<div class="act"><span class="pill '+cls+'">'+lbl+'</span><span class="pill ch">'+o.c.ch+
+      '</span><span class="pill ch">сигналов: '+o.c.sig.length+"</span></div></div>";
+  }).join("");
+}
+["ws","wb","wf","wp"].forEach(function(id){$("#"+id).addEventListener("input",render)});
+
+/* источники */
+var SRC=[
+ ["ЕИС и площадки закупок",["44-ФЗ / 223-ФЗ","ежедневно","поздний сигнал"],
+  "Основной поток, но самый поздний: когда закупка опубликована, ТЗ уже написано. Ценность — не в участии, а в понимании, кто и что строит: по завершённым закупкам видно инвестпрограмму компании на год вперёд."],
+ ["Вакансии",["hh и отраслевые","ежедневно","ранний сигнал"],
+  "Самый недооценённый источник. Компания нанимает главного инженера и трёх КИПиА за два-три месяца до тендера. Ключевое — не сам факт вакансии, а связка профессий: по набору специальностей читается тип объекта."],
+ ["ЕГРЮЛ и реестры",["ФНС, лицензии, разрешения",'раз в неделю',"подтверждающий"],
+  "Новые ОКВЭД, смена руководства, продление лицензий на опасные объекты, разрешения на строительство. Поодиночке слабый сигнал, в связке с другими — подтверждает, что проект реальный."],
+ ["Отраслевые СМИ и релизы",["РБК, профильные издания","ежедневно","ранний + бюджет"],
+  "Единственный источник, который называет деньги до закупки: «одобрена модернизация на 1,4 млрд». Требует нормальной дедупликации — одна новость расходится по двадцати изданиям."],
+ ["Партнёрская сеть",["поставщики, интеграторы","постоянно","самый тёплый"],
+  "Поставщик оборудования знает о проекте раньше всех — ему шлют запрос на спецификацию. Это канал с самой высокой конверсией, и его нельзя автоматизировать целиком: система подсказывает, у какого партнёра спросить, а спрашивает человек."],
+ ["Контент и входящие",["статьи, кейсы, выступления","накопительно","самый дешёвый"],
+  "Работает на длинной дистанции и не даёт быстрых цифр. Но в инжиниринге решение принимает технический специалист, который гуглит перед закупкой — и попасть к нему в закладки дешевле, чем в рекламу."]
+];
+$("#src").innerHTML=SRC.map(function(s){
+  return '<div class="si"><b>'+s[0]+'</b><div class="m">'+s[1].map(function(m){
+    return '<span class="pill ch">'+m+"</span>"}).join("")+"</div><p>"+s[2]+"</p></div>";
+}).join("");
+
+/* воронка */
+function C(){return {c1:+$("#c1").value/100,c2:+$("#c2").value/100,c3:+$("#c3").value/100,c4:+$("#c4").value/100}}
+function funnel(){
+  var c=C(),goal=3;
+  $("#vc1").textContent=Math.round(c.c1*100)+"%";
+  $("#vc2").textContent=Math.round(c.c2*100)+"%";
+  $("#vc3").textContent=Math.round(c.c3*100)+"%";
+  $("#vc4").textContent=Math.round(c.c4*100)+"%";
+  var meet=goal/c.c4, talk=meet/c.c3, comp=talk/c.c2, sig=comp/c.c1;
+  var st=[["Сигналов на входе",sig],["Компаний в работе",comp],["Состоявшихся разговоров",talk],
+          ["Встреч и защит",meet],["Договоров",goal]];
+  var mx=sig;
+  $("#funnel").innerHTML='<span class="lbl">Воронка за месяц</span>'+st.map(function(s){
+    return '<div class="step"><span>'+s[0]+'</span><span class="sbar"><i style="width:'+
+      Math.max(3,s[1]/mx*100)+'%"></i></span><span class="mono" style="text-align:right">'+
+      fmt(s[1])+"</span></div>";
+  }).join("");
+  var costTools=38000, costPeople=140000, total=costTools+costPeople;
+  $("#econ").innerHTML=
+    "<div><span>Нужно сигналов в месяц</span><span>"+fmt(sig)+"</span></div>"+
+    "<div><span>Это в день</span><span>"+fmt(sig/22)+"</span></div>"+
+    "<div><span>Подписки и данные</span><span>"+fmt(costTools)+" ₽</span></div>"+
+    "<div><span>Обработка, 1 человек</span><span>"+fmt(costPeople)+" ₽</span></div>"+
+    "<div><span>Цена компании в работе</span><span>"+fmt(total/comp)+" ₽</span></div>"+
+    '<div class="tot"><span>Цена договора</span><span>'+fmt(total/goal)+" ₽</span></div>";
+}
+["c1","c2","c3","c4"].forEach(function(id){$("#"+id).addEventListener("input",funnel)});
+
+$("#tt").addEventListener("click",function(){
+  var cur=document.documentElement.getAttribute("data-theme");
+  var dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+render();funnel();
+})();
+</script>
