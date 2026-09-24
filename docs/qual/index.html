@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Демо ботов для ниши ремонта: квалификация лида со проверкой сходимости бюджета и площади, и реаниматор базы со сценариями, каденцией и стоп-листом.">
+<title>Квалификатор и реаниматор лидов для ремонта — демо</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Fira+Mono:wght@400;500&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --bg:#F7F8F9; --surf:#FFFFFF; --surf2:#EFF1F3; --surf3:#E2E5E8;
+  --ink:#15181A; --ink2:#4E545A; --ink3:#828990;
+  --line:#E2E5E8; --line2:#C8CDD3;
+  --acc:#0C4A6E; --acc2:#0369A1; --acc-s:#E5EEF4;
+  --a:#047857; --a-s:#E3F2EC;
+  --b:#B45309; --b-s:#FAF0E3;
+  --c:#475569; --c-s:#ECEEF1;
+  --d:#BE123C; --d-s:#FBE9ED;
+  --r:13px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1214; --surf:#181C1F; --surf2:#202529; --surf3:#2B3136;
+    --ink:#F0F2F4; --ink2:#A4ABB2; --ink3:#767D84;
+    --line:#252A2E; --line2:#363C42;
+    --acc:#7DD3FC; --acc2:#BAE6FD; --acc-s:#102432;
+    --a:#34D399; --a-s:#112A20;
+    --b:#E0A63C; --b-s:#2B2212;
+    --c:#94A3B8; --c-s:#1D2229;
+    --d:#FB7185; --d-s:#331419;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1214; --surf:#181C1F; --surf2:#202529; --surf3:#2B3136;
+  --ink:#F0F2F4; --ink2:#A4ABB2; --ink3:#767D84;
+  --line:#252A2E; --line2:#363C42;
+  --acc:#7DD3FC; --acc2:#BAE6FD; --acc-s:#102432;
+  --a:#34D399; --a-s:#112A20;
+  --b:#E0A63C; --b-s:#2B2212;
+  --c:#94A3B8; --c-s:#1D2229;
+  --d:#FB7185; --d-s:#331419;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:"Fira Sans",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.02em;line-height:1.17;text-wrap:balance}
+h1{font-size:clamp(21px,5.2vw,30px)}
+h2{font-size:clamp(18px,4.3vw,22px)}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.mono{font-family:"Fira Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 16px}
+.sm{font-size:13.5px;line-height:1.45}
+.mut{color:var(--ink2)} .mut3{color:var(--ink3)}
+.lbl{font-family:"Fira Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+
+header{border-bottom:1px solid var(--line);background:var(--surf);position:sticky;top:0;z-index:40}
+header .in{display:flex;align-items:center;gap:12px;min-height:60px}
+.brand{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.logo{width:30px;height:30px;border-radius:9px;background:var(--acc);flex:none;display:grid;place-items:center;color:#fff}
+:root[data-theme="dark"] .logo,:root:not([data-theme="light"]) .logo{color:#0F1214}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .logo{color:#fff}}
+.logo svg{width:16px;height:16px;display:block}
+.brand b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tt{border:1px solid var(--line2);border-radius:8px;padding:7px 10px;font-size:12px;color:var(--ink2);flex:none}
+.tt:hover{border-color:var(--acc);color:var(--acc)}
+
+.intro{padding:26px 0 6px}
+.intro p{margin-top:12px;color:var(--ink2);max-width:66ch}
+.note{margin-top:16px;border-left:3px solid var(--acc);background:var(--acc-s);padding:11px 14px;
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink2);max-width:66ch}
+section{padding:26px 0;border-top:1px solid var(--line);margin-top:24px}
+.shead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.num{font-family:"Fira Mono",monospace;font-size:12px;color:var(--acc);border:1px solid var(--line2);
+  border-radius:6px;padding:2px 7px}
+.sdesc{margin-top:10px;color:var(--ink2);font-size:14.5px;max-width:64ch}
+
+.cols{display:grid;gap:13px;margin-top:16px}
+@media(min-width:900px){.cols{grid-template-columns:minmax(0,1fr) minmax(0,420px);align-items:start}}
+.box{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:15px}
+.f{margin-top:13px}
+.f .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.f .v{font-family:"Fira Mono",monospace;font-size:13px;font-weight:500}
+input[type=range]{width:100%;margin:8px 0 0;accent-color:var(--acc);height:22px}
+.seg{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line2);border-radius:8px;padding:7px 11px;font-size:12.5px;color:var(--ink2);min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+:root[data-theme="dark"] .seg button[aria-pressed="true"],:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{color:#0F1214}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .seg button[aria-pressed="true"]{color:#fff}}
+
+.verd{border-radius:12px;padding:14px;border:1px solid var(--line)}
+.verd.A{background:var(--a-s);border-color:var(--a)}
+.verd.B{background:var(--b-s);border-color:var(--b)}
+.verd.C{background:var(--c-s);border-color:var(--c)}
+.verd.D{background:var(--d-s);border-color:var(--d)}
+.verd .t{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.verd .g{font-family:"Fira Mono",monospace;font-size:32px;font-weight:700;line-height:1}
+.verd .rt{font-weight:600;font-size:15px;text-align:right}
+.verd p{margin-top:9px;font-size:13.5px;color:var(--ink2)}
+.bd{display:grid;gap:5px;margin-top:12px}
+.bd div{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink2);
+  border-bottom:1px dashed var(--line);padding-bottom:5px}
+.bd span:last-child{font-family:"Fira Mono",monospace}
+.fit{margin-top:12px;background:var(--surf2);border-radius:10px;padding:11px 12px;font-size:13px}
+.fit b{font-weight:600}
+.fit .bar{height:10px;border-radius:5px;background:var(--surf3);margin-top:9px;position:relative;overflow:hidden}
+.fit .bar i{position:absolute;top:0;bottom:0;background:var(--acc);opacity:.3}
+.fit .bar u{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--ink);border-radius:2px}
+.say{margin-top:13px;background:var(--surf2);border-radius:12px 12px 12px 4px;padding:12px 13px;font-size:14px;
+  line-height:1.55;white-space:pre-wrap}
+
+/* реаниматор */
+.rows{display:grid;gap:7px;margin-top:16px}
+.row{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px;border-left:3px solid var(--c)}
+.row.hot{border-left-color:var(--a)}
+.row.mid{border-left-color:var(--b)}
+.row.stop{border-left-color:var(--d);opacity:.7}
+.row .t{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.row .nm{font-weight:600;font-size:14.5px}
+.row .nm i{font-style:normal;display:block;font-size:12px;color:var(--ink3);font-weight:400;margin-top:2px}
+.pill{border-radius:20px;padding:3px 9px;font-size:11px;font-weight:600;white-space:nowrap}
+.pill.hot{background:var(--a-s);color:var(--a)}
+.pill.mid{background:var(--b-s);color:var(--b)}
+.pill.cold{background:var(--c-s);color:var(--c)}
+.pill.stop{background:var(--d-s);color:var(--d)}
+.row .plan{margin-top:8px;font-size:13px;color:var(--ink2);border-top:1px dashed var(--line);padding-top:8px}
+.row .plan b{color:var(--ink);font-weight:600}
+.cad{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.cad span{border-radius:20px;padding:2px 9px;font-size:11px;background:var(--surf3);color:var(--ink2);
+  font-family:"Fira Mono",monospace}
+.msg{margin-top:9px;background:var(--surf2);border-radius:10px;padding:11px 12px;font-size:13.5px;
+  line-height:1.55;white-space:pre-wrap;display:none}
+.row.open .msg{display:block}
+.more{margin-top:8px;font-size:12.5px;color:var(--acc);font-weight:500}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}
+@media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:12px 13px}
+.stat .v{font-family:"Fira Mono",monospace;font-size:19px;font-weight:500;margin-top:5px}
+.risks{display:grid;gap:8px;margin-top:16px}
+@media(min-width:760px){.risks{grid-template-columns:1fr 1fr}}
+.ri{background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:13px;border-left:3px solid var(--d)}
+.ri b{font-size:14.5px;font-weight:600}
+.ri p{margin-top:6px;font-size:13px;color:var(--ink2)}
+.ri .fix{margin-top:7px;font-size:12.5px;color:var(--a);border-top:1px dashed var(--line);padding-top:7px}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:22px 0 34px;color:var(--ink3);font-size:13px}
+</style>
+
+<header>
+  <div class="wrap in">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 6v14M18 6v14M3 20h18M9 11h6"/></svg></div>
+      <b>Квалификатор + реаниматор · ремонт</b>
+    </div>
+    <button class="tt" id="tt" type="button">Тема</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>Главный фильтр в ремонте — сходимость бюджета и площади</h1>
+    <p>Анкету из пяти вопросов напишет кто угодно. Но 500 тысяч на 80 квадратов «под ключ» — это не лид, это несостоявшийся разговор, на который менеджер потратит два часа. Бот должен поймать несходимость сразу и не отдать такого в продажи, а переуточнить. Ниже это считается, и ниже — реаниматор, который знает, кому писать нельзя.</p>
+    <div class="note">Вилки ₽/м² — настраиваемые параметры под ваш прайс, а не константы. Веса квалификации тоже: у каждой компании свой профиль идеального клиента, и он меняется от сезона.</div>
+  </div>
+
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Квалификатор</h2></div>
+    <p class="sdesc">Ответы гостя слева — вердикт справа пересчитывается сразу. Попробуйте поставить большую площадь и маленький бюджет.</p>
+    <div class="cols">
+      <div class="box">
+        <div class="f"><div class="top"><span class="lbl">Площадь</span><span class="v" id="vS"></span></div>
+          <input type="range" id="s" min="20" max="200" step="5" value="65"></div>
+        <div class="f"><div class="top"><span class="lbl">Бюджет</span><span class="v" id="vB"></span></div>
+          <input type="range" id="b" min="200" max="6000" step="50" value="1400"></div>
+        <div class="f"><span class="lbl">Что за ремонт</span><div class="seg" id="kind"></div></div>
+        <div class="f"><span class="lbl">Объект</span><div class="seg" id="obj"></div></div>
+        <div class="f"><span class="lbl">Когда начинать</span><div class="seg" id="when"></div></div>
+        <div class="f"><span class="lbl">Кто принимает решение</span><div class="seg" id="who"></div></div>
+        <div class="f"><span class="lbl">Город</span><div class="seg" id="geo"></div></div>
+      </div>
+      <div>
+        <div class="verd" id="verd"></div>
+        <div class="box" style="margin-top:13px">
+          <span class="lbl">Что бот скажет клиенту</span>
+          <div class="say" id="say"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Реаниматор</h2></div>
+    <p class="sdesc">Восемь лидов из выгрузки CRM и Excel. Движок выбирает сценарий по причине потери и давности, назначает каденцию и ставит в очередь с учётом лимита отправки. Нажмите на карточку — увидите первое сообщение.</p>
+    <div class="stats">
+      <div class="stat"><div class="lbl">В базе</div><div class="v mono" id="q1">8</div></div>
+      <div class="stat"><div class="lbl">Пишем</div><div class="v mono" id="q2">0</div></div>
+      <div class="stat"><div class="lbl">Не трогаем</div><div class="v mono" id="q3">0</div></div>
+      <div class="stat"><div class="lbl">Первая волна</div><div class="v mono" id="q4">—</div></div>
+    </div>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <section>
+    <div class="shead"><span class="num">03</span><h2>Где такие проекты ломаются</h2></div>
+    <p class="sdesc">Четыре вещи, которые выясняются после запуска, если о них не договориться заранее.</p>
+    <div class="risks" id="risks"></div>
+  </section>
+
+  <footer>Демо ботов квалификации и реанимации. Денис, Telegram @hockey81.</footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var fmt=function(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")};
+
+var KIND=[{k:"cos",n:"Косметический",lo:8,hi:14},{k:"cap",n:"Капитальный",lo:16,hi:26},
+          {k:"dis",n:"Дизайнерский",lo:28,hi:45}];
+var OBJ=[{k:"new",n:"Новостройка без отделки",p:6},{k:"rough",n:"Черновая",p:4},
+         {k:"sec",n:"Вторичка",p:0},{k:"com",n:"Коммерция",p:2}];
+var WHEN=[{k:"now",n:"Сейчас",p:30},{k:"m3",n:"1–3 месяца",p:22},
+          {k:"late",n:"Через полгода",p:8},{k:"ask",n:"Просто узнаю",p:2}];
+var WHO=[{k:"me",n:"Я сам",p:20},{k:"pair",n:"С супругом",p:14},{k:"other",n:"Решает другой",p:5}];
+var GEO=[{k:"in",n:"В зоне работ",p:15},{k:"out",n:"Другой город",p:0}];
+var st={kind:"cap",obj:"sec",when:"m3",who:"me",geo:"in"};
+
+function cur(a,k){for(var i=0;i<a.length;i++)if(a[i].k===k)return a[i];return a[0]}
+function calc(){
+  var s=+$("#s").value, b=+$("#b").value;
+  var kd=cur(KIND,st.kind);
+  var perM=b*1000/s/1000;                       /* тыс ₽ за м² */
+  var fitPts, fitTxt, fitKind;
+  if(perM>=kd.lo&&perM<=kd.hi){fitPts=30;fitKind="ok";fitTxt="Бюджет попадает в вилку "+kd.lo+"–"+kd.hi+" тыс ₽/м². Считать можно."}
+  else if(perM>kd.hi){fitPts=30;fitKind="up";fitTxt="Бюджет выше вилки — клиент готов платить больше среднего. Показать премиальные решения."}
+  else if(perM>=kd.lo*.75){fitPts=12;fitKind="low";fitTxt="Бюджет ниже вилки на "+Math.round((1-perM/kd.lo)*100)+" %. Сойдётся при упрощении отделки — уточнить, что можно убрать."}
+  else {fitPts=0;fitKind="no";fitTxt="Бюджет не сходится: "+perM.toFixed(1)+" тыс ₽/м² против нижней границы "+kd.lo+". Отдавать менеджеру нельзя — сначала переуточнить."}
+  var pts=[["Сходимость бюджета",fitPts],["Срок",cur(WHEN,st.when).p],
+    ["Решение",cur(WHO,st.who).p],["География",cur(GEO,st.geo).p],["Тип объекта",cur(OBJ,st.obj).p]];
+  var total=pts.reduce(function(a,p){return a+p[1]},0);
+  var g=total>=70?"A":total>=45?"B":total>=25?"C":"D";
+  if(fitKind==="no"&&g==="A")g="B";
+  return {s:s,b:b,perM:perM,kd:kd,fitKind:fitKind,fitTxt:fitTxt,pts:pts,total:total,g:g};
+}
+var ROUTE={A:["Замерщик сегодня","Горячий: бюджет сходится, решение за клиентом, старт близко. Отдаём напрямую в замер, менеджер звонит в течение 15 минут."],
+ B:["Менеджеру в работу","Перспективный, но есть что уточнить. Менеджер перезванивает сегодня, замер — после разговора."],
+ C:["В прогрев","Рано: интерес есть, решения нет. Уходит в цепочку прогрева, менеджера не занимаем."],
+ D:["Самообслуживание","Не наш клиент по текущим вводным. Бот отдаёт калькулятор и статьи, в отдел продаж не передаём."]};
+
+function render(){
+  var r=calc();
+  $("#vS").textContent=r.s+" м²";
+  $("#vB").textContent=fmt(r.b)+" тыс ₽";
+  var v=$("#verd");
+  v.className="verd "+r.g;
+  var pos=Math.max(0,Math.min(100,(r.perM-r.kd.lo*.5)/(r.kd.hi*1.5-r.kd.lo*.5)*100));
+  var lo=Math.max(0,(r.kd.lo-r.kd.lo*.5)/(r.kd.hi*1.5-r.kd.lo*.5)*100);
+  var hi=Math.min(100,(r.kd.hi-r.kd.lo*.5)/(r.kd.hi*1.5-r.kd.lo*.5)*100);
+  v.innerHTML='<div class="t"><div><span class="g mono">'+r.g+'</span><div class="lbl" style="margin-top:4px">'+
+    r.total+" баллов</div></div>"+
+    '<div class="rt">'+ROUTE[r.g][0]+"</div></div><p>"+ROUTE[r.g][1]+"</p>"+
+    '<div class="fit"><b>Сходимость:</b> '+r.perM.toFixed(1)+" тыс ₽/м² · вилка «"+r.kd.n.toLowerCase()+"» "+
+    r.kd.lo+"–"+r.kd.hi+'<div class="bar"><i style="left:'+lo+"%;width:"+(hi-lo)+'%"></i><u style="left:'+pos+'%"></u></div>'+
+    '<div style="margin-top:8px;color:var(--ink2)">'+r.fitTxt+"</div></div>"+
+    '<div class="bd">'+r.pts.map(function(p){
+      return "<div><span>"+p[0]+"</span><span>+"+p[1]+"</span></div>"}).join("")+"</div>";
+  var say;
+  if(r.fitKind==="no")say="Спасибо! Смотрите: при площади "+r.s+" м² «"+r.kd.n.toLowerCase()+
+    "» обычно выходит от "+fmt(r.kd.lo*r.s)+" тыс ₽. Ваш бюджет "+fmt(r.b)+
+    " — это реально, если сделать этапами или взять другой формат отделки.\n\nПодскажите: важнее уложиться в сумму или сделать всё сразу? От этого зависит, что предложу.";
+  else if(r.g==="A")say="Отлично, всё сходится. Могу записать замерщика — он приедет, посчитает точно и бесплатно.\n\nКогда вам удобно: сегодня после 16:00 или завтра утром?";
+  else if(r.g==="B")say="Понял вас. Передаю менеджеру — он перезвонит сегодня, уточнит пару деталей и рассчитает смету.\n\nНа какой номер удобнее звонить?";
+  else if(r.g==="C")say="Понял, до старта ещё есть время. Пришлю подборку: сколько стоит ремонт по этапам и на чём можно сэкономить без потери качества.\n\nНапишу ближе к делу, если не против.";
+  else say="Спасибо! Пока вводных маловато для расчёта. Вот калькулятор — прикиньте бюджет сами, а как определитесь со сроками, возвращайтесь, посчитаем точно.";
+  $("#say").textContent=say;
+}
+function segs(){
+  [["kind",KIND],["obj",OBJ],["when",WHEN],["who",WHO],["geo",GEO]].forEach(function(p){
+    var box=$("#"+p[0]);box.innerHTML="";
+    p[1].forEach(function(x){
+      var e=document.createElement("button");e.type="button";e.textContent=x.n;
+      e.setAttribute("aria-pressed",st[p[0]]===x.k?"true":"false");
+      e.addEventListener("click",function(){st[p[0]]=x.k;segs();render()});
+      box.appendChild(e);
+    });
+  });
+}
+["s","b"].forEach(function(id){$("#"+id).addEventListener("input",render)});
+
+/* ---------- реаниматор ---------- */
+var LEADS=[
+ {n:"Ирина К.",src:"CRM · сделка «Отказ»",d:118,why:"price",sum:1850,measured:1},
+ {n:"Сергей П.",src:"CRM · «Не дозвонились»",d:42,why:"noanswer",sum:0,measured:0},
+ {n:"Алексей М.",src:"CRM · «Замер проведён»",d:27,why:"ghost",sum:2400,measured:1},
+ {n:"Ольга В.",src:"Excel · холодная база",d:390,why:"old",sum:0,measured:0},
+ {n:"Дмитрий Р.",src:"CRM · «Ушёл к другим»",d:205,why:"lost",sum:3100,measured:1},
+ {n:"Наталья С.",src:"CRM · «Не писать»",d:64,why:"optout",sum:0,measured:0},
+ {n:"Марина Ж.",src:"Excel · дубль записи",d:12,why:"dup",sum:0,measured:0},
+ {n:"Виктор Т.",src:"CRM · «Думает»",d:9,why:"think",sum:1200,measured:1}
+];
+var SCEN={
+ ghost:{t:"hot",n:"Возврат после замера",cad:["сразу","+2 дня","+5 дней"],
+  p:"Самый тёплый сегмент: смету видел, цену знает, просто затих. Пишем про смету, а не про компанию.",
+  m:"Алексей, здравствуйте! Это [компания], делали вам замер 27 дней назад — смета на 2 400 тыс ₽ у меня на руках.\n\nЦены на материалы с тех пор изменились, могу пересчитать под сегодня. Актуально ещё или отложили?"},
+ price:{t:"mid",n:"Цена: этапы и рассрочка",cad:["сразу","+4 дня","+10 дней"],
+  p:"Отказ был по деньгам, прошло почти 4 месяца. Заходим не скидкой, а способом снизить вход: этапы, очерёдность работ.",
+  m:"Ирина, добрый день! Вы обращались к нам по ремонту, тогда не сошлись по сумме.\n\nС тех пор у нас появился формат «по этапам»: сначала черновые работы, отделка позже. Вход получается почти вдвое ниже. Прислать, как это выглядит на вашей квартире?"},
+ noanswer:{t:"mid",n:"Один вопрос вместо звонка",cad:["сразу","+6 дней"],
+  p:"До человека не дозвонились — значит, звонить снова бессмысленно. Одно короткое сообщение с вопросом, на который легко ответить.",
+  m:"Сергей, здравствуйте! Вы оставляли заявку на ремонт, но мы не смогли дозвониться.\n\nОдин вопрос, чтобы не тратить ваше время: ремонт ещё в планах? Если да — напишу расчёт в переписке, звонить не буду."},
+ think:{t:"hot",n:"Мягкое дожатие",cad:["+3 дня","+7 дней"],
+  p:"Свежий лид в раздумьях. Торопить нельзя — дать повод вернуться, а не давить.",
+  m:"Виктор, добрый день! Не тороплю с решением. Собрал для вас три наших объекта такой же площади — с фото до и после и итоговыми суммами.\n\nПосмотрите, когда будет минутка. Если появятся вопросы по смете — я на связи."},
+ old:{t:"cold",n:"Холодная база: проверка интереса",cad:["сразу"],
+  p:"Больше года и никакой истории — это по сути холодный контакт. Одно касание, максимально мягко, с явной возможностью отписаться.",
+  m:"Здравствуйте! Вы оставляли контакт по ремонту квартиры больше года назад.\n\nЕсли тема ещё актуальна — подскажу порядок цен на сегодня. Если нет, напишите «не надо», и я больше не побеспокою."},
+ lost:{t:"cold",n:"Долгая игра",cad:["+180 дней"],
+  p:"Ушёл к конкуренту. Писать сейчас бессмысленно и вредно. Ставим одно касание через полгода — когда ремонт закончен и видны недоделки.",
+  m:"Дмитрий, здравствуйте! Полгода назад вы выбрали другого подрядчика — надеюсь, всё прошло гладко.\n\nЕсли остались хвосты или планируете второй этап, будем рады помочь. Отдельно делаем доработки после других бригад."},
+ optout:{t:"stop",n:"Стоп навсегда",cad:[],
+  p:"Человек просил не писать. Это не «подождать полгода», а постоянное исключение — по закону и по совести. Проверка стоп-листа идёт до выбора сценария.",m:""},
+ dup:{t:"stop",n:"Дубль",cad:[],
+  p:"Тот же номер уже есть в CRM с активной сделкой. Второе сообщение от компании выглядит как спам и путает менеджера.",m:""}
+};
+function renderR(){
+  var send=0,skip=0,html="";
+  LEADS.forEach(function(l,i){
+    var s=SCEN[l.why];
+    if(s.t==="stop")skip++;else send++;
+    html+='<div class="row '+(s.t==="hot"?"hot":s.t==="mid"?"mid":s.t==="stop"?"stop":"")+'" data-i="'+i+'">'+
+      '<div class="t"><div class="nm">'+l.n+"<i>"+l.src+" · "+l.d+" дней назад"+
+      (l.sum?" · смета "+fmt(l.sum)+" тыс ₽":"")+"</i></div>"+
+      '<span class="pill '+(s.t==="hot"?"hot":s.t==="mid"?"mid":s.t==="stop"?"stop":"cold")+'">'+
+      (s.t==="stop"?"не пишем":s.n)+"</span></div>"+
+      '<div class="plan">'+s.p+"</div>"+
+      (s.cad.length?'<div class="cad">'+s.cad.map(function(c){return "<span>"+c+"</span>"}).join("")+"</div>":"")+
+      (s.m?'<div class="more">Показать первое сообщение →</div><div class="msg">'+s.m+"</div>":"")+
+      "</div>";
+  });
+  $("#rows").innerHTML=html;
+  $("#q2").textContent=send;$("#q3").textContent=skip;
+  $("#q4").textContent=Math.ceil(send/3)+" ч · по 3 в час";
+  Array.prototype.forEach.call($("#rows").querySelectorAll(".row"),function(el){
+    el.addEventListener("click",function(){el.classList.toggle("open")});
+  });
+}
+
+var RISK=[
+ ["Массовая рассылка по Excel — это риск","Отправка сотен сообщений с одного аккаунта ловится антиспамом мессенджера, а по закону реклама без согласия абонента — повод для штрафа. Холодная база из таблицы опаснее всего.",
+  "Решение: лимит отправки в час, окна по времени, мгновенный стоп-лист по любому «не пишите», разные сценарии для тёплых и холодных."],
+ ["Стоп-лист должен быть первым","Проверка «просил не писать» и «уже клиент» идёт до выбора сценария, а не после. Одно сообщение не тому человеку стоит дороже, чем десять правильных.",
+  "Решение: стоп-лист на уровне БД с уникальным индексом, а не проверка в коде сценария."],
+ ["Квалификатор без вилок цен бесполезен","Если бот не знает ваш прайс за м², он не отличит реального клиента от мечтателя и завалит менеджеров пустыми разговорами.",
+  "Решение: на старте забираем ваши вилки по типам ремонта и обновляем их из одной таблицы."],
+ ["Ответы вне сценария будут всегда","Гость спросит про рассрочку, гарантию, «а вы официально работаете». Бот, который на это отвечает «выберите пункт меню», убивает доверие.",
+  "Решение: сценарий закрывает 80 % случаев, остальное уходит менеджеру с пометкой, о чём спрашивали."]
+];
+$("#risks").innerHTML=RISK.map(function(r){
+  return '<div class="ri"><b>'+r[0]+"</b><p>"+r[1]+'</p><div class="fix">'+r[2]+"</div></div>"}).join("");
+
+$("#tt").addEventListener("click",function(){
+  var cur2=document.documentElement.getAttribute("data-theme");
+  var dark=cur2?cur2==="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark");
+});
+segs();render();renderR();
+})();
+</script>
+
+</body>
+</html>
