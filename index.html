@@ -11,10 +11,10 @@
   <link rel="preload" href="assets/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.classList.add('js');window.__revealFallback=setTimeout(()=>document.documentElement.classList.remove('js'),2500)</script>
-  <link rel="stylesheet" href="styles.css?v=20260928-client-notes"><link rel="stylesheet" href="refinement.css?v=client-10">
+  <link rel="stylesheet" href="styles.css?v=20260928-client-notes"><link rel="stylesheet" href="refinement.css?v=client-11">
 </head>
 <body>
-  <noscript><div class="noscript-note">Сайт работает без JavaScript. Интерактивный подбор и калькулятор требуют включённого JavaScript.</div></noscript>
+  <noscript><div class="noscript-note">Сайт работает без JavaScript. Интерактивный подбор требует включённого JavaScript.</div></noscript>
   <a class="skip-link" href="#main">Перейти к содержанию</a>
 
   <header class="site-header" id="top">
@@ -26,7 +26,7 @@
       <span class="mobile-header-label">Аренда с правом выкупа</span>
       <p class="header-descriptor">Аренда с правом выкупа</p>
       <nav class="desktop-nav" aria-label="Основная навигация">
-        <a href="#calculator">Калькулятор</a>
+        <a href="#order">Как это работает</a>
         <a href="#fleet">Автомобили</a>
         <a href="#terms">Условия</a>
         <a href="#stories">Отзывы</a>
@@ -41,7 +41,7 @@
       </button>
     </div>
     <div class="mobile-menu" id="mobile-menu" hidden>
-      <a href="#calculator">Калькулятор</a><a href="#fleet">Автомобили</a><a href="#terms">Условия</a><a href="#stories">Отзывы</a><a href="#contacts">Контакты</a>
+      <a href="#order">Как это работает</a><a href="#fleet">Автомобили</a><a href="#terms">Условия</a><a href="#stories">Отзывы</a><a href="#contacts">Контакты</a>
       <a class="mobile-menu-phone" href="tel:+79539708877">+7 953 970-88-77</a>
     </div>
   </header>
@@ -53,7 +53,7 @@
           <div class="eyebrow">Парк в Новомосковске · работаем в пяти областях</div>
           <p class="hero-promise">Вы выбираете авто — мы покупаем его под вас</p>
           <h1 id="hero-title">Автомобили под личные цели и такси с правом выкупа <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark></h1>
-          <script>try{const p=new URLSearchParams(location.search),m=`${p.get('utm_campaign')||''} ${p.get('utm_term')||''} ${p.get('utm_content')||''}`.toLowerCase(),h=document.getElementById('hero-title');if(m.includes('arenda'))h.innerHTML='Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и <span class="price-nowrap">1 800 ₽/сутки</span>';if(m.includes('vikup')||m.includes('vykup'))h.innerHTML='Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — одобрение с любой КИ'}catch(e){}</script>
+          <script>try{const p=new URLSearchParams(location.search),m=`${p.get('utm_campaign')||''} ${p.get('utm_term')||''} ${p.get('utm_content')||''}`.toLowerCase(),h=document.getElementById('hero-title');if(/vikup|vykup|выкуп/.test(m))h.innerHTML='Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — условия индивидуально';else if(/taxi|такси/.test(m))h.innerHTML='Автомобили для такси <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — аренда с правом выкупа';else if(/arenda|аренда/.test(m))h.innerHTML='Аренда автомобилей для работы и личных целей <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark>'}catch(e){}</script>
           <p class="hero-subtitle">Одобрение за 30 минут по 2 документам. Только для граждан РФ.</p>
           <div class="hero-labels" aria-label="Ключевые условия">
             <div><small>Формат подбора</small><strong>Автомобиль под ваш запрос</strong></div>
@@ -105,47 +105,14 @@
     </section>
 
     <section class="section order-section" id="order" aria-labelledby="order-title"><div class="shell">
-<div class="section-head"><div><p class="section-kicker">Ваш выбор. Понятные условия.</p><h2 id="order-title">Автомобиль, который<br><em>нужен именно вам</em></h2></div><p>Для работы, бизнеса и семейных поездок. Рассмотрим выбранный вами автомобиль с пробегом и подготовим индивидуальные условия выкупа.</p></div>
-<div class="order-grid"><article><span>01 / ВЫБОР</span><h3>Пришлите объявление</h3><p>Выберите автомобиль на Авито или Auto.ru. Если ещё не определились — обсудим задачи и бюджет.</p></article><article><span>02 / УСЛОВИЯ</span><h3>Изучите договор</h3><p>До внесения аванса уточните полную стоимость, график платежей, обслуживание и условия досрочного выкупа.</p></article><article><span>03 / ВЫКУП</span><h3>Начните с аванса 20%</h3><p>После согласования автомобиля и договора компания покупает его для вас. Платежи и переход права собственности — по договору.</p></article></div>
+<div class="section-head"><div><p class="section-kicker">Понятные условия</p><h2 id="order-title">Автомобиль, который<br><em>нужен именно вам</em></h2></div><p>Для работы, бизнеса и семейных поездок. Рассмотрим выбранный вами автомобиль с пробегом и подготовим индивидуальные условия выкупа.</p></div>
+<div class="order-grid"><article><span>01 / ВЫБОР</span><h3>Пришлите объявление</h3><p>Пришлите объявление с Авито или Auto.ru. Если нет варианта — подберём по бюджету и критериям.</p></article><article><span>02 / ПРОВЕРКА СБ</span><h3>Проверка документов</h3><p>Проверка по двум документам: сверка данных и подтверждение соответствия.</p></article><article><span>03 / УСЛОВИЯ</span><h3>Изучите договор</h3><p>Изучите договор до внесения аванса: полная стоимость, график платежей, обслуживание, условия досрочного выкупа.</p></article><article><span>04 / ВЫКУП</span><h3>Начните с взноса 20%</h3><p>Начните с первоначального взноса 20%. После согласования авто и условий компания выкупает его под вас. Платежи и переход права собственности — по договору.</p></article></div>
 <div class="order-trust"><p><strong>Банк отказал? Обсудим вашу ситуацию.</strong><br>Не требуем справку 2-НДФЛ. Решение принимается индивидуально после проверки документов и выбранного автомобиля.</p><button class="button js-open-quiz" data-purpose="Авто под заказ" type="button">Обсудить мой автомобиль</button></div></div></section>
-    <section class="section calculator-section" id="calculator" aria-labelledby="calculator-title">
-      <div class="shell calculator-shell">
-        <div class="calculator-heading reveal">
-          <p class="section-kicker">Предварительный расчёт</p>
-          <h2 id="calculator-title">Оцените платеж<br><em>за одну минуту</em></h2>
-          <p>Укажите стоимость выбранного автомобиля, размер аванса и желаемый срок. Расчёт обновится сразу.</p>
-          <div class="calculator-note"><strong>Как считается</strong><span>Стоимость после аванса распределяется на выбранный срок. Итоговые условия зависят от автомобиля и договора.</span></div>
-        </div>
-        <div class="calculator-card reveal delay-1" data-calculator>
-          <div class="calculator-field">
-            <div class="calculator-label"><label for="calc-price">Стоимость автомобиля</label><output id="calc-price-output" for="calc-price">1 900 000 ₽</output></div>
-            <input id="calc-price" type="range" min="500000" max="3500000" step="50000" value="1900000" aria-describedby="calc-price-range">
-            <div class="calculator-range" id="calc-price-range"><span>500 000 ₽</span><span>3 500 000 ₽</span></div>
-          </div>
-          <div class="calculator-field">
-            <div class="calculator-label"><label for="calc-advance">Первоначальный аванс</label><output id="calc-advance-output" for="calc-advance">20% · 380 000 ₽</output></div>
-            <input id="calc-advance" type="range" min="20" max="50" step="5" value="20">
-            <div class="calculator-range"><span>20%</span><span>50%</span></div>
-          </div>
-          <div class="calculator-field">
-            <div class="calculator-label"><label for="calc-term">Срок выкупа</label><output id="calc-term-output" for="calc-term">24 месяца</output></div>
-            <input id="calc-term" type="range" min="12" max="36" step="6" value="24">
-            <div class="calculator-range"><span>12 месяцев</span><span>36 месяцев</span></div>
-          </div>
-          <div class="calculator-result" aria-live="polite">
-            <div class="calculator-main-result"><span>Ориентир в неделю</span><strong id="calc-weekly">14 615 ₽</strong><small>при графике 7 / 0</small></div>
-            <div class="calculator-details"><div><span>В месяц</span><strong id="calc-monthly">63 333 ₽</strong></div><div><span>После аванса</span><strong id="calc-balance">1 520 000 ₽</strong></div></div>
-          </div>
-          <button class="button button-large js-open-quiz calculator-cta" data-purpose="Авто под заказ" type="button">Получить точный расчёт <span aria-hidden="true">&#x2197;&#xFE0E;</span></button>
-          <p class="calculator-disclaimer">Предварительный ориентир, не публичная оферта. Комиссии, обслуживание, страхование и другие условия здесь не учитываются — точный график подготовит менеджер после проверки автомобиля.</p>
-        </div>
-      </div>
-    </section>
     <section class="section fleet" id="fleet" aria-labelledby="fleet-title">
       <div class="shell">
         <div class="section-head reveal">
           <div><p class="section-kicker">Автопарк</p><h2 id="fleet-title">Выкуп из наличия<br><em>Ваш автомобиль уже здесь</em></h2></div>
-          <p>Автомобили из парка с ценой за сутки. Депозит — 25 000 ₽. Доступность, срок выкупа и итоговый расчёт подтвердит менеджер.</p>
+          <p>Автомобили из парка с ценой за сутки. Депозит от 25 000 ₽. Доступность, срок выкупа и итоговый расчёт подтвердит менеджер.</p>
         </div>
         <div class="fleet-toolbar reveal delay-1">
           <div class="tabs" role="tablist" aria-label="Классы автомобилей">
@@ -201,20 +168,20 @@
             <div class="car-media"><img loading="lazy" src="assets/catalog-15.webp?v=client-3" srcset="assets/responsive/catalog-15-480.webp?v=client-3 480w, assets/responsive/catalog-15-800.webp?v=client-3 800w, assets/catalog-15.webp?v=client-3 1400w" sizes="(max-width:720px) calc(100vw - 28px), (max-width:1040px) calc((100vw - 54px)/2), 388px" width="1400" height="629" alt="Solaris HS 2024 из парка Автокар71"><span class="car-status">В наличии</span><span class="car-index">15</span></div><div class="car-body"><div class="car-title-row"><div><p class="car-class">Комфорт</p><h3>Solaris HS 2024</h3></div><span class="round-arrow" aria-hidden="true"></span></div><ul><li>2024 год</li><li>1.6 л</li><li>МКПП</li><li>бензин</li></ul><div class="car-price"><strong>от 2 295 ₽</strong><span>/ сутки · аренда / выкуп</span></div></div>
           </article>
         </div>
-        <div class="fleet-expand"><p id="fleet-summary" aria-live="polite"></p><button id="fleet-toggle" class="button" aria-expanded="false" aria-controls="cars-list" type="button">Показать весь автопарк</button></div><div class="fleet-note reveal"><p><strong>Не нашли подходящую?</strong> Купим автомобиль специально под вас с первоначальным взносом от 20%.</p><button class="button js-open-quiz" type="button">Рассчитать вариант</button></div>
+        <div class="fleet-expand"><p id="fleet-summary" aria-live="polite"></p><button id="fleet-toggle" class="button" aria-expanded="false" aria-controls="cars-list" type="button">Показать весь автопарк</button></div><div class="fleet-note reveal"><p><strong>Не нашли подходящий автомобиль —</strong> купим специально под ваш запрос с первоначальным взносом от 20%.</p><button class="button js-open-quiz" data-purpose="Авто под заказ" type="button">Обсудить вариант</button></div>
       </div>
     </section>
 
     <section class="section terms" id="terms" aria-labelledby="terms-title">
       <div class="shell">
-        <div class="section-head light reveal"><div><p class="section-kicker">Условия выдачи</p><h2 id="terms-title">Три требования<br><em>Никаких сюрпризов</em></h2></div><p>Базовые требования для рассмотрения заявки. Решение и условия — индивидуально после проверки документов.</p></div>
+        <div class="section-head light reveal"><div><p class="section-kicker">Условия выдачи</p><h2 id="terms-title">Базовые требования</h2></div><p>Решение и условия — индивидуально после проверки документов.</p></div>
         <div class="requirements">
-          <article class="requirement reveal"><span>01</span><svg aria-hidden="true" viewBox="0 0 48 48"><path d="M15 13h18v25H15zM19 8h10v5H19zM19 20h10M19 26h10M19 32h7"/></svg><h3>Гражданство РФ</h3><p>Паспорт гражданина Российской Федерации</p></article>
-          <article class="requirement reveal delay-1"><span>02</span><svg aria-hidden="true" viewBox="0 0 48 48"><circle cx="24" cy="18" r="8"/><path d="M10 40c1-9 6-14 14-14s13 5 14 14M35 12l6-4v9"/></svg><h3>Возраст от 23 лет</h3><p>На дату подписания договора аренды</p></article>
+          <article class="requirement reveal"><span>01</span><svg aria-hidden="true" viewBox="0 0 48 48"><path d="M15 13h18v25H15zM19 8h10v5H19zM19 20h10M19 26h10M19 32h7"/></svg><h3>Гражданство</h3><p>Граждане РФ — паспорт РФ. Иностранные граждане — рассматриваем индивидуально.</p></article>
+          <article class="requirement reveal delay-1"><span>02</span><svg aria-hidden="true" viewBox="0 0 48 48"><circle cx="24" cy="18" r="8"/><path d="M10 40c1-9 6-14 14-14s13 5 14 14M35 12l6-4v9"/></svg><h3>Возраст от 23 лет</h3><p>На дату подписания договора.</p></article>
           <article class="requirement reveal delay-2"><span>03</span><svg aria-hidden="true" viewBox="0 0 48 48"><path d="M9 35h30l-3-12-7-5H19l-7 5zM15 35v5M33 35v5"/><circle cx="16" cy="34" r="4"/><circle cx="32" cy="34" r="4"/></svg><h3>Стаж от 3 лет</h3><p>Действующее водительское удостоверение</p></article>
         </div>
         <div class="payment-panel reveal">
-          <div class="payment-copy"><p class="section-kicker">График платежей</p><h3>Для аренды из парка — график 7 / 0</h3><p>Для авто из наличия депозит — 25 000 ₽. Для автомобиля с пробегом под заказ — аванс 20%. Отдельную программу нового автомобиля и её депозит уточняйте у менеджера.</p></div>
+          <div class="payment-copy"><p class="section-kicker">График платежей</p><h3>Для аренды из парка — график 7 / 0</h3><p>Для авто из наличия депозит от 25 000 ₽. Для автомобиля под заказ — первоначальный взнос 20%. Отдельную программу нового автомобиля и её депозит уточняйте у менеджера.</p></div>
           <div class="week" aria-label="Платёжный график семь дней из семи"><div><span>Пн</span><b>✓</b></div><div><span>Вт</span><b>✓</b></div><div><span>Ср</span><b>✓</b></div><div><span>Чт</span><b>✓</b></div><div><span>Пт</span><b>✓</b></div><div><span>Сб</span><b>✓</b></div><div><span>Вс</span><b>✓</b></div><small>7 / 0</small></div>
         </div>
       </div>
@@ -244,9 +211,6 @@
           <div class="quiz-top"><span id="quiz-step-label">Вопрос 1 из 4</span><span id="quiz-percent">20%</span></div>
           <div class="progress"><i id="quiz-progress"></i></div>
           <form id="lead-quiz" novalidate>
-            <input type="hidden" name="calc_price" id="lead-calc-price">
-            <input type="hidden" name="calc_advance" id="lead-calc-advance">
-            <input type="hidden" name="calc_term" id="lead-calc-term">
             <fieldset class="quiz-step active" data-question="purpose">
               <legend>Для каких целей нужен автомобиль?</legend>
               <button type="button" class="answer" data-value="Авто под заказ"><span>01</span>Авто под заказ — аванс 20%<i>→</i></button>
@@ -341,8 +305,8 @@
   <footer class="site-footer" id="contacts">
     <div class="shell footer-top">
       <div><a class="brand footer-brand" href="#top"><img src="assets/logo.webp" width="70" height="70" alt=""><span>Автокар<span>71</span></span></a><p>Аренда и выкуп автомобилей<br>для личных целей и такси.</p></div>
-      <div><p class="footer-label">Связаться</p><a class="footer-phone" href="tel:+79539708877">+7 953 970-88-77</a><p>Пн–Пт, 09:00–18:00</p><a href="https://max.ru/u/f9LHodD0cOIBOdMPdPRkykrXSuDAfuPH_tyIQmgBG9YWK49WY8BfOVELOPM" target="_blank" rel="noopener">Написать в MAX &#x2197;&#xFE0E;</a><a href="https://t.me/autocat71" target="_blank" rel="noopener">Telegram &#x2197;&#xFE0E;</a><a href="https://wa.me/message/7H33VRCJ367GO1" target="_blank" rel="noopener">WhatsApp &#x2197;&#xFE0E;</a><a href="mailto:autocar71@yandex.ru">autocar71@yandex.ru</a></div>
-      <div><p class="footer-label">Наш парк</p><p>г. Новомосковск,<br>ул. Первомайская, 73</p><a href="https://yandex.ru/maps/org/avtokar71/7720672617/" target="_blank" rel="noopener">Открыть на карте &#x2197;&#xFE0E;</a></div>
+      <div><p class="footer-label">Связаться</p><a class="footer-phone" href="tel:+79539708877">+7 953 970-88-77</a><p>Пн–Пт, 09:00–18:00</p><a href="https://max.ru/u/f9LHodD0cOI6JfBs3FGlMtOcMpBqhR2duetrBES8_vSzQ2gOJeDS9R2RmPw" target="_blank" rel="noopener">Написать в MAX &#x2197;&#xFE0E;</a><a href="https://t.me/autocat71" target="_blank" rel="noopener">Telegram &#x2197;&#xFE0E;</a><a href="https://wa.me/message/7H33VRCJ367GO1" target="_blank" rel="noopener">WhatsApp &#x2197;&#xFE0E;</a><a href="mailto:autocar71@yandex.ru">autocar71@yandex.ru</a></div>
+      <div><p class="footer-label">Наш парк</p><p>г. Новомосковск,<br>ул. Первомайская, 73</p><a href="https://yandex.ru/profile/7720672617?lang=ru" target="_blank" rel="noopener">Открыть на карте &#x2197;&#xFE0E;</a></div>
       <div><p class="footer-label">Навигация</p><a href="#fleet">Автомобили</a><a href="#terms">Условия выдачи</a><a href="#quiz">Подбор авто</a><a href="#stories">Отзывы</a></div>
     </div>
     <div class="shell map-panel"><div><p class="section-kicker">Приезжайте знакомиться</p><h3>Новомосковск,<br>Первомайская, 73</h3><p>Парк и выдача автомобилей. Уточните время визита по телефону.</p></div><div class="external-widget" data-widget="map" data-src="https://yandex.ru/map-widget/v1/?oid=7720672617&amp;ol=biz&amp;z=16"><div class="widget-placeholder"><p>Интерактивная карта Яндекса откроется на этой странице. Для загрузки Яндекс получит технические данные браузера.</p><button class="button widget-enable" type="button">Показать карту здесь</button></div></div></div><div class="shell footer-legal" aria-label="Юридическая информация">
@@ -352,15 +316,15 @@
     <div class="shell footer-bottom"><p>© 2026 Автокар71</p><div><a href="privacy.html">Политика обработки ПДн</a><a href="consent.html">Согласие на обработку ПДн</a><button class="cookie-settings" type="button">Настройки cookies</button></div><p>Информация на сайте не является публичной офертой.</p></div>
   </footer>
 
-  <div class="mobile-bar" aria-label="Быстрые действия"><a href="tel:+79539708877">Позвонить</a><a class="mobile-chat" href="https://max.ru/u/f9LHodD0cOIBOdMPdPRkykrXSuDAfuPH_tyIQmgBG9YWK49WY8BfOVELOPM" target="_blank" rel="noopener">Чат в MAX</a></div>
+  <div class="mobile-bar" aria-label="Быстрые действия"><a href="tel:+79539708877">Позвонить</a><a class="mobile-chat" href="https://max.ru/u/f9LHodD0cOI6JfBs3FGlMtOcMpBqhR2duetrBES8_vSzQ2gOJeDS9R2RmPw" target="_blank" rel="noopener">Чат в MAX</a></div>
 
   <dialog class="car-modal" id="car-modal" aria-labelledby="modal-title">
-    <button class="modal-close" type="button" aria-label="Закрыть">×</button>
+    <div class="modal-close-holder"><button class="modal-close" type="button" aria-label="Закрыть">×</button></div>
     <div class="modal-media"><img id="modal-image" src="assets/catalog-06.webp?v=client-5" alt=""><span>Авто в наличии</span></div>
-    <div class="modal-content"><p class="section-kicker">Условия автомобиля</p><h2 id="modal-title">Lada Granta 2023</h2><div class="modal-specs" id="modal-specs"></div><div class="payment-rules" aria-label="Условия оплаты"><div><span>Авто в наличии</span><strong>Депозит 25 000 ₽</strong></div><div><span>Подержанное авто под заказ</span><strong>Первоначальный взнос 20%</strong></div><div><span>Новое авто под заказ</span><strong>Условия уточняет менеджер</strong></div></div><p>Окончательные условия и доступность подтверждает менеджер после заявки.</p><button class="button button-large modal-quiz" type="button">Проверить доступность <span>→</span></button></div>
+    <div class="modal-content"><p class="section-kicker">Условия автомобиля</p><h2 id="modal-title">Lada Granta 2023</h2><div class="modal-specs" id="modal-specs"></div><div class="payment-rules" aria-label="Условия оплаты"><div><span>Авто в наличии</span><strong>Депозит от 25 000 ₽</strong></div><div><span>Авто под заказ</span><strong>Первоначальный взнос 20%</strong></div><div><span>Новый автомобиль</span><strong>Условия уточняет менеджер</strong></div></div><p>Окончательные условия и доступность подтверждает менеджер после заявки.</p><button class="button button-large modal-quiz" type="button">Проверить доступность <span>→</span></button></div>
   </dialog>
 
   <section class="cookie-panel" aria-label="Настройки cookies" hidden><div><strong>Ваши настройки приватности</strong><p>Сохраняем ваш выбор в браузере. Карту и отзывы Яндекса включаем только с вашего разрешения. Аналитика в демо отключена. <a href="privacy.html#cookies">Подробнее</a></p></div><div class="cookie-actions"><button type="button" class="button" id="cookies-allow">Разрешить сервисы Яндекса</button><button type="button" class="cookie-decline" id="cookies-decline">Только необходимые</button></div></section>
-  <script src="app.js?v=20260928-client-notes" defer></script><script src="privacy-controls.js?v=20260921" defer></script>
+  <script src="app.js?v=20260928-client-notes-2" defer></script><script src="privacy-controls.js?v=20260921" defer></script>
 </body>
 </html>

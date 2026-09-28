@@ -6,8 +6,9 @@
   const params = new URLSearchParams(location.search);
   const campaign = `${params.get('utm_campaign') || ''} ${params.get('utm_term') || ''} ${params.get('utm_content') || ''}`.toLowerCase();
   const hero = $('#hero-title');
-  if (campaign.includes('arenda')) hero.innerHTML = 'Аренда автомобилей под такси и личные цели <mark>от 10 дней</mark> и <span class="price-nowrap">1 800 ₽/сутки</span>';
-  if (campaign.includes('vikup') || campaign.includes('vykup')) hero.innerHTML = 'Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — одобрение с любой КИ';
+  if (/vikup|vykup|выкуп/.test(campaign)) hero.innerHTML = 'Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — условия индивидуально';
+  else if (/taxi|такси/.test(campaign)) hero.innerHTML = 'Автомобили для такси <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — аренда с правом выкупа';
+  else if (/arenda|аренда/.test(campaign)) hero.innerHTML = 'Аренда автомобилей для работы и личных целей <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark>';
 
   const menuButton = $('.menu-button');
   const menu = $('#mobile-menu');
@@ -44,10 +45,31 @@
   }));
   renderFleet();
   const modal = $('#car-modal');
+  // Optional independent catalog flags: data-availability="rented|available",
+  // data-no-mileage="true", data-old-price="2 000 ₽", data-sale-price="1 800 ₽".
+  // No promotional prices or statuses are fabricated when these fields are absent.
+  $$('.car-card').forEach(card => {
+    const status = $('.car-status', card);
+    if (card.dataset.availability === 'rented') { status.textContent = 'В аренде'; status.classList.add('rented'); }
+    else if (card.dataset.availability === 'available') status.textContent = 'Доступно';
+    if (card.dataset.noMileage === 'true') {
+      const badge = document.createElement('span'); badge.className = 'car-mileage'; badge.textContent = 'Без пробега';
+      $('.car-media', card).append(badge);
+    }
+    if (card.dataset.salePrice && card.dataset.oldPrice) {
+      const price = $('.car-price', card);
+      const previous = document.createElement('del'); previous.textContent = `от ${card.dataset.oldPrice}`;
+      $('strong', price).textContent = `от ${card.dataset.salePrice}`;
+      price.prepend(previous);
+      const sale = document.createElement('span'); sale.className = 'car-sale'; sale.textContent = 'Акция';
+      $('.car-media', card).append(sale);
+    }
+  });
   const openCar = card => {
     const name = $('h3', card).textContent.trim();
     const specs = (card.dataset.specs || '').split('|').filter(Boolean);
     $('#modal-title').textContent = name; $('#modal-image').src = card.dataset.image; $('#modal-image').alt = name;
+    $('.modal-media span').textContent = $('.car-status', card).textContent;
     $('#modal-specs').innerHTML = specs.map(x => `<span>${x}</span>`).join('');
     $('.modal-quiz').dataset.purpose = 'Хочу выкупить авто';
     $('.modal-quiz').dataset.car = name;
@@ -148,38 +170,6 @@
   $$('.js-open-quiz').forEach(btn => btn.addEventListener('click', openQuiz));
   $('.modal-quiz').addEventListener('click', openQuiz);
 
-  const calculator = $('[data-calculator]');
-  if (calculator) {
-    const price = $('#calc-price');
-    const advance = $('#calc-advance');
-    const term = $('#calc-term');
-    const money = value => `${Math.round(value).toLocaleString('ru-RU')} ₽`;
-    const monthWord = value => value % 10 === 1 && value % 100 !== 11 ? 'месяц' : value % 10 >= 2 && value % 10 <= 4 && (value % 100 < 10 || value % 100 >= 20) ? 'месяца' : 'месяцев';
-    const paintRange = input => {
-      const progress = ((input.value - input.min) / (input.max - input.min)) * 100;
-      input.style.setProperty('--range-progress', `${progress}%`);
-    };
-    const updateCalculator = () => {
-      const carPrice = Number(price.value);
-      const advancePercent = Number(advance.value);
-      const months = Number(term.value);
-      const advanceAmount = carPrice * advancePercent / 100;
-      const balance = carPrice - advanceAmount;
-      const weeks = months * 52 / 12;
-      $('#calc-price-output').textContent = money(carPrice);
-      $('#calc-advance-output').textContent = `${advancePercent}% · ${money(advanceAmount)}`;
-      $('#calc-term-output').textContent = `${months} ${monthWord(months)}`;
-      $('#calc-weekly').textContent = money(balance / weeks);
-      $('#calc-monthly').textContent = money(balance / months);
-      $('#calc-balance').textContent = money(balance);
-      $('#lead-calc-price').value = String(carPrice);
-      $('#lead-calc-advance').value = String(advancePercent);
-      $('#lead-calc-term').value = String(months);
-      [price, advance, term].forEach(paintRange);
-    };
-    [price, advance, term].forEach(input => input.addEventListener('input', updateCalculator));
-    updateCalculator();
-  }
   renderStep();
   clearTimeout(window.__revealFallback);
 })();
