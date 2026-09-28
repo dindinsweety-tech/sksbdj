@@ -19,18 +19,18 @@
 
   <header class="site-header" id="top">
     <div class="shell header-inner">
-      <a class="brand" href="#top" aria-label="Автокар71 — на главную">
+      <a class="brand" href="/" aria-label="Автокар71 — на главную">
         <img src="/assets/logo.webp" width="54" height="54" alt="Логотип Автокар71">
         <span>Автокар<span>71</span></span>
       </a>
       <span class="mobile-header-label">Аренда с правом выкупа</span>
       <p class="header-descriptor">Аренда с правом выкупа</p>
       <nav class="desktop-nav" aria-label="Основная навигация">
-        <a href="#order">Как это работает</a>
-        <a href="#fleet">Автомобили</a>
-        <a href="#terms">Условия</a>
-        <a href="#stories">Отзывы</a>
-        <a href="#contacts">Контакты</a>
+        <a href="/p/kak-eto-rabotaet/">Как это работает</a>
+        <a href="/p/avtomobili/">Автомобили</a>
+        <a href="/p/usloviya/">Условия</a>
+        <a href="/p/otzyvy/">Отзывы</a>
+        <a href="/p/kontakty/">Контакты</a>
       </nav>
       <div class="header-actions">
         <a class="phone-link" href="tel:+79539708877" aria-label="Позвонить: плюс семь 953 970-88-77"><span class="online-dot" aria-hidden="true"></span><span>+7 953 970-88-77</span></a>
@@ -41,7 +41,7 @@
       </button>
     </div>
     <div class="mobile-menu" id="mobile-menu" hidden>
-      <a href="#order">Как это работает</a><a href="#fleet">Автомобили</a><a href="#terms">Условия</a><a href="#stories">Отзывы</a><a href="#contacts">Контакты</a>
+      <a href="/p/kak-eto-rabotaet/">Как это работает</a><a href="/p/avtomobili/">Автомобили</a><a href="/p/usloviya/">Условия</a><a href="/p/otzyvy/">Отзывы</a><a href="/p/kontakty/">Контакты</a>
       <a class="mobile-menu-phone" href="tel:+79539708877">+7 953 970-88-77</a>
     </div>
   </header>
@@ -55,6 +55,22 @@
           <h1 id="hero-title">Автомобили под личные цели и такси с правом выкупа <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark></h1>
           <script>try{const p=new URLSearchParams(location.search),m=`${p.get('utm_campaign')||''} ${p.get('utm_term')||''} ${p.get('utm_content')||''}`.toLowerCase(),route=location.pathname.match(/^\/p\/(arenda|vykup|taxi)\/?$/)?.[1],kind=route||(/vikup|vykup|выкуп/.test(m)?'vykup':/taxi|такси/.test(m)?'taxi':/arenda|аренда/.test(m)?'arenda':'');const variants={arenda:{h:'Аренда автомобилей для работы и личных целей <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark>',t:'Автокар71 — аренда автомобилей для работы и личных поездок'},vykup:{h:'Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — условия индивидуально',t:'Автокар71 — автомобили с правом выкупа'},taxi:{h:'Автомобили для такси <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — аренда с правом выкупа',t:'Автокар71 — аренда автомобилей для такси'}};if(variants[kind]){document.documentElement.dataset.landing=kind;document.getElementById('hero-title').innerHTML=variants[kind].h;document.title=variants[kind].t}}catch(e){}</script>
           <p class="hero-subtitle">Рассмотрение по двум документам. Решение и условия — индивидуально после проверки.</p>
+          <script>try {
+            const route = location.pathname.match(/^\/p\/(kak-eto-rabotaet|avtomobili|usloviya|podbor-avto|otzyvy|kontakty)\/?$/)?.[1];
+            const variants = {
+              'kak-eto-rabotaet': ['Как это работает: <mark>от выбора авто до оформления</mark>', 'Как это работает — Автокар71'],
+              avtomobili: ['Автомобили из парка <mark>Автокар71</mark>', 'Автомобили в парке — Автокар71'],
+              usloviya: ['Условия выдачи <mark>автомобиля</mark>', 'Условия выдачи автомобиля — Автокар71'],
+              'podbor-avto': ['Подберём автомобиль <mark>под ваши задачи</mark>', 'Подбор автомобиля — Автокар71'],
+              otzyvy: ['Отзывы клиентов <mark>Автокар71</mark>', 'Отзывы клиентов — Автокар71'],
+              kontakty: ['Контакты <mark>Автокар71</mark>', 'Контакты в Новомосковске — Автокар71']
+            };
+            if (variants[route]) {
+              document.documentElement.dataset.landing = route;
+              document.getElementById('hero-title').innerHTML = variants[route][0];
+              document.title = variants[route][1];
+            }
+          } catch (e) {}</script>
           <div class="hero-labels" aria-label="Ключевые условия">
             <div><small>Формат подбора</small><strong>Автомобиль под ваш запрос</strong></div>
             <div class="hero-label-accent"><small>Отдельная программа</small><strong>Авто под заказ с первоначальным взносом 20%</strong></div>
@@ -77,6 +93,21 @@
             <div class="availability"><span></span> Есть авто в наличии</div>
           </div>
           <p class="photo-caption">Реальный автомобиль из парка · Новомосковск</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact-entry" id="contact-entry" aria-labelledby="contact-entry-title" hidden>
+      <div class="shell">
+        <p class="section-kicker">Связаться с нами</p>
+        <h2 id="contact-entry-title">Ответим на вопросы <em>и покажем автомобили</em></h2>
+        <p>Парк в Новомосковске, ул. Первомайская, 73. Пн–Пт, 09:00–18:00. Уточните время визита заранее.</p>
+        <div class="contact-entry-links">
+          <a href="tel:+79539708877">+7 953 970-88-77</a>
+          <a href="https://max.ru/u/f9LHodD0cOI6JfBs3FGlMtOcMpBqhR2duetrBES8_vSzQ2gOJeDS9R2RmPw" target="_blank" rel="noopener">MAX &#x2197;&#xFE0E;</a>
+          <a href="https://t.me/autocat71" target="_blank" rel="noopener">Telegram &#x2197;&#xFE0E;</a>
+          <a href="https://wa.me/message/7H33VRCJ367GO1" target="_blank" rel="noopener">WhatsApp &#x2197;&#xFE0E;</a>
+          <a href="https://yandex.ru/profile/7720672617?lang=ru" target="_blank" rel="noopener">Адрес на карте &#x2197;&#xFE0E;</a>
         </div>
       </div>
     </section>
@@ -305,10 +336,10 @@
 
   <footer class="site-footer" id="contacts">
     <div class="shell footer-top">
-      <div><a class="brand footer-brand" href="#top"><img src="/assets/logo.webp" width="70" height="70" alt=""><span>Автокар<span>71</span></span></a><p>Аренда и выкуп автомобилей<br>для личных целей и такси.</p></div>
+      <div><a class="brand footer-brand" href="/"><img src="/assets/logo.webp" width="70" height="70" alt=""><span>Автокар<span>71</span></span></a><p>Аренда и выкуп автомобилей<br>для личных целей и такси.</p></div>
       <div><p class="footer-label">Связаться</p><a class="footer-phone" href="tel:+79539708877">+7 953 970-88-77</a><p>Пн–Пт, 09:00–18:00</p><a href="https://max.ru/u/f9LHodD0cOI6JfBs3FGlMtOcMpBqhR2duetrBES8_vSzQ2gOJeDS9R2RmPw" target="_blank" rel="noopener">Написать в MAX &#x2197;&#xFE0E;</a><a href="https://t.me/autocat71" target="_blank" rel="noopener">Telegram &#x2197;&#xFE0E;</a><a href="https://wa.me/message/7H33VRCJ367GO1" target="_blank" rel="noopener">WhatsApp &#x2197;&#xFE0E;</a><a href="mailto:autocar71@yandex.ru">autocar71@yandex.ru</a></div>
       <div><p class="footer-label">Наш парк</p><p>г. Новомосковск,<br>ул. Первомайская, 73</p><a href="https://yandex.ru/profile/7720672617?lang=ru" target="_blank" rel="noopener">Открыть на карте &#x2197;&#xFE0E;</a></div>
-      <div><p class="footer-label">Навигация</p><a href="#fleet">Автомобили</a><a href="#terms">Условия выдачи</a><a href="#quiz">Подбор авто</a><a href="#stories">Отзывы</a></div>
+      <div><p class="footer-label">Навигация</p><a href="/p/kak-eto-rabotaet/">Как это работает</a><a href="/p/avtomobili/">Автомобили</a><a href="/p/usloviya/">Условия выдачи</a><a href="/p/podbor-avto/">Подбор авто</a><a href="/p/otzyvy/">Отзывы</a><a href="/p/kontakty/">Контакты</a></div>
     </div>
     <div class="shell map-panel"><div><p class="section-kicker">Приезжайте знакомиться</p><h3>Новомосковск,<br>Первомайская, 73</h3><p>Парк и выдача автомобилей. Уточните время визита по телефону.</p></div><div class="external-widget" data-widget="map" data-src="https://yandex.ru/map-widget/v1/?oid=7720672617&amp;ol=biz&amp;z=16"><div class="widget-placeholder"><p>Интерактивная карта Яндекса откроется на этой странице. Для загрузки Яндекс получит технические данные браузера.</p><button class="button widget-enable" type="button">Показать карту здесь</button></div></div></div><div class="shell footer-legal" aria-label="Юридическая информация">
       <p class="footer-label">Юридическая информация</p>
@@ -326,6 +357,6 @@
   </dialog>
 
   <section class="cookie-panel" aria-label="Настройки cookies" hidden><div><strong>Ваши настройки приватности</strong><p>Сохраняем ваш выбор в браузере. Карту и отзывы Яндекса включаем только с вашего разрешения. Аналитика в демо отключена. <a href="/privacy.html#cookies">Подробнее</a></p></div><div class="cookie-actions"><button type="button" class="button" id="cookies-allow">Разрешить сервисы Яндекса</button><button type="button" class="cookie-decline" id="cookies-decline">Только необходимые</button></div></section>
-  <script src="/app.js?v=20260928-landing-1" defer></script><script src="/privacy-controls.js?v=20260921" defer></script>
+  <script src="/app.js?v=20260928-menu-1" defer></script><script src="/privacy-controls.js?v=20260921" defer></script>
 </body>
 </html>
