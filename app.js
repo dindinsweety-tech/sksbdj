@@ -3,12 +3,47 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-  const params = new URLSearchParams(location.search);
-  const campaign = `${params.get('utm_campaign') || ''} ${params.get('utm_term') || ''} ${params.get('utm_content') || ''}`.toLowerCase();
-  const hero = $('#hero-title');
-  if (/vikup|vykup|выкуп/.test(campaign)) hero.innerHTML = 'Автомобили под выкуп <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — условия индивидуально';
-  else if (/taxi|такси/.test(campaign)) hero.innerHTML = 'Автомобили для такси <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark> — аренда с правом выкупа';
-  else if (/arenda|аренда/.test(campaign)) hero.innerHTML = 'Аренда автомобилей для работы и личных целей <mark><span class="price-nowrap">от 1 800 ₽/сутки</span></mark>';
+  const landing = document.documentElement.dataset.landing;
+  const offer = {
+    arenda: {
+      promise: 'Автомобиль для работы и личных поездок',
+      subtitle: 'Подберите автомобиль из нашего парка. Доступность и сроки аренды подтвердит менеджер.',
+      first: ['Формат', 'Аренда из нашего парка'], second: ['Условия', 'Депозит от 25 000 ₽ · график 7 / 0'],
+      action: 'Подобрать авто в аренду', purpose: '', proof: ['25 000 ₽', 'депозит из наличия', '7 / 0', 'график аренды'],
+      description: 'Аренда автомобилей из парка Автокар71 для работы и личных поездок. Парк в Новомосковске, условия индивидуально после проверки.'
+    },
+    vykup: {
+      promise: 'Вы выбираете авто — мы покупаем его под вас',
+      subtitle: 'Авто под заказ с первоначальным взносом 20% или выкуп из наличия. Условия — по договору после проверки.',
+      first: ['Формат подбора', 'Автомобиль под ваш запрос'], second: ['Первоначальный взнос', 'От 20% для автомобиля под заказ'],
+      action: 'Обсудить выкуп', purpose: 'Авто под заказ', proof: ['20%', 'взнос под заказ', 'Договор', 'условия до оплаты'],
+      description: 'Автомобиль с правом выкупа в Автокар71: из наличия или под заказ. Первоначальный взнос от 20% для автомобиля под заказ.'
+    },
+    taxi: {
+      promise: 'Автомобиль для работы в такси',
+      subtitle: 'Выберите автомобиль из парка для ежедневной работы. Наличие и условия аренды подтвердит менеджер.',
+      first: ['Для работы', 'Автомобили под такси'], second: ['График аренды', '7 / 0 · депозит от 25 000 ₽'],
+      action: 'Подобрать авто для такси', purpose: 'Работа в такси', proof: ['7 / 0', 'график аренды', 'СТО', 'обслуживание парка'],
+      description: 'Аренда автомобилей для работы в такси в Автокар71. Автомобили из парка, график 7 / 0, индивидуальные условия.'
+    }
+  }[landing];
+  if (offer) {
+    $('.hero-promise').textContent = offer.promise;
+    $('.hero-subtitle').textContent = offer.subtitle;
+    const labels = $$('.hero-labels div');
+    [offer.first, offer.second].forEach(([caption, value], i) => {
+      $('small', labels[i]).textContent = caption;
+      $('strong', labels[i]).textContent = value;
+    });
+    const action = $('.hero-actions .button');
+    action.firstChild.textContent = `${offer.action} `;
+    if (offer.purpose) action.dataset.purpose = offer.purpose;
+    else delete action.dataset.purpose;
+    const proof = $$('.hero-proof div');
+    $('strong', proof[0]).textContent = offer.proof[0]; $('span', proof[0]).textContent = offer.proof[1];
+    $('strong', proof[2]).textContent = offer.proof[2]; $('span', proof[2]).textContent = offer.proof[3];
+    $('meta[name="description"]').content = offer.description;
+  }
 
   const menuButton = $('.menu-button');
   const menu = $('#mobile-menu');
@@ -156,7 +191,7 @@
     // Demo only. No personal data persistence or delivery-success analytics.
     // Production payload must include consent version, timestamp and qualification.
     try { sessionStorage.removeItem('autocar71_lead'); } catch (_) {}
-    location.href = 'thanks.html';
+    location.href = '/thanks.html';
   });
 
   const openQuiz = event => {
