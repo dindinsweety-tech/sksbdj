@@ -3,6 +3,17 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
+  // Keep campaign attribution while navigating between landing pages.
+  const campaign = new URLSearchParams();
+  new URLSearchParams(location.search).forEach((value, key) => {
+    if (/^utm_(source|medium|campaign|content|term)$/.test(key)) campaign.set(key, value);
+  });
+  if (campaign.size) $$('a[href^="/p/"]').forEach(link => {
+    const target = new URL(link.href);
+    campaign.forEach((value, key) => target.searchParams.set(key, value));
+    link.href = target.pathname + target.search + target.hash;
+  });
+
   const landing = document.documentElement.dataset.landing;
   const offer = {
     arenda: {
@@ -108,12 +119,19 @@
 
   const menuButton = $('.menu-button');
   const menu = $('#mobile-menu');
-  menuButton.addEventListener('click', () => {
-    const open = menuButton.getAttribute('aria-expanded') === 'true';
-    menuButton.setAttribute('aria-expanded', String(!open));
-    menu.hidden = open;
+  const setMenu = open => {
+    menu.hidden = !open;
+    menuButton.setAttribute('aria-expanded', String(open));
+    menuButton.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+  };
+  menuButton.addEventListener('click', () => setMenu(menu.hidden));
+  $$('#mobile-menu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !menu.hidden) { setMenu(false); menuButton.focus(); }
   });
-  $$('#mobile-menu a').forEach(a => a.addEventListener('click', () => { menu.hidden = true; menuButton.setAttribute('aria-expanded', 'false'); }));
+  document.addEventListener('click', event => {
+    if (!menu.hidden && !menu.contains(event.target) && !menuButton.contains(event.target)) setMenu(false);
+  });
 
   const observer = new IntersectionObserver(entries => entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
@@ -258,7 +276,7 @@
   const openQuiz = event => {
     if (modal.open) closeModal();
     const purpose = event?.currentTarget?.dataset.purpose;
-    if (purpose && !stepping) { Object.keys(answers).forEach(k => { if (k !== 'channel') delete answers[k]; }); answers.purpose = purpose; buildPath(); current = 1; renderStep(); }
+    if (purpose && !stepping) { Object.keys(answers).forEach(k => { if (k !== 'channel') delete answers[k]; }); $$('.answer.selected').forEach(el => el.classList.remove('selected')); answers.purpose = purpose; buildPath(); current = 1; renderStep(); }
     if (event?.currentTarget?.dataset.car) answers.selected_car = event.currentTarget.dataset.car;
     validateContact();
     $('#quiz').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'instant' : 'smooth' });

@@ -197,7 +197,7 @@ html{overflow-x:clip}body{overflow-x:clip}
  .hero-labels strong{font-size:.84rem}
  .hero-actions{margin-bottom:24px}
  .hero-actions .button{width:100%;min-height:56px}
- .hero-actions .text-link{display:none}
+ .hero-actions .text-link{display:inline-flex;align-items:center;min-height:44px;color:#fff}
  .hero-proof{grid-template-columns:repeat(3,1fr)}
  .hero-photo-wrap>img{object-position:68% center}
  .service-area{padding:64px 0}
@@ -205,7 +205,8 @@ html{overflow-x:clip}body{overflow-x:clip}
  .service-area-copy h2{font-size:2.35rem;margin-bottom:18px}
  .region-atlas{border-radius:20px;padding:10px}
  .region-atlas svg{min-height:280px}
- .atlas-label{display:none}
+ .atlas-label{display:block}
+ .atlas-label text{font-size:27px;paint-order:stroke fill;stroke:#181818;stroke-width:4px;stroke-linejoin:round}
  .atlas-hub text{font-size:20px}
  .region-atlas ul{display:flex;padding:0 10px 12px}
  .payment-rules{grid-template-columns:1fr}
@@ -216,3 +217,18 @@ html{overflow-x:clip}body{overflow-x:clip}
  .phone-link,.header-actions .button{font-size:.76rem!important}
  .hero h1{font-size:1.92rem}
 }
+
+/* Responsive review: readable geography and controls at every breakpoint. */
+.service-area-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px}
+.service-area-copy,.region-atlas,.section-head>div,.payment-copy{min-width:0}
+.service-area-copy h2{font-size:clamp(1.8rem,2.65vw,2.65rem);line-height:1.15;letter-spacing:-.045em}
+.service-area-copy h2 span,.service-area-copy h2 em{display:block}
+.service-area-copy h2 em{margin-top:12px}
+.payment-copy h3{white-space:normal}
+.nowrap{white-space:nowrap}
+.atlas-label text{font-size:23px}
+@media(max-width:1180px){.desktop-nav{display:none}.menu-button{display:grid!important;width:48px;height:48px}.mobile-menu{position:fixed;top:88px;left:0;right:0;display:grid;gap:16px;padding:22px 28px;background:#fff;box-shadow:0 20px 50px #0002;max-height:calc(100dvh - 160px);overflow-y:auto}.mobile-menu[hidden]{display:none}}
+@media(max-width:1040px){.service-area-grid{grid-template-columns:1fr;gap:32px}.service-area-copy h2{font-size:clamp(1.8rem,4.2vw,2.65rem)}.mobile-menu{top:78px}.service-area-copy{max-width:720px;width:100%;margin:auto}}
+@media(max-width:720px){.service-area-copy h2{font-size:clamp(1.45rem,6.5vw,2.35rem);line-height:1.2}.service-area-copy h2 em{margin-top:8px}.mobile-menu{top:116px;max-height:calc(100dvh - 190px)}.region-atlas svg{min-height:0}.atlas-label text{font-size:25px}.atlas-hub text{font-size:20px}.payment-copy h3{font-size:1.1rem}.section-head h2{overflow-wrap:break-word}.button{white-space:normal;text-align:center}.hero-labels{min-width:0}}
+
+@media(min-width:721px) and (max-width:1180px){.header-actions .button{display:inline-flex}}
