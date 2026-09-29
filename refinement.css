@@ -46,23 +46,8 @@ html{overflow-x:clip}body{overflow-x:clip}
 
 /* Client-preview compatibility with the portable stage-one markup. */
 .hero-background img,.hero-photo-wrap>img{content:url("assets/hero-park.webp?v=client-3");object-position:62% 56%}
-.car-media{aspect-ratio:8/5;background:#f4f4f1}
+.car-media{aspect-ratio:8/5;height:auto;min-width:0;background:#f4f4f1}
 .car-media img{width:100%;height:100%;object-fit:contain;object-position:center}
-.car-card:nth-child(1) .car-media img{content:url("assets/catalog-06.webp?v=client-5")}
-.car-card:nth-child(2) .car-media img{content:url("assets/catalog-01.webp?v=client-5")}
-.car-card:nth-child(3) .car-media img{content:url("assets/catalog-02.webp?v=client-5")}
-.car-card:nth-child(4) .car-media img{content:url("assets/catalog-03.webp?v=client-3")}
-.car-card:nth-child(5) .car-media img{content:url("assets/catalog-04.webp?v=client-3")}
-.car-card:nth-child(6) .car-media img{content:url("assets/catalog-05.webp?v=client-3")}
-.car-card:nth-child(7) .car-media img{content:url("assets/catalog-07.webp?v=client-3")}
-.car-card:nth-child(8) .car-media img{content:url("assets/catalog-08.webp?v=client-5")}
-.car-card:nth-child(9) .car-media img{content:url("assets/catalog-09.webp?v=client-5")}
-.car-card:nth-child(10) .car-media img{content:url("assets/catalog-10.webp?v=client-5")}
-.car-card:nth-child(11) .car-media img{content:url("assets/catalog-11.webp?v=client-5")}
-.car-card:nth-child(12) .car-media img{content:url("assets/catalog-12.webp?v=client-3")}
-.car-card:nth-child(13) .car-media img{content:url("assets/catalog-13.webp?v=client-3")}
-.car-card:nth-child(14) .car-media img{content:url("assets/catalog-14.webp?v=client-3")}
-.car-card:nth-child(15) .car-media img{content:url("assets/catalog-15.webp?v=client-3")}
 .car-modal{max-height:min(90vh,820px);overflow:auto}
 .modal-close-holder{position:sticky;top:0;height:0;z-index:10}
 .modal-close-holder .modal-close{position:absolute;top:14px;right:14px;box-shadow:0 3px 14px #0003;cursor:pointer}
@@ -86,7 +71,7 @@ html{overflow-x:clip}body{overflow-x:clip}
 .contact-entry-links a:first-child{background:var(--yellow);border-color:var(--yellow)}
 .contact-entry-links a:hover{border-color:#171717}
 [hidden]{display:none!important}
-@media(max-width:720px){.hero-background img,.hero-photo-wrap>img{content:url("assets/hero-park-720.webp?v=client-3");object-position:58% center}.car-media{aspect-ratio:8/5}}
+@media(max-width:720px){.hero-background img,.hero-photo-wrap>img{content:url("assets/hero-park-720.webp?v=client-3");object-position:58% center}.car-media{aspect-ratio:8/5;height:auto;width:100%}}
 
 /* Keep the full-bleed cover anchored to the viewport after reveal animations finish. */
 .hero .hero-visual{left:calc(50% - 50vw);right:auto;width:100vw;transform:none!important}
@@ -232,3 +217,32 @@ html{overflow-x:clip}body{overflow-x:clip}
 @media(max-width:720px){.service-area-copy h2{font-size:clamp(1.45rem,6.5vw,2.35rem);line-height:1.2}.service-area-copy h2 em{margin-top:8px}.mobile-menu{top:116px;max-height:calc(100dvh - 190px)}.region-atlas svg{min-height:0}.atlas-label text{font-size:25px}.atlas-hub text{font-size:20px}.payment-copy h3{font-size:1.1rem}.section-head h2{overflow-wrap:break-word}.button{white-space:normal;text-align:center}.hero-labels{min-width:0}}
 
 @media(min-width:721px) and (max-width:1180px){.header-actions .button{display:inline-flex}}
+
+/* Client quiz v3, integrated into the site design. */
+#quiz-stage{padding:28px 30px 32px;min-height:360px}
+.quiz-v3-title{font-family:Montserrat,Arial,sans-serif;font-size:clamp(1.35rem,2.1vw,1.8rem);line-height:1.25;margin:0 0 14px;overflow-wrap:anywhere}
+.quiz-v3-description{color:#626262;line-height:1.5;margin:0 0 24px}
+.quiz-v3-options{display:grid;gap:10px}
+.quiz-v3-choice{display:block;width:100%;min-height:58px;text-align:left;padding:14px 17px;background:#fff;border:1px solid #dadad6;border-radius:13px;font:700 16px/1.3 Inter,Arial,sans-serif;cursor:pointer;transition:background .15s,border .15s}
+.quiz-v3-choice:hover,.quiz-v3-choice:focus-visible{background:var(--yellow-soft);border-color:var(--ink)}
+.quiz-v3-choice small{display:block;margin-top:5px;color:#666;font-size:14px;font-weight:400}
+.quiz-v3-continue{width:100%;min-height:54px;justify-content:center;text-align:center;margin-top:18px}
+.quiz-v3-summary{display:grid;margin:10px 0;border:1px solid #ddd;border-radius:13px;overflow:hidden}
+.quiz-v3-row{padding:11px 15px;border-bottom:1px solid #ddd}.quiz-v3-row:last-child{border:0}
+.quiz-v3-row dt{font-size:14px;color:#696969;margin-bottom:4px}.quiz-v3-row dd{margin:0;font-weight:700;line-height:1.35}
+.quiz-v3-form{display:grid;gap:12px}.quiz-v3-form>label:first-child{font-weight:700}
+.quiz-v3-form input[type=tel]{width:100%;height:56px;border:1px solid #aaa;border-radius:12px;padding:0 16px;font-size:17px}
+.quiz-v3-error{color:#a22323;min-height:18px;margin:0;font-size:14px}
+.quiz-v3-consent{display:flex;align-items:flex-start;gap:10px;color:#555;font-size:14px;line-height:1.45}
+.quiz-v3-consent input{width:20px;height:20px;flex:0 0 20px;accent-color:var(--yellow)}
+.quiz-v3-consent a{text-decoration:underline}
+.quiz-v3-demo{color:#686868;font-size:13px;line-height:1.45;margin:0}
+.quiz-bottom{justify-content:space-between;min-height:53px}.quiz-bottom button:last-child{margin-left:auto}
+.quiz-bottom button[hidden]{display:none}
+@media(max-width:720px){#quiz-stage{padding:24px 18px 28px;min-height:400px}.quiz-v3-title{font-size:1.35rem}.quiz-v3-choice{font-size:16px}.quiz-v3-summary{max-height:48vh;overflow-y:auto}}
+
+.car-media-pending{display:grid;place-items:center;background:linear-gradient(140deg,#292929,#111);color:#fff}
+.car-media-pending img{position:static;width:92px;height:92px;object-fit:contain;opacity:.9}
+.car-media-pending p{position:absolute;bottom:26px;left:16px;right:16px;color:#fff;text-align:center;font-weight:700}
+.car-card-pending .car-media img{transform:none}
+.car-price del{display:block;margin-bottom:3px}
