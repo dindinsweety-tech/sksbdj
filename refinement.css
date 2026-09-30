@@ -218,6 +218,15 @@ html{overflow-x:clip}body{overflow-x:clip}
 
 @media(min-width:721px) and (max-width:1180px){.header-actions .button{display:inline-flex}}
 
+/* Review: keep the schedule value on its own row and the hero conditions non-interactive. */
+.week{grid-template-rows:auto auto;align-self:stretch;padding-bottom:0}
+.week small{position:static;grid-column:1/-1;justify-self:end;margin-top:8px;line-height:1.05}
+.hero-labels div{border-radius:0;border:0;border-left:3px solid #ffffff80;background:#111b}
+.hero-labels .hero-label-accent{border:0;border-left:3px solid var(--yellow);background:#111b;color:#fff}
+.hero-labels .hero-label-accent small{color:var(--yellow)}
+@media(max-width:720px){.week{padding-bottom:0}}
+@media(min-width:721px) and (max-width:1180px){.phone-link span:last-child{font-size:0}.phone-link span:last-child::after{content:'Позвонить';font-size:16px}}
+
 /* Client quiz v3, integrated into the site design. */
 #quiz-stage{padding:28px 30px 32px;min-height:360px}
 .quiz-v3-title{font-family:Montserrat,Arial,sans-serif;font-size:clamp(1.35rem,2.1vw,1.8rem);line-height:1.25;margin:0 0 14px;overflow-wrap:anywhere}
