@@ -248,3 +248,17 @@ html{overflow-x:clip}body{overflow-x:clip}
 @media(min-width:721px) and (max-width:1180px){.car-price del,.car-price>span{font-size:10px}.car-price strong{font-size:17px}}
 @media(max-width:720px){.car-price{display:flex;gap:4px}.car-price del{font-size:11px}.car-price strong{font-size:clamp(16px,4.9vw,20px)}.car-price>span{display:inline;font-size:11px}}
 @media(max-width:360px){.car-price{gap:3px}.car-price del,.car-price>span{font-size:9.5px}.car-price strong{font-size:15px}}
+
+/* The region outlines share one geographic frame; names stay at readable HTML sizes. */
+.region-atlas{padding:20px 22px 22px;overflow:hidden}
+.atlas-map{position:relative;width:100%;aspect-ratio:760/520}
+.atlas-map img{display:block;width:100%;height:100%}
+.atlas-name{position:absolute;transform:translate(-50%,-50%);color:#bec1bc;font-size:clamp(16px,1.25vw,18px);font-weight:700;white-space:nowrap;text-shadow:0 2px 8px #181818,0 0 4px #181818}
+.atlas-kaluga{left:24%;top:32%}.atlas-ryazan{left:76%;top:32%}.atlas-tula{left:34%;top:53%}.atlas-oryol{left:28%;top:73%}.atlas-lipetsk{left:68%;top:77%}
+.atlas-point{position:absolute;left:52.2%;top:40.1%;width:16px;height:16px;transform:translate(-50%,-50%);background:var(--yellow);border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 12px #ffc80045,0 0 20px #ffc80080}
+.atlas-hub-caption{width:max-content;max-width:100%;margin:0 0 18px auto;padding:9px 14px;border:1px solid #747772;border-radius:999px;color:#fff;font-size:16px;font-weight:700;white-space:nowrap}
+.atlas-hub-caption i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--yellow);margin-right:9px}
+.region-atlas .atlas-regions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 15px;border-top:1px solid #4b4e49;padding:16px 0 0;margin:0;list-style:none}
+.region-atlas .atlas-regions li{display:flex;align-items:center;gap:9px;min-width:0;padding:0;border:0;border-radius:0;background:transparent;color:#d6d8d3;font-size:16px;white-space:nowrap}
+.atlas-regions li:before{content:"";width:10px;height:10px;flex:0 0 10px;background:#a5a9a3;border-radius:50%}.atlas-regions li:first-child:before{background:var(--yellow)}
+@media(max-width:720px){.region-atlas{padding:14px 14px 18px}.atlas-name{font-size:16px}.atlas-point{width:12px;height:12px;box-shadow:0 0 0 8px #ffc80045,0 0 14px #ffc80080}.atlas-hub-caption{margin-bottom:14px}.region-atlas .atlas-regions{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 8px}.region-atlas .atlas-regions li{font-size:16px}}

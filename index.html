@@ -11,7 +11,7 @@
   <link rel="preload" href="/assets/inter-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/montserrat-800.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.classList.add('js');window.__revealFallback=setTimeout(()=>document.documentElement.classList.remove('js'),2500)</script>
-  <link rel="stylesheet" href="/styles.css?v=20260928-client-notes"><link rel="stylesheet" href="/refinement.css?v=20260930-prices-3">
+  <link rel="stylesheet" href="/styles.css?v=20260928-client-notes"><link rel="stylesheet" href="/refinement.css?v=20260930-region-map-1">
 </head>
 <body>
   <noscript><div class="noscript-note">Сайт работает без JavaScript. Интерактивный подбор требует включённого JavaScript.</div></noscript>
@@ -118,19 +118,19 @@
           <p class="section-kicker">География работы</p>
           <h2 id="service-area-title"><span>Парк в Новомосковске</span><em>Работаем в пяти областях</em></h2>
           <p>Подбираем, оформляем и передаём автомобили клиентам из Тульской, Рязанской, Калужской, Орловской и Липецкой областей. Детали выдачи согласуем заранее.</p>
-          <div class="area-legend"><span><i></i>Парк Автокар71</span><span><i></i>Регионы работы</span></div>
         </div>
-        <div class="region-atlas" role="img" aria-label="Схема пяти областей работы Автокар71 с парком в Новомосковске">
-          <svg viewBox="0 0 720 470" aria-hidden="true">
-            <path class="region-shape region-kaluga" d="M88 84 246 52 309 129 252 221 111 211 52 143Z"/>
-            <path class="region-shape region-tula" d="M252 136 411 107 480 189 421 287 278 269 226 209Z"/>
-            <path class="region-shape region-ryazan" d="M420 78 610 92 678 171 614 276 475 242 443 175Z"/>
-            <path class="region-shape region-oryol" d="M104 228 264 216 315 303 249 411 87 374 54 291Z"/>
-            <path class="region-shape region-lipetsk" d="M307 273 458 253 558 331 503 425 339 418 270 353Z"/>
-            <g class="atlas-label"><text x="146" y="137">Калужская</text><text x="307" y="194">Тульская</text><text x="521" y="165">Рязанская</text><text x="133" y="307">Орловская</text><text x="371" y="352">Липецкая</text></g>
-            <g class="atlas-hub"><circle cx="374" cy="224" r="22"/><circle cx="374" cy="224" r="6"/><text x="405" y="230">Новомосковск</text></g>
-          </svg>
-          <ul><li>Тульская</li><li>Рязанская</li><li>Калужская</li><li>Орловская</li><li>Липецкая</li></ul>
+        <div class="region-atlas" role="group" aria-label="Парк Автокар71 и пять областей работы">
+          <div class="atlas-map" role="img" aria-label="Контуры пяти областей; Тульская выделена жёлтым, парк расположен в Новомосковске">
+            <img src="/assets/map-five-regions.svg" width="760" height="520" alt="" aria-hidden="true">
+            <span class="atlas-name atlas-kaluga" aria-hidden="true">Калужская</span>
+            <span class="atlas-name atlas-ryazan" aria-hidden="true">Рязанская</span>
+            <span class="atlas-name atlas-tula" aria-hidden="true">Тульская</span>
+            <span class="atlas-name atlas-oryol" aria-hidden="true">Орловская</span>
+            <span class="atlas-name atlas-lipetsk" aria-hidden="true">Липецкая</span>
+            <span class="atlas-point" aria-hidden="true"></span>
+          </div>
+          <div class="atlas-hub-caption"><i aria-hidden="true"></i>Парк · Новомосковск</div>
+          <ul class="atlas-regions" aria-label="Регионы работы"><li>Тульская</li><li>Рязанская</li><li>Калужская</li><li>Орловская</li><li>Липецкая</li></ul>
         </div>
       </div>
     </section>
