@@ -241,4 +241,9 @@ html{overflow-x:clip}body{overflow-x:clip}
 .quiz-bottom button[hidden]{display:none}
 @media(max-width:720px){#quiz-stage{padding:24px 18px 28px;min-height:400px}.quiz-v3-title{font-size:1.35rem}.quiz-v3-choice{font-size:16px}.quiz-v3-summary{max-height:48vh;overflow-y:auto}}
 
-.car-price del{display:block;margin-bottom:3px}
+.car-price{display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+.car-price del{display:inline;margin:0;font-size:12px;flex:0 0 auto}
+.car-price strong{font-size:20px;line-height:1.2;flex:0 0 auto}
+.car-price>span{display:inline;font-size:12px;flex:0 0 auto}
+@media(max-width:720px){.car-price{display:flex;gap:4px}.car-price del{font-size:11px}.car-price strong{font-size:clamp(16px,4.9vw,20px)}.car-price>span{display:inline;font-size:11px}}
+@media(max-width:360px){.car-price{gap:3px}.car-price del,.car-price>span{font-size:10px}.car-price strong{font-size:15px}}
