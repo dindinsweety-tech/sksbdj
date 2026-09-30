@@ -227,6 +227,8 @@ html{overflow-x:clip}body{overflow-x:clip}
 @media(max-width:720px){.week{padding-bottom:0}}
 @media(min-width:721px) and (max-width:1180px){.phone-link span:last-child{font-size:0}.phone-link span:last-child::after{content:'Позвонить';font-size:16px}}
 
+.car-media .photo-pending{width:100%;height:100%;display:grid;place-items:center;padding:25px;background:linear-gradient(145deg,#252525,#363632);color:#ddd;text-align:center;font-weight:700}
+
 /* Client quiz v3, integrated into the site design. */
 #quiz-stage{padding:28px 30px 32px;min-height:360px}
 .quiz-v3-title{font-family:Montserrat,Arial,sans-serif;font-size:clamp(1.35rem,2.1vw,1.8rem);line-height:1.25;margin:0 0 14px;overflow-wrap:anywhere}
