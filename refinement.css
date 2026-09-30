@@ -246,4 +246,4 @@ html{overflow-x:clip}body{overflow-x:clip}
 .car-price strong{font-size:20px;line-height:1.2;flex:0 0 auto}
 .car-price>span{display:inline;font-size:12px;flex:0 0 auto}
 @media(max-width:720px){.car-price{display:flex;gap:4px}.car-price del{font-size:11px}.car-price strong{font-size:clamp(16px,4.9vw,20px)}.car-price>span{display:inline;font-size:11px}}
-@media(max-width:360px){.car-price{gap:3px}.car-price del,.car-price>span{font-size:10px}.car-price strong{font-size:15px}}
+@media(max-width:360px){.car-price{gap:3px}.car-price del,.car-price>span{font-size:9.5px}.car-price strong{font-size:15px}}
