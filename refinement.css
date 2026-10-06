@@ -273,3 +273,22 @@ html{overflow-x:clip}body{overflow-x:clip}
 .region-atlas .atlas-regions li{display:flex;align-items:center;gap:9px;min-width:0;padding:0;border:0;border-radius:0;background:transparent;color:#d6d8d3;font-size:16px;white-space:nowrap}
 .atlas-regions li:before{content:"";width:10px;height:10px;flex:0 0 10px;background:#a5a9a3;border-radius:50%}.atlas-regions li:first-child:before{background:var(--yellow)}
 @media(max-width:720px){.region-atlas{padding:14px 14px 18px}.atlas-name{font-size:16px}.atlas-point{width:12px;height:12px;box-shadow:0 0 0 8px #ffc80045,0 0 14px #ffc80080}.atlas-hub-caption{margin-bottom:14px}.region-atlas .atlas-regions{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 8px}.region-atlas .atlas-regions li{font-size:16px}}
+
+/* October client revision: consistent contact, requirements and benefit layouts. */
+.online-dot{position:relative;display:inline-block!important;width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#2eb872}
+.online-dot:after{content:"";position:absolute;inset:0;border-radius:inherit;background:inherit;animation:online-pulse 2.4s ease-out infinite}
+@keyframes online-pulse{0%{transform:scale(1);opacity:.6}75%,100%{transform:scale(2.5);opacity:0}}
+.mobile-bar a[href^="tel:"]{gap:10px}
+.payment-rules{grid-template-columns:1fr}
+.tariff-guide{display:grid;gap:8px;margin:0 0 24px;color:#666;font-size:15px;line-height:1.6;max-width:900px}
+.tariff-guide p{margin:0}.tariff-guide strong{color:var(--ink)}.tariff-guide a{text-decoration:underline;text-underline-offset:3px}
+.requirements{align-items:stretch}
+.requirement{display:grid;grid-template-rows:64px auto 1fr;align-content:start;justify-content:normal;gap:20px;min-height:290px;padding:28px}
+.requirement svg{position:static;width:56px;height:56px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.requirement h3{margin:0;line-height:1.3}.requirement p{margin:0;line-height:1.6}
+.benefit-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;gap:20px;align-items:stretch}
+.benefit-card,.benefit-large{grid-column:auto;grid-row:auto;display:flex;flex-direction:column;align-items:flex-start;min-height:300px;padding:32px;gap:20px}
+.benefit-card h3,.benefit-large h3{font-size:clamp(22px,2.2vw,32px);line-height:1.25;margin:0;overflow-wrap:anywhere}
+.benefit-card p,.benefit-card>span{margin:0;line-height:1.6}.benefit-icon{margin:0}.benefit-large>span{margin-top:auto}
+@media(max-width:720px){.requirements,.benefit-grid{grid-template-columns:1fr;gap:16px}.requirement{min-height:0;padding:24px;grid-template-rows:56px auto auto;gap:16px}.benefit-card,.benefit-large{min-height:0;padding:24px;gap:18px}.order-grid h3{font-size:20px;line-height:1.35}.tariff-guide{font-size:14px}.phone-link .online-dot{display:inline-block!important}}
+@media(prefers-reduced-motion:reduce){.online-dot:after{animation:none}}

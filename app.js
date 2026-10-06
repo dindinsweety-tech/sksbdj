@@ -182,6 +182,7 @@
   const openCar = card => {
     const name = $('h3', card).textContent.trim();
     const specs = (card.dataset.specs || '').split('|').filter(Boolean);
+    specs.unshift('Класс: ' + $('.car-class', card).textContent.trim());
     $('#modal-title').textContent = name; $('#modal-image').src = card.dataset.image || '/assets/logo.webp'; $('#modal-image').alt = card.dataset.image ? name : 'Фотография автомобиля уточняется';
     $('.modal-media span').textContent = $('.car-status', card).textContent;
     $('#modal-specs').innerHTML = specs.map(x => `<span>${x}</span>`).join('');
