@@ -292,3 +292,17 @@ html{overflow-x:clip}body{overflow-x:clip}
 .benefit-card p,.benefit-card>span{margin:0;line-height:1.6}.benefit-icon{margin:0}.benefit-large>span{margin-top:auto}
 @media(max-width:720px){.requirements,.benefit-grid{grid-template-columns:1fr;gap:16px}.requirement{min-height:0;padding:24px;grid-template-rows:56px auto auto;gap:16px}.benefit-card,.benefit-large{min-height:0;padding:24px;gap:18px}.order-grid h3{font-size:20px;line-height:1.35}.tariff-guide{font-size:14px}.phone-link .online-dot{display:inline-block!important}}
 @media(prefers-reduced-motion:reduce){.online-dot:after{animation:none}}
+
+/* Landing navigation and mobile gallery revision. */
+.final-cta .section-kicker{display:inline-block;color:var(--ink);background:var(--yellow);padding:8px 12px;border-radius:8px;font-weight:800;letter-spacing:.04em;font-size:16px;line-height:1.45}
+.fleet-toolbar{min-width:0}.tabs{max-width:100%;min-width:0}
+.story-grid{display:flex;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0;margin:0;padding:0 0 12px;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#bbb transparent}
+.story-grid:focus-visible{outline:2px solid var(--yellow);outline-offset:5px}
+.story-grid .story-card{flex:0 0 calc((100% - 24px)/2);min-width:0;height:auto;scroll-snap-align:start;scroll-snap-stop:always}
+.story-grid .story-card img{aspect-ratio:4/3;object-position:center;object-fit:contain;background:#e8e8e3}
+.story-grid .story-card>div{flex:1;padding:24px}
+.handover-controls{display:flex;align-items:center;gap:14px;margin-top:16px}
+.handover-controls button{width:46px;height:46px;flex:0 0 46px;border-radius:50%;border:1px solid #ccc;background:#fff;color:var(--ink);font-size:24px;cursor:pointer}
+.handover-controls button:disabled{opacity:.35;cursor:default}.handover-counter{font-variant-numeric:tabular-nums;min-width:60px;text-align:center;font-weight:700}.handover-hint{font-size:14px;color:#666;margin-left:auto}
+.requirement svg{position:static!important;display:block;align-self:start;flex:none}
+@media(max-width:720px){.final-cta .section-kicker{font-size:14px;max-width:100%}.fleet-toolbar{width:100%;align-items:stretch}.tabs{width:100%;flex-wrap:wrap;overflow:visible;gap:8px;margin:0;padding:0}.tabs button{flex:0 0 auto;min-height:44px;padding:0 14px;font-size:14px;white-space:nowrap}.story-grid{gap:16px;margin:0;padding:0 0 10px}.story-grid .story-card{flex-basis:100%}.story-grid .story-card>div{padding:20px}.handover-controls{gap:10px}.handover-hint{font-size:12px}.requirement{grid-template-columns:minmax(0,1fr);min-width:0}.requirement h3,.requirement p{min-width:0;overflow-wrap:break-word}}
