@@ -306,3 +306,9 @@ html{overflow-x:clip}body{overflow-x:clip}
 .handover-controls button:disabled{opacity:.35;cursor:default}.handover-counter{font-variant-numeric:tabular-nums;min-width:60px;text-align:center;font-weight:700}.handover-hint{font-size:14px;color:#666;margin-left:auto}
 .requirement svg{position:static!important;display:block;align-self:start;flex:none}
 @media(max-width:720px){.final-cta .section-kicker{font-size:14px;max-width:100%}.fleet-toolbar{width:100%;align-items:stretch}.tabs{width:100%;flex-wrap:wrap;overflow:visible;gap:8px;margin:0;padding:0}.tabs button{flex:0 0 auto;min-height:44px;padding:0 14px;font-size:14px;white-space:nowrap}.story-grid{gap:16px;margin:0;padding:0 0 10px}.story-grid .story-card{flex-basis:100%}.story-grid .story-card>div{padding:20px}.handover-controls{gap:10px}.handover-hint{font-size:12px}.requirement{grid-template-columns:minmax(0,1fr);min-width:0}.requirement h3,.requirement p{min-width:0;overflow-wrap:break-word}}
+
+/* Benefit numbers occupy their own row at every viewport width. */
+.benefit-card,.benefit-large{justify-content:flex-start}
+.benefit-card .benefit-icon{position:static;inset:auto;flex:0 0 auto;align-self:flex-end;font-size:48px;line-height:1;letter-spacing:-.06em;margin:0 0 4px}
+.benefit-card h3,.benefit-card p{width:100%;max-width:none}
+@media(max-width:720px){.benefit-card .benefit-icon{font-size:40px}.benefit-card,.benefit-large{gap:16px}}
