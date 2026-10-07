@@ -312,3 +312,6 @@ html{overflow-x:clip}body{overflow-x:clip}
 .benefit-card .benefit-icon{position:static;inset:auto;flex:0 0 auto;align-self:flex-end;font-size:48px;line-height:1;letter-spacing:-.06em;margin:0 0 4px}
 .benefit-card h3,.benefit-card p{width:100%;max-width:none}
 @media(max-width:720px){.benefit-card .benefit-icon{font-size:40px}.benefit-card,.benefit-large{gap:16px}}
+
+/* Hide the three hero benefit dividers on mobile. */
+@media(max-width:720px){.hero-proof div{border-top:0}}
