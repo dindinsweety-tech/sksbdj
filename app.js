@@ -65,26 +65,27 @@
   function setupCarousel(track, cardSelector, controls, delay) {
     if (!track) return;
     const slides=$$(cardSelector,track);
-    let timer, busy=false, visible=false;
-    const index=()=>slides.reduce((best,slide,i)=>Math.abs(slide.offsetLeft-track.offsetLeft-track.scrollLeft)<Math.abs(slides[best].offsetLeft-track.offsetLeft-track.scrollLeft)?i:best,0);
+    let timer, interacting=false, hovered=false, keyboardFocus=false, visible=false;
+    const position=slide=>slide.getBoundingClientRect().left-track.getBoundingClientRect().left+track.scrollLeft-track.clientLeft;
+    const index=()=>slides.reduce((best,slide,i)=>Math.abs(position(slide)-track.scrollLeft)<Math.abs(position(slides[best])-track.scrollLeft)?i:best,0);
     const move=direction=>{
       const max=track.scrollWidth-track.clientWidth;
       const next=Math.max(0,Math.min(slides.length-1,index()+direction));
       const edge=direction>0&&track.scrollLeft>=max-2?0:direction<0&&track.scrollLeft<2?max:null;
-      const target=edge===null?Math.min(max,slides[next].offsetLeft-track.offsetLeft):edge;
+      const target=edge===null?Math.min(max,position(slides[next])):edge;
       track.scrollTo({left:target,behavior:reduceMotion.matches?'instant':'smooth'});
     };
     const stop=()=>{clearInterval(timer);timer=undefined};
-    const play=()=>{stop();if(visible&&!busy&&!document.hidden&&!reduceMotion.matches)timer=setInterval(()=>move(1),delay)};
+    const play=()=>{stop();if(visible&&!interacting&&!hovered&&!keyboardFocus&&!document.hidden)timer=setInterval(()=>move(1),delay)};
     controls?.previous?.addEventListener('click',()=>{move(-1);play()});
     controls?.next?.addEventListener('click',()=>{move(1);play()});
-    track.addEventListener('pointerdown',()=>{busy=true;stop()},{passive:true});
-    window.addEventListener('pointerup',()=>{if(busy){busy=false;play()}},{passive:true});
-    track.addEventListener('pointercancel',()=>{busy=false;play()},{passive:true});
-    track.addEventListener('mouseenter',()=>{busy=true;stop()});
-    track.addEventListener('mouseleave',()=>{busy=false;play()});
-    track.addEventListener('focusin',()=>{busy=true;stop()});
-    track.addEventListener('focusout',()=>{busy=false;play()});
+    track.addEventListener('pointerdown',()=>{interacting=true;stop()},{passive:true});
+    window.addEventListener('pointerup',()=>{if(interacting){interacting=false;play()}},{passive:true});
+    window.addEventListener('pointercancel',()=>{if(interacting){interacting=false;play()}},{passive:true});
+    track.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'&&matchMedia('(hover:hover)').matches){hovered=true;stop()}});
+    track.addEventListener('pointerleave',event=>{if(event.pointerType==='mouse'){hovered=false;play()}});
+    track.addEventListener('focusin',event=>{keyboardFocus=event.target.matches(':focus-visible');play()});
+    track.addEventListener('focusout',()=>{keyboardFocus=false;play()});
     track.addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();move(event.key==='ArrowRight'?1:-1)}});
     document.addEventListener('visibilitychange',play);
     reduceMotion.addEventListener('change',play);

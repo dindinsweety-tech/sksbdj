@@ -332,10 +332,12 @@ h2{font-family:Inter,Arial,sans-serif;letter-spacing:-.035em}
 .story-grid{overflow-y:hidden;scrollbar-width:none;padding:0;align-items:stretch}
 .story-grid::-webkit-scrollbar,.review-slider::-webkit-scrollbar{display:none}
 .story-grid .story-card{position:relative;display:block;aspect-ratio:4/3;height:auto;overflow:hidden;border-radius:22px;background:#181818;opacity:1;transform:none}
-.story-grid .story-card img{display:block;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;filter:brightness(.65)}
-.story-grid .story-card>div{display:block;position:absolute;inset:0;padding:24px;background:linear-gradient(180deg,#0005,transparent 50%);pointer-events:none}
+.story-grid .story-card img{display:block;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;filter:none}
+.story-grid .story-card>div{display:block;position:absolute;inset:0;padding:24px;background:none;pointer-events:none}
 .story-grid .story-card>div span{display:inline-block;margin:0;color:#efefea;text-transform:uppercase;font-size:13px;line-height:1.25;letter-spacing:.08em;font-weight:700;background:#1118;border:1px solid #fff4;padding:9px 12px;border-radius:999px}
-.handover-controls{justify-content:flex-end}
+.handover-controls{justify-content:flex-start}
+.handover-controls button{display:grid;place-items:center;padding:0;line-height:1;background:#fff;border:1px solid #ccc;border-radius:50%;width:46px;height:46px}
+.handover-controls button:hover{border-color:var(--ink)}
 
 .review-slider{position:relative;display:flex;gap:20px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;min-width:0;border-radius:22px}
 .review-card{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:32px;background:#f1f1ec;border:1px solid #e4e4dd;border-radius:22px}
@@ -357,7 +359,6 @@ h2{font-family:Inter,Arial,sans-serif;letter-spacing:-.035em}
 .mobile-bar{background:#111}
 .quiz-result-contacts{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0 6px}
 .quiz-result-contacts .button{flex:1;min-width:150px;justify-content:center;white-space:normal}
-.quiz-context-choice{border-color:#c39d00;background:var(--yellow-soft)}
 @media(min-width:721px) and (max-width:1180px){
  .site-header{height:88px}
  .header-inner{position:relative;gap:14px}
@@ -372,3 +373,8 @@ h2{font-family:Inter,Arial,sans-serif;letter-spacing:-.035em}
 
 .section h2,.service-area h2{margin-left:-.06em}
 
+
+/* Contact comment stays inside the quiz card at narrow widths. */
+.quiz-v3-form textarea{display:block;width:100%;min-width:0;max-width:100%;min-height:112px;resize:vertical;padding:14px 16px;border:1px solid #ccc;border-radius:12px;background:#fff;color:var(--ink);font:inherit;line-height:1.5}
+.quiz-v3-form textarea:focus{outline:2px solid var(--yellow);outline-offset:2px}
+.review-rating{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:20px 0;font-size:16px}.review-rating strong{font-size:32px;color:var(--ink)}.review-rating .rating-stars{color:#dfab00;font-size:20px;letter-spacing:2px}

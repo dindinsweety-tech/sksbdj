@@ -94,7 +94,6 @@
           current++;render();
         });
         if(item.note)choice.append(el('small','',item.note));
-        if(key==='goal' && answers.goal===(item.value||item.label)){choice.classList.add('quiz-context-choice');choice.append(el('small','','Выбрано по кнопке на сайте — можно изменить'));}
         options.append(choice);
       });
       body.append(options);
@@ -126,7 +125,9 @@
     const consentText=el('span');consentText.innerHTML='Даю <a href="/consent.html" target="_blank" rel="noopener">согласие на обработку персональных данных</a> для ответа на заявку. Ознакомлен(а) с <a href="/privacy.html" target="_blank" rel="noopener">Политикой</a>.';
     consent.append(check,consentText);
     const send=el('button','button quiz-v3-continue','Получить варианты');send.type='submit';
-    form.append(label,phone,error,consent,send);
+    const commentLabel=el('label','','Комментарий или ссылка на автомобиль');commentLabel.htmlFor='lead-comment';
+    const comment=el('textarea');comment.id='lead-comment';comment.name='comment';comment.rows=3;comment.maxLength=3000;comment.placeholder='Оставьте любой свой комментарий или ссылку на автомобиль';
+    form.append(label,phone,error,commentLabel,comment,consent,send);
     if(debug)form.append(el('p','quiz-v3-demo','Демонстрационная форма: данные не отправляются менеджеру.'));
     // Keep typing/deleting untouched; format a complete number only when leaving the field.
     phone.addEventListener('input',()=>{error.textContent='';phone.removeAttribute('aria-invalid')});
@@ -136,7 +137,7 @@
       if(digits.length!==11||!/^7\d{10}$/.test(digits)){error.textContent='Введите номер полностью';phone.focus();return}
       if(!check.checked){error.textContent='Подтвердите согласие';check.focus();return}
       const params=new URLSearchParams(location.search);
-      const payload={lead_source:'site',quiz_name:'Подбор автомобиля',goal:answers.goal,selected_car:selectedCar||undefined,vehicle_choice:answers.vehicle_choice,deposit_status:answers.deposit_status,car_class:answers.car_class,region:answers.region,rental_term:answers.rental_term,configuration:answers.configuration,timing:answers.timing,age_group:answers.age_group,driving_experience:answers.driving_experience,citizenship:answers.citizenship,phone:formatPhone(digits),page_url:location.href,utm:Object.fromEntries([...params].filter(([k])=>/^utm_/.test(k)))};
+      const payload={lead_source:'site',quiz_name:'Подбор автомобиля',goal:answers.goal,selected_car:selectedCar||undefined,vehicle_choice:answers.vehicle_choice,deposit_status:answers.deposit_status,car_class:answers.car_class,region:answers.region,rental_term:answers.rental_term,configuration:answers.configuration,timing:answers.timing,age_group:answers.age_group,driving_experience:answers.driving_experience,citizenship:answers.citizenship,phone:formatPhone(digits),comment:comment.value.trim(),page_url:location.href,utm:Object.fromEntries([...params].filter(([k])=>/^utm_/.test(k)))};
       // Prepared for a Tilda/CRM integration. The demonstration never stores or transmits personal data.
       track('quiz_submit',{goal:payload.goal,region:payload.region||'',rental_term:payload.rental_term||'',...payload.utm});
       completed=true;render();track('quiz_success',{goal:payload.goal});
@@ -146,8 +147,7 @@
   back.addEventListener('click',()=>{if(current>0){current--;render()}});
   reset.addEventListener('click',()=>{answers={};selectedCar='';current=0;completed=false;render()});
   window.autocarQuizStart=(purpose='',car='')=>{
-    const map={'Авто под заказ':'order','Хочу выкупить авто':'fleet','Личные поездки':'personal','Работа в такси':'taxi'};
-    answers=map[purpose]?{goal:map[purpose]}:{};selectedCar=car;completed=false;
+    answers={};selectedCar=car;completed=false;
     current=0;
     render();track('quiz_view');
   };
