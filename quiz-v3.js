@@ -24,6 +24,7 @@
   const configurations = ['МКПП + бензин','МКПП + газ','АКПП + бензин','АКПП + газ','Не имеет значения'];
   const purchaseTiming = ['В ближайшее время','В течение 1–3 месяцев','Позже','Пока изучаю варианты'];
   let answers = {}, current = 0, selectedCar = '', completed = false;
+  const debug = new URLSearchParams(location.search).get('debug')==='1';
   const option = (label, note) => ({label,note});
   const schema = {
     goal: {title:'Для каких целей нужен автомобиль?', options:goalOptions.map(([label,value,note])=>({label,value,note}))},
@@ -62,9 +63,13 @@
     reset.hidden=false;
     if (completed) {
       stepText.textContent='Готово';percent.textContent='100%';progress.style.width='100%';
-      body.append(el('h3','quiz-v3-title','Ваш подбор готов'));
-      info('Ответы заполнены. Чтобы получить варианты автомобилей и точные условия, свяжитесь с Автокар71 по телефону или в MAX. В демонстрационной версии заявка автоматически не отправляется.');
-      const contact=el('a','button quiz-v3-continue','Позвонить в Автокар71');contact.href='tel:+79539708877';body.append(contact);
+      body.append(el('h3','quiz-v3-title','Спасибо за ответы!'));
+      info('Ваш подбор готов. Для консультации по автомобилям и условиям позвоните нам или напишите в MAX. Ответим в рабочее время: пн–пт, 09:00–18:00.');
+      if(debug)info('Демонстрационная версия: заявка автоматически не отправляется.');
+      const contacts=el('div','quiz-result-contacts');
+      const contact=el('a','button','Позвонить');contact.href='tel:+79539708877';
+      const max=el('a','button','Написать в MAX');max.href='https://max.ru/u/f9LHodD0cOI6JfBs3FGlMtOcMpBqhR2duetrBES8_vSzQ2gOJeDS9R2RmPw';max.target='_blank';max.rel='noopener';
+      contacts.append(contact,max);body.append(contacts);
       body.append(button('Вернуться на сайт','button quiz-v3-continue',()=>{location.href='/'}));
       return;
     }
@@ -89,6 +94,7 @@
           current++;render();
         });
         if(item.note)choice.append(el('small','',item.note));
+        if(key==='goal' && answers.goal===(item.value||item.label)){choice.classList.add('quiz-context-choice');choice.append(el('small','','Выбрано по кнопке на сайте — можно изменить'));}
         options.append(choice);
       });
       body.append(options);
@@ -106,7 +112,7 @@
   }
   const phoneDigits = value => {
     const digits=value.replace(/\D/g,'');
-    if(digits.length===10)return '7'+digits;
+    if(digits.length===10 && !/^[78]/.test(digits) && !value.trim().startsWith('+'))return '7'+digits;
     return digits.length===11 && digits[0]==='8'?'7'+digits.slice(1):digits;
   };
   const formatPhone = digits => '+7 ('+digits.slice(1,4)+') '+digits.slice(4,7)+'-'+digits.slice(7,9)+'-'+digits.slice(9,11);
@@ -121,7 +127,7 @@
     consent.append(check,consentText);
     const send=el('button','button quiz-v3-continue','Получить варианты');send.type='submit';
     form.append(label,phone,error,consent,send);
-    form.append(el('p','quiz-v3-demo','Демонстрационная форма: данные не отправляются менеджеру. Для связи позвоните или напишите в MAX.'));
+    if(debug)form.append(el('p','quiz-v3-demo','Демонстрационная форма: данные не отправляются менеджеру.'));
     // Keep typing/deleting untouched; format a complete number only when leaving the field.
     phone.addEventListener('input',()=>{error.textContent='';phone.removeAttribute('aria-invalid')});
     phone.addEventListener('blur',()=>{const digits=phoneDigits(phone.value);if(/^7\d{10}$/.test(digits))phone.value=formatPhone(digits)});
@@ -140,9 +146,11 @@
   back.addEventListener('click',()=>{if(current>0){current--;render()}});
   reset.addEventListener('click',()=>{answers={};selectedCar='';current=0;completed=false;render()});
   window.autocarQuizStart=(purpose='',car='')=>{
-    answers={};selectedCar=car;completed=false;
+    const map={'Авто под заказ':'order','Хочу выкупить авто':'fleet','Личные поездки':'personal','Работа в такси':'taxi'};
+    answers=map[purpose]?{goal:map[purpose]}:{};selectedCar=car;completed=false;
     current=0;
     render();track('quiz_view');
   };
   window.autocarQuizStart();
 })();
+

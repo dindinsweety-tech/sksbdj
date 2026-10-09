@@ -65,7 +65,7 @@
   function setupCarousel(track, cardSelector, controls, delay) {
     if (!track) return;
     const slides=$$(cardSelector,track);
-    let timer, busy=false, visible=false, scrollFrame;
+    let timer, busy=false, visible=false;
     const index=()=>slides.reduce((best,slide,i)=>Math.abs(slide.offsetLeft-track.offsetLeft-track.scrollLeft)<Math.abs(slides[best].offsetLeft-track.offsetLeft-track.scrollLeft)?i:best,0);
     const move=direction=>{
       const max=track.scrollWidth-track.clientWidth;
@@ -76,7 +76,6 @@
     };
     const stop=()=>{clearInterval(timer);timer=undefined};
     const play=()=>{stop();if(visible&&!busy&&!document.hidden&&!reduceMotion.matches)timer=setInterval(()=>move(1),delay)};
-    const update=()=>{if(controls?.counter)controls.counter.textContent=(index()+1)+' / '+slides.length};
     controls?.previous?.addEventListener('click',()=>{move(-1);play()});
     controls?.next?.addEventListener('click',()=>{move(1);play()});
     track.addEventListener('pointerdown',()=>{busy=true;stop()},{passive:true});
@@ -86,15 +85,12 @@
     track.addEventListener('mouseleave',()=>{busy=false;play()});
     track.addEventListener('focusin',()=>{busy=true;stop()});
     track.addEventListener('focusout',()=>{busy=false;play()});
-    track.addEventListener('scroll',()=>{cancelAnimationFrame(scrollFrame);scrollFrame=requestAnimationFrame(update)},{passive:true});
     track.addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();move(event.key==='ArrowRight'?1:-1)}});
     document.addEventListener('visibilitychange',play);
     reduceMotion.addEventListener('change',play);
     new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;play()},{threshold:.2}).observe(track);
-    new ResizeObserver(update).observe(track);
-    update();
   }
-  setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next'),counter:$('.handover-counter')},5000);
+  setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next')},5000);
   setupCarousel($('#review-slider'),'.review-card',null,6500);
 
   // Measure the actual bars rather than maintaining rounded CSS estimates.
@@ -198,3 +194,4 @@
   $('.modal-quiz').addEventListener('click', openQuiz);
   clearTimeout(window.__revealFallback);
 })();
+
