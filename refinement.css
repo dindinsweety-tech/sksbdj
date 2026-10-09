@@ -378,3 +378,6 @@ h2{font-family:Inter,Arial,sans-serif;letter-spacing:-.035em}
 .quiz-v3-form textarea{display:block;width:100%;min-width:0;max-width:100%;min-height:112px;resize:vertical;padding:14px 16px;border:1px solid #ccc;border-radius:12px;background:#fff;color:var(--ink);font:inherit;line-height:1.5}
 .quiz-v3-form textarea:focus{outline:2px solid var(--yellow);outline-offset:2px}
 .review-rating{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:20px 0;font-size:16px}.review-rating strong{font-size:32px;color:var(--ink)}.review-rating .rating-stars{color:#dfab00;font-size:20px;letter-spacing:2px}
+
+/* Desktop payment heading and spacing above the large schedule label. */
+@media(min-width:721px){.payment-copy h3 .payment-heading-tail{display:block}.payment-panel .week small{margin-top:24px}}
