@@ -7,21 +7,21 @@
   const offer = {
     arenda: {
       promise: 'Автомобиль для работы и личных поездок',
-      subtitle: 'Одобрение за 30 минут по 2 документам. Только для граждан РФ.',
+      subtitle: 'Одобрение за 30 минут по 2 документам.',
       first: ['Формат', 'Аренда из нашего парка'], second: ['Условия', 'Депозит от 25 000 ₽ · график 7 / 0'],
       action: 'Подобрать авто в аренду', purpose: '', proof: ['25 000 ₽', 'депозит из наличия', '7 / 0', 'график аренды'],
       description: 'Аренда автомобилей из парка Автокар71 для работы и личных поездок. Парк в Новомосковске, условия индивидуально после проверки.'
     },
     vykup: {
       promise: 'Вы выбираете авто — мы покупаем его под вас',
-      subtitle: 'Одобрение за 30 минут по 2 документам. Только для граждан РФ.',
+      subtitle: 'Одобрение за 30 минут по 2 документам.',
       first: ['Формат подбора', 'Автомобиль под ваш запрос'], second: ['Первоначальный взнос', 'От 20% для автомобиля под заказ'],
       action: 'Обсудить выкуп', purpose: 'Авто под заказ', proof: ['20%', 'взнос под заказ', 'Договор', 'условия до оплаты'],
       description: 'Автомобиль с правом выкупа в Автокар71: из наличия или под заказ. Первоначальный взнос от 20% для автомобиля под заказ.'
     },
     taxi: {
       promise: 'Автомобиль для работы в такси',
-      subtitle: 'Одобрение за 30 минут по 2 документам. Только для граждан РФ.',
+      subtitle: 'Одобрение за 30 минут по 2 документам.',
       first: ['Для работы', 'Автомобили под такси'], second: ['График аренды', '7 / 0 · депозит от 25 000 ₽'],
       action: 'Подобрать авто для такси', purpose: 'Работа в такси', proof: ['7 / 0', 'график аренды', 'СТО', 'обслуживание парка'],
       description: 'Аренда автомобилей для работы в такси в Автокар71. Автомобили из парка, график 7 / 0, индивидуальные условия.'
@@ -61,35 +61,52 @@
   });
 
 
-  const handover = $('#handover-slider');
-  const handoverCards = $$('.story-card', handover);
-  const previousPhoto = $('.handover-prev'), nextPhoto = $('.handover-next');
-  let handoverFrame;
-  const handoverIndex = () => {
-    const left = handover.getBoundingClientRect().left;
-    return handoverCards.reduce((best, card, index) =>
-      Math.abs(card.getBoundingClientRect().left - left) < Math.abs(handoverCards[best].getBoundingClientRect().left - left) ? index : best, 0);
+  const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)');
+  function setupCarousel(track, cardSelector, controls, delay) {
+    if (!track) return;
+    const slides=$$(cardSelector,track);
+    let timer, busy=false, visible=false, scrollFrame;
+    const index=()=>slides.reduce((best,slide,i)=>Math.abs(slide.offsetLeft-track.offsetLeft-track.scrollLeft)<Math.abs(slides[best].offsetLeft-track.offsetLeft-track.scrollLeft)?i:best,0);
+    const move=direction=>{
+      const max=track.scrollWidth-track.clientWidth;
+      const next=Math.max(0,Math.min(slides.length-1,index()+direction));
+      const edge=direction>0&&track.scrollLeft>=max-2?0:direction<0&&track.scrollLeft<2?max:null;
+      const target=edge===null?Math.min(max,slides[next].offsetLeft-track.offsetLeft):edge;
+      track.scrollTo({left:target,behavior:reduceMotion.matches?'instant':'smooth'});
+    };
+    const stop=()=>{clearInterval(timer);timer=undefined};
+    const play=()=>{stop();if(visible&&!busy&&!document.hidden&&!reduceMotion.matches)timer=setInterval(()=>move(1),delay)};
+    const update=()=>{if(controls?.counter)controls.counter.textContent=(index()+1)+' / '+slides.length};
+    controls?.previous?.addEventListener('click',()=>{move(-1);play()});
+    controls?.next?.addEventListener('click',()=>{move(1);play()});
+    track.addEventListener('pointerdown',()=>{busy=true;stop()},{passive:true});
+    window.addEventListener('pointerup',()=>{if(busy){busy=false;play()}},{passive:true});
+    track.addEventListener('pointercancel',()=>{busy=false;play()},{passive:true});
+    track.addEventListener('mouseenter',()=>{busy=true;stop()});
+    track.addEventListener('mouseleave',()=>{busy=false;play()});
+    track.addEventListener('focusin',()=>{busy=true;stop()});
+    track.addEventListener('focusout',()=>{busy=false;play()});
+    track.addEventListener('scroll',()=>{cancelAnimationFrame(scrollFrame);scrollFrame=requestAnimationFrame(update)},{passive:true});
+    track.addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();move(event.key==='ArrowRight'?1:-1)}});
+    document.addEventListener('visibilitychange',play);
+    reduceMotion.addEventListener('change',play);
+    new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;play()},{threshold:.2}).observe(track);
+    new ResizeObserver(update).observe(track);
+    update();
+  }
+  setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next'),counter:$('.handover-counter')},5000);
+  setupCarousel($('#review-slider'),'.review-card',null,6500);
+
+  // Measure the actual bars rather than maintaining rounded CSS estimates.
+  const mobileBar=$('.mobile-bar'), header=$('.site-header');
+  const syncBars=()=>{
+    document.documentElement.style.setProperty('--mobile-bar-height',mobileBar.getBoundingClientRect().height+'px');
+    document.documentElement.style.setProperty('--header-height',header.getBoundingClientRect().height+'px');
   };
-  const updateHandover = () => {
-    const index = handoverIndex();
-    const visible = matchMedia('(max-width:720px)').matches ? 1 : 2;
-    $('.handover-counter').textContent = visible === 1 ? `${index + 1} / ${handoverCards.length}` : `${index + 1}–${Math.min(index + visible, handoverCards.length)} / ${handoverCards.length}`;
-    previousPhoto.disabled = handover.scrollLeft < 2;
-    nextPhoto.disabled = handover.scrollLeft >= handover.scrollWidth - handover.clientWidth - 2;
-  };
-  const moveHandover = direction => {
-    const index = Math.max(0, Math.min(handoverCards.length - 1, handoverIndex() + direction));
-    const offset = handoverCards[index].getBoundingClientRect().left - handover.getBoundingClientRect().left + handover.scrollLeft;
-    handover.scrollTo({left: offset, behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'instant' : 'smooth'});
-  };
-  previousPhoto.addEventListener('click', () => moveHandover(-1));
-  nextPhoto.addEventListener('click', () => moveHandover(1));
-  handover.addEventListener('scroll', () => { cancelAnimationFrame(handoverFrame); handoverFrame = requestAnimationFrame(updateHandover); }, {passive:true});
-  handover.addEventListener('keydown', event => {
-    if (event.target === handover && ['ArrowLeft','ArrowRight'].includes(event.key)) { event.preventDefault(); moveHandover(event.key === 'ArrowRight' ? 1 : -1); }
-  });
-  new ResizeObserver(updateHandover).observe(handover);
-  updateHandover();
+  new ResizeObserver(syncBars).observe(mobileBar);
+  new ResizeObserver(syncBars).observe(header);
+  window.addEventListener('resize',syncBars,{passive:true});
+  syncBars();
 
   const observer = new IntersectionObserver(entries => entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
@@ -137,6 +154,20 @@
       $('.car-media', card).append(sale);
     }
   });
+  let pageLock;
+  const lockPage=()=>{
+    if(pageLock)return;
+    pageLock={y:window.scrollY,body:document.body.getAttribute('style'),html:document.documentElement.style.overflow};
+    document.body.style.position='fixed';document.body.style.top=-pageLock.y+'px';document.body.style.left='0';document.body.style.right='0';document.body.style.width='100%';
+    document.documentElement.style.overflow='hidden';
+  };
+  const unlockPage=()=>{
+    if(!pageLock)return;
+    const saved=pageLock;pageLock=null;
+    if(saved.body===null)document.body.removeAttribute('style');else document.body.setAttribute('style',saved.body);
+    document.documentElement.style.overflow=saved.html;
+    window.scrollTo({top:saved.y,left:0,behavior:'instant'});
+  };
   const openCar = card => {
     const name = $('h3', card).textContent.trim();
     const specs = (card.dataset.specs || '').split('|').filter(Boolean);
@@ -146,15 +177,15 @@
     $('#modal-specs').innerHTML = specs.map(x => `<span>${x}</span>`).join('');
     $('.modal-quiz').dataset.purpose = 'Хочу выкупить авто';
     $('.modal-quiz').dataset.car = name;
-    modal.showModal(); document.body.style.overflow = 'hidden';
+    lockPage(); modal.showModal();
   };
   $$('.car-card').forEach(card => {
     card.addEventListener('click', () => openCar(card));
     card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCar(card); } });
   });
-  const closeModal = () => { modal.close(); document.body.style.overflow = ''; };
+  const closeModal = () => { modal.close(); unlockPage(); };
   $('.modal-close').addEventListener('click', closeModal);
-  modal.addEventListener('close', () => { document.body.style.overflow = ''; });
+  modal.addEventListener('close', unlockPage);
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
   const openQuiz = event => {
