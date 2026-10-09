@@ -332,7 +332,7 @@ h2{font-family:Inter,Arial,sans-serif;letter-spacing:-.035em}
 .story-grid{overflow-y:hidden;scrollbar-width:none;padding:0;align-items:stretch}
 .story-grid::-webkit-scrollbar,.review-slider::-webkit-scrollbar{display:none}
 .story-grid .story-card{position:relative;display:block;aspect-ratio:4/3;height:auto;overflow:hidden;border-radius:22px;background:#181818;opacity:1;transform:none}
-.story-grid .story-card img{display:block;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;filter:none}
+.story-grid .story-card img{display:block;width:100%;height:100%;aspect-ratio:auto;object-fit:contain;filter:none}
 .story-grid .story-card>div{display:block;position:absolute;inset:0;padding:24px;background:none;pointer-events:none}
 .story-grid .story-card>div span{display:inline-block;margin:0;color:#efefea;text-transform:uppercase;font-size:13px;line-height:1.25;letter-spacing:.08em;font-weight:700;background:#1118;border:1px solid #fff4;padding:9px 12px;border-radius:999px}
 .handover-controls{justify-content:flex-start}
@@ -381,3 +381,8 @@ h2{font-family:Inter,Arial,sans-serif;letter-spacing:-.035em}
 
 /* Desktop payment heading and spacing above the large schedule label. */
 @media(min-width:721px){.payment-copy h3 .payment-heading-tail{display:block}.payment-panel .week small{margin-top:24px}}
+
+/* Show complete source photos without cropping or zoom on hover. */
+.car-media{aspect-ratio:auto;height:auto}.car-media img{display:block;width:100%;height:auto;object-fit:contain}.car-card:hover .car-media img{transform:none}
+.external-widget[data-widget=rating]{width:150px;height:50px;margin:20px 0;border:0;border-radius:0;background:transparent}.rating-widget .widget-placeholder{padding:0;gap:0}.rating-widget .widget-enable{display:flex;align-items:center;justify-content:center;gap:8px;width:150px;height:50px;border:1px solid #ddd;border-radius:10px;background:#fff;color:var(--ink);cursor:pointer}.rating-widget .widget-enable strong{font-size:26px}.rating-widget .widget-enable span{font-size:13px}.rating-widget iframe{width:150px;height:50px}
+

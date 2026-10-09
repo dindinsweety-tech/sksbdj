@@ -7,7 +7,7 @@
     if (el.querySelector('iframe')) return;
     const frame = document.createElement('iframe');
     frame.src = el.dataset.src; frame.loading = 'lazy';
-    frame.title = el.dataset.widget === 'map' ? 'Карта проезда к Автокар71' : 'Отзывы об Автокар71 на Яндексе';
+    frame.title = el.dataset.widget === 'map' ? 'Карта проезда к Автокар71' : el.dataset.widget === 'rating' ? 'Рейтинг Автокар71 на Яндексе' : 'Отзывы об Автокар71 на Яндексе';
     frame.referrerPolicy = 'strict-origin-when-cross-origin';
     el.querySelector('.widget-placeholder').hidden = true;
     el.append(frame);
@@ -28,3 +28,4 @@
   document.querySelectorAll('.cookie-settings').forEach(b => b.addEventListener('click', () => {panel.hidden=false; document.querySelector('#cookies-decline').focus();}));
   widgets.forEach(el => el.querySelector('.widget-enable').addEventListener('click', () => loadWidget(el)));
 })();
+
