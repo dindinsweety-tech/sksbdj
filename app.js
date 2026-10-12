@@ -107,7 +107,7 @@
     new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;play()},{threshold:.2}).observe(track);
   }
   setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next'),pause:$('.handover-pause')},3500,1000);
-  setupCarousel($('#review-slider'),'.review-card',{previous:$('.review-prev'),next:$('.review-next'),pause:$('.review-pause')},5500);
+  setupCarousel($('#review-slider'),'.review-card',{previous:$('.review-prev'),next:$('.review-next'),pause:$('.review-pause')},5500,1000);
 
   // Measure the actual bars rather than maintaining rounded CSS estimates.
   const mobileBar=$('.mobile-bar'), header=$('.site-header');
