@@ -62,21 +62,37 @@
 
 
   const reduceMotion = matchMedia('(prefers-reduced-motion:reduce)');
-  function setupCarousel(track, cardSelector, controls, delay) {
+  function setupCarousel(track, cardSelector, controls, delay, duration=0) {
     if (!track) return;
     const slides=$$(cardSelector,track);
-    let timer, interacting=false, paused=false, keyboardFocus=false, visible=false;
+    let timer, firstTimer, motion=0, previousSnap="", previousBehavior="", started=false, interacting=false, paused=false, keyboardFocus=false, visible=false;
     const position=slide=>slide.getBoundingClientRect().left-track.getBoundingClientRect().left+track.scrollLeft-track.clientLeft;
     const index=()=>slides.reduce((best,slide,i)=>Math.abs(position(slide)-track.scrollLeft)<Math.abs(position(slides[best])-track.scrollLeft)?i:best,0);
-    const move=direction=>{
+    const stopMotion=()=>{if(!motion)return;cancelAnimationFrame(motion);motion=0;track.style.scrollSnapType=previousSnap;track.style.scrollBehavior=previousBehavior};
+    const animate=target=>{
+      stopMotion();
+      const from=track.scrollLeft,begin=performance.now();
+      previousSnap=track.style.scrollSnapType;previousBehavior=track.style.scrollBehavior;
+      track.style.scrollSnapType="none";track.style.scrollBehavior="auto";
+      const frame=now=>{
+        const progress=Math.min(1,(now-begin)/duration);
+        const eased=progress<.5?4*progress**3:1-(-2*progress+2)**3/2;
+        track.scrollLeft=from+(target-from)*eased;
+        if(progress<1)motion=requestAnimationFrame(frame);
+        else{motion=0;track.scrollLeft=target;track.style.scrollSnapType=previousSnap;track.style.scrollBehavior=previousBehavior;}
+      };
+      motion=requestAnimationFrame(frame);
+    };
+    const move=(direction,autoplay=false)=>{
       const max=track.scrollWidth-track.clientWidth;
       const next=Math.max(0,Math.min(slides.length-1,index()+direction));
       const edge=direction>0&&track.scrollLeft>=max-2?0:direction<0&&track.scrollLeft<2?max:null;
       const target=edge===null?Math.min(max,position(slides[next])):edge;
-      track.scrollTo({left:target,behavior:reduceMotion.matches?'instant':'smooth'});
+      if(autoplay&&duration&&!reduceMotion.matches&&edge===null)animate(target);
+      else{stopMotion();track.scrollTo({left:target,behavior:reduceMotion.matches||autoplay&&duration?'instant':'smooth'});}
     };
-    const stop=()=>{clearInterval(timer);timer=undefined};
-    const play=()=>{stop();if(visible&&!interacting&&!paused&&!keyboardFocus&&!document.hidden)timer=setInterval(()=>move(1),delay)};
+    const stop=()=>{clearInterval(timer);clearTimeout(firstTimer);timer=firstTimer=undefined;stopMotion()};
+    const play=()=>{stop();if(visible&&!interacting&&!paused&&!keyboardFocus&&!document.hidden){timer=setInterval(()=>move(1,true),delay);if(duration&&!started)firstTimer=setTimeout(()=>{started=true;move(1,true)},1500)}};
     controls?.previous?.addEventListener('click',()=>{move(-1);play()});
     controls?.next?.addEventListener('click',()=>{move(1);play()});
     controls?.pause?.addEventListener('click',()=>{paused=!paused;controls.pause.setAttribute('aria-pressed',String(paused));controls.pause.setAttribute('aria-label',paused?'Продолжить автопрокрутку':'Приостановить автопрокрутку');play()});
@@ -90,7 +106,7 @@
     reduceMotion.addEventListener('change',play);
     new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;play()},{threshold:.2}).observe(track);
   }
-  setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next'),pause:$('.handover-pause')},3500);
+  setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next'),pause:$('.handover-pause')},3500,1000);
   setupCarousel($('#review-slider'),'.review-card',{previous:$('.review-prev'),next:$('.review-next'),pause:$('.review-pause')},5500);
 
   // Measure the actual bars rather than maintaining rounded CSS estimates.
