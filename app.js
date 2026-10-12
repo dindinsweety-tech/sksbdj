@@ -65,7 +65,7 @@
   function setupCarousel(track, cardSelector, controls, delay) {
     if (!track) return;
     const slides=$$(cardSelector,track);
-    let timer, interacting=false, hovered=false, keyboardFocus=false, visible=false;
+    let timer, interacting=false, paused=false, keyboardFocus=false, visible=false;
     const position=slide=>slide.getBoundingClientRect().left-track.getBoundingClientRect().left+track.scrollLeft-track.clientLeft;
     const index=()=>slides.reduce((best,slide,i)=>Math.abs(position(slide)-track.scrollLeft)<Math.abs(position(slides[best])-track.scrollLeft)?i:best,0);
     const move=direction=>{
@@ -76,14 +76,13 @@
       track.scrollTo({left:target,behavior:reduceMotion.matches?'instant':'smooth'});
     };
     const stop=()=>{clearInterval(timer);timer=undefined};
-    const play=()=>{stop();if(visible&&!interacting&&!hovered&&!keyboardFocus&&!document.hidden)timer=setInterval(()=>move(1),delay)};
+    const play=()=>{stop();if(visible&&!interacting&&!paused&&!keyboardFocus&&!document.hidden)timer=setInterval(()=>move(1),delay)};
     controls?.previous?.addEventListener('click',()=>{move(-1);play()});
     controls?.next?.addEventListener('click',()=>{move(1);play()});
+    controls?.pause?.addEventListener('click',()=>{paused=!paused;controls.pause.setAttribute('aria-pressed',String(paused));controls.pause.setAttribute('aria-label',paused?'Продолжить автопрокрутку':'Приостановить автопрокрутку');play()});
     track.addEventListener('pointerdown',()=>{interacting=true;stop()},{passive:true});
     window.addEventListener('pointerup',()=>{if(interacting){interacting=false;play()}},{passive:true});
     window.addEventListener('pointercancel',()=>{if(interacting){interacting=false;play()}},{passive:true});
-    track.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'&&matchMedia('(hover:hover)').matches){hovered=true;stop()}});
-    track.addEventListener('pointerleave',event=>{if(event.pointerType==='mouse'){hovered=false;play()}});
     track.addEventListener('focusin',event=>{keyboardFocus=event.target.matches(':focus-visible');play()});
     track.addEventListener('focusout',()=>{keyboardFocus=false;play()});
     track.addEventListener('keydown',event=>{if(['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();move(event.key==='ArrowRight'?1:-1)}});
@@ -91,8 +90,8 @@
     reduceMotion.addEventListener('change',play);
     new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;play()},{threshold:.2}).observe(track);
   }
-  setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next')},5000);
-  setupCarousel($('#review-slider'),'.review-card',null,6500);
+  setupCarousel($('#handover-slider'),'.story-card',{previous:$('.handover-prev'),next:$('.handover-next'),pause:$('.handover-pause')},3500);
+  setupCarousel($('#review-slider'),'.review-card',{previous:$('.review-prev'),next:$('.review-next'),pause:$('.review-pause')},5500);
 
   // Measure the actual bars rather than maintaining rounded CSS estimates.
   const mobileBar=$('.mobile-bar'), header=$('.site-header');
